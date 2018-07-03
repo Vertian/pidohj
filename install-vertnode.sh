@@ -75,7 +75,7 @@ function hd_detect {
             [Yy]* ) DRIVE_CONF=true; break;;
             [Nn]* ) echo "This script needs to format the entire flash drive.";
                     echo -e "$TEXT_RESET"; exit;;
-            * ) echo "Do you wish to continue? (y/n)";;
+            * ) echo "Do you wish to continue? (y/n) ";;
         esac
         echo -e "$TEXT_RESET"
     done
@@ -130,11 +130,11 @@ function user_input {
     # check for USB flash drive
     while true; do
         echo -e "$TEXT_YELLOW"
-        read -p "Is the USB flash drive connected? It will be formatted. (y/n)" yn
+        read -p "Is the USB flash drive connected? It will be formatted. (y/n) " yn
         case $yn in
             [Yy]* ) hd_detect; break;;  # if we have hd_config value we can configure it
             [Nn]* ) echo "Please connect USB flash drive and retry."; exit;;
-            * ) echo "Do you wish to continue? (y/n)";;
+            * ) echo "Do you wish to continue? (y/n) ";;
         esac
     done
     echo 'Vertcoin requires both an rpcuser & rpcpassword, please enter your preferred values: '
