@@ -4,7 +4,7 @@
 
 # Vertnode
 - [x] Install dependencies
-- [x] Modify IPTABLES for security
+- [x] Modify `IPTABLES` for security
 - [x] Find, format and configure USB flash drive
 - [x] Create and configure swap space on USB flash drive
 - [x] Download & compile Berkeley DB
