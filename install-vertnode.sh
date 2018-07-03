@@ -277,8 +277,8 @@ done
 clear
 user_input
 echo
-greentext 'Initializing the Vertcoin full node installation, please be patient...'
-greentext '______________________________________________________________________'
+greentext 'Starting Vertcoin full node installation, please be patient...'
+greentext '______________________________________________________________'
 # call update_rasp function | update the system
 update_rasp
 echo
