@@ -17,3 +17,7 @@
 - [ ] Clone & build `p2pool-vtc`
 - [ ] Configure & launch `p2pool-vtc` 
 - [ ] Display installation report
+
+<p align="center">
+  <img src="https://i.imgur.com/zgx4uiu.jpg">
+</p>
