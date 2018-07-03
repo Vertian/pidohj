@@ -1,8 +1,9 @@
 <p align="center">
-  <img src="https://github.com/e-corp-sam-sepiol/Documentation/blob/master/images/vertcoin-branding.png" width="343" height="68" />
+  <img src="https://github.com/e-corp-sam-sepiol/Documentation/blob/master/images/vertcoin-branding.png" width="343" height="68" /> <img src="https://i.imgur.com/1RKi4wd.png" width="90">
 </p>
 
-# Vertnode
+# Vertnode 
+## An automated installation for Vertcoin full nodes 
 - [x] Install dependencies
 - [x] Modify `IPTABLES` for security
 * Play around with `ufw` configuration?
