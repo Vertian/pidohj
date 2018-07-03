@@ -65,6 +65,8 @@ function redtext(){
 
 # hd_detect | USB flash drive detect; prompt for formatting
 function hd_detect {
+    # list block devices that are less than or equal to 16GB, cut the first three characters
+    # of lsblk -dlnb and pass to df -h
     find_drive="$(lsblk -dlnb | awk '$4<=16008609792' | numfmt --to=iec --field=4 | cut -c1-3)"
     drive=$FOLD1$find_drive
     drive_size="$(df -h "$drive" | sed 1d |  awk '{print $2}')"
@@ -106,12 +108,14 @@ function hd_config {
         fi
     sudo chmod 777 "$VTCDIR"
     greentext 'Successfully configured USB flash drive!'
+    echo
 }
 
 # swap_config | configure swap file to reside on formatted flash drive
 function swap_config {
     yellowtext 'Configuring swap file to reside on USB flash drive...'
     sudo -u "$user" mkdir -p /home/"$user"/.vertcoin/swap
+    # dd will take a few minutes to complete
     dd if=/dev/zero of=/home/"$user"/.vertcoin/swap/swap.file bs=1M count=2148
     chmod 600 /home/"$user"/.vertcoin/swap/swap.file
     sudo sed -i".bak" "/CONF_SWAPFILE/d" /etc/dphys-swapfile
@@ -123,6 +127,7 @@ function swap_config {
     swapon /home/"$user"/.vertcoin/swap/swap.file
     echo "/home/$user/.vertcoin/swap/swap.file  none  swap  defaults  0    0" >> /etc/fstab
     greentext 'Successfully configured swap space!'
+    echo
 }
 
 # user_input | take user input for rpcuser and rpcpass
@@ -169,12 +174,14 @@ function secure {
     # limit unique IP addresses to 6 connections
     iptables -I INPUT -p tcp --syn --dport 5889 -m connlimit --connlimit-above 6 -j REJECT
     greentext 'Limited unique IP addresses 6 connections to port 5889'
+    echo
     # save the iptables rules; load the saved rules
     iptables-save > /etc/iptables.conf
     sed -i".bak" '/exit/d' /etc/rc.local
     echo 'iptables-restore < /etc/iptables.conf' >> /etc/rc.local
     echo 'exit 0' >> /etc/rc.local
     greentext 'Rules saved!'
+    echo
 }
 
 # update_rasp | update the system
@@ -184,6 +191,7 @@ function update_rasp {
     sudo apt-get upgrade -y
     sudo apt-get autoremove -y
     greentext 'Successfully updated system!'
+    echo
     # check if reboot is needed
         if [ -f /var/run/reboot-required ]; then
             redtext 'Reboot required!'
@@ -202,6 +210,7 @@ function install_berkeley {
     make
     sudo make install
     greentext 'Successfully installed Berkeley (4.8) database!'
+    echo
 }
 
 # install_vertcoind | clone, build and install vertcoin core daemon
@@ -216,6 +225,7 @@ function install_vertcoind {
     make
     sudo make install
     greentext 'Successfully installed Vertcoin Core!'
+    echo
 }
 
 # config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
@@ -238,6 +248,7 @@ function install_depends {
     yellowtext 'Installing package dependencies...'
     sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban
     greentext 'Successfully installed required dependencies!'
+    echo
 }
 
 # -------------BEGIN-MAIN-------------------
@@ -263,15 +274,20 @@ do
 done
 
 # call user_input function | take user input for rpcuser and rpcpass
+clear
 user_input
+echo
 greentext 'Initializing the Vertcoin full node installation, please be patient...'
 greentext '______________________________________________________________________'
 # call update_rasp function | update the system
 update_rasp
+echo
 # call install_depends function | install the required dependencies to run this script
 install_depends
+echo
 # call secure function | modify iptables to limit connections for security purposes
 secure
+echo
 
 # configure USB flash drive ; call hd_config function, then call swap_config function
 if [ "$DRIVE_CONF" = "true" ]; then
@@ -281,9 +297,11 @@ fi
 
 # call install_berkeley function | install berkeley database 4.8 for wallet functionality
 install_berkeley
+echo
 
 # call install_vertcoind | clone, build and install vertcoin core daemon
 install_vertcoind
+echo
 
 # call config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 config_vertcoin
