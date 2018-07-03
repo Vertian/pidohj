@@ -230,6 +230,7 @@ function install_vertcoind {
 
 # config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 function config_vertcoin {
+    # echo values into a file named vertcoin.conf
     echo "server=1" >> /home/"$user"/.vertcoin/vertcoin.conf
     echo "rpcuser=$rpcuser" >> /home/"$user"/.vertcoin/vertcoin.conf
     echo "rpcpassword=$rpcpass" >> /home/"$user"/.vertcoin/vertcoin.conf
@@ -240,7 +241,6 @@ function config_vertcoin {
     echo 'maxconnections=40' >> /home/"$user"/.vertcoin/vertcoin.conf
     echo 'maxuploadtarget=5000' >> /home/"$user"/.vertcoin/vertcoin.conf
     echo 'usehd=1' >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'txindex=1' >> /home/"$user"/.vertcoin/vertcoin.conf
 }
 
 # install_depends | install the required dependencies to run this script
