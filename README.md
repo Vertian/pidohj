@@ -26,7 +26,7 @@
 ### [Manual Installation Walkthrough: Raspberry Pi Zero W](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi-zero-w.md)
 ### [Manual Installation Walkthrough: Intel NUC](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/intel-nuc.md)
 #### Automated Vertcoin Installation Testing
-- [ ] Raspberry Pi 3 - More testing needed
+- [x] Raspberry Pi 3 - Installs a Vertcoin full node with little user input. Looks for USB flash drives <=16GB for storage. More testing to be done.
 - [ ] Raspberry Pi Zero W - Not tested
 - [ ] Intel NUC - Not tested
 
