@@ -3,7 +3,7 @@
 </p>
 
 # Vertnode 
-## An automated installation for Vertcoin full nodes on a Raspberry Pi 3
+## An automated installation for Vertcoin full node(s) on a Raspberry Pi 3
 - [x] Install dependencies
 - [x] Modify `IPTABLES` for security
 * Play around with `ufw` configuration?
