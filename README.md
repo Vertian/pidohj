@@ -3,7 +3,7 @@
 </p>
 
 # Vertnode 
-## An automated installation for Vertcoin full nodes 
+## An automated installation for Vertcoin full nodes on a Raspberry Pi 3
 - [x] Install dependencies
 - [x] Modify `IPTABLES` for security
 * Play around with `ufw` configuration?
@@ -13,9 +13,10 @@
 - [x] Clone, build and install Vertcoin Core
 - [x] Provide option to grab latest release rather than building from source
 - [x] Configure `~/.vertcoin/vertcoin.conf`
-- [ ] Prompt to transfer blockchain
-* Provide option for `bootstrap.dat` sideload
-- [ ] Begin Vertcoin Sync
+* Prompt user that Pi is ready to be sideloaded with blockchain
+- [x] Prompt to transfer blockchain
+- [x] Provide option for `bootstrap.dat` sideload
+- [x] Begin Vertcoin Sync
 - [ ] Setup crontab jobs
 - [ ] Clone & build `p2pool-vtc`
 - [ ] Configure & launch `p2pool-vtc` 
