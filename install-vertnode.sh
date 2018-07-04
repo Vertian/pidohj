@@ -437,10 +437,13 @@ function install_p2pool {
 # config_crontab | function to configure crontab to start 
 function config_crontab {
     yellowtext 'Configuring Crontab...'
-    yellowtext '- @reboot vertcoind -daemon'
+    yellowtext '- vertcoind  | start on reboot'
+    yellowtext '- p2pool-vtc | start on reboot'
     # store our command in variable cronjob
     cronjob="@reboot vertcoind -daemon"
+    cronjob1="@reboot sleep 120; nohup sh /home/$user/start-p2pool.sh"
     (crontab -u $user -l; echo "$cronjob" ) | crontab -u $user -
+    (crontab -u $user -l; echo "$cronjob1" ) | crontab -u $user -
     echo
     greentext 'Successfully configured Crontab!'
 }
