@@ -27,6 +27,14 @@
 #           install_vertcoind   | clone, build and install vertcoin core daemon
 #           config_vertcoin     | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 #           install_depends     | install the required dependencies to run this script
+#           grab_vtc_release    | grab the latest vertcoind release from github
+#           wait_for_continue   | function for classic "Press spacebar to continue..." 
+#           grab_vtc_release    | grab the latest vertcoind release from github
+#           grab_bootstrap      | grab the latest bootstrap.dat from alwayshashing
+#           compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
+#           load_blockchain     | prompt the user for input; would you like to sideload the chain or 
+#                               | grab the latest bootstrap.dat
+#           install_p2pool      | function to download and configure p2pool
 # -------------------------------------------------------------------
 
 # fail on error; debug all lines
