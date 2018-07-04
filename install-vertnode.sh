@@ -115,6 +115,10 @@ function hd_config {
 
 # swap_config | configure swap file to reside on formatted flash drive
 function swap_config {
+    # !! notify user the ability to begin sideloading blockchain
+    # echo "information about using WinSFTP or FileZilla to sideload blockchain"
+    #
+    # continue and configure swap    
     yellowtext 'Configuring swap file to reside on USB flash drive...'
     sudo -u "$user" mkdir -p /home/"$user"/.vertcoin/swap
     # dd will take a few minutes to complete
@@ -311,15 +315,27 @@ function config_vertcoin {
 # load_blockchain | prompt the user for input; would you like to sideload the
 #                 | the vertcoin blockchain or grab the latest bootstrap.dat
 function load_blockchain {
-    while true; do
-        read -p "Are you going to sideload the blockchain @ $LANIP:22? " yn
-        case $yn in
-            [Yy]*   )   wait_for_continue; break;;
-            [Nn]*   )   grab_bootstrap; break;;
+    # prompt user with menu selection
+    PS3="Are you going to sideload the blockchain @ $LANIP:22? "
+    options=("Yes, I will sideload the blockchain." "No, use bootstrap.dat instead." "No, sync on it's own.")
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "Yes, I will sideload the blockchain.")
+                wait_for_continue 
+                break       
+                ;;
+            "No, use bootstrap.dat instead.")
+                grab_bootstrap                
+                break                
+                ;;
+            "No, sync on it's own.")
+                break                
+                ;;
+            * ) echo "Invalid option, please try again";;
         esac
     done
 }
-
 
 # -------------BEGIN-MAIN-------------------
 
@@ -368,6 +384,9 @@ compile_or_compiled
 echo
 # call config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 config_vertcoin
-# temporary, prompt user to load blockchain
+# prompt user to load blockchain
 load_blockchain
+echo 'Starting Vertcoin Core...'
+vertcoind &
 echo 'Script was successful!'
+
