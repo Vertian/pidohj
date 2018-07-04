@@ -175,34 +175,23 @@ function wait_for_continue {
 
 # secure | modify iptables to limit connections for security purposes
 function secure {
+    # install the dependancy 
+    sudo apt-get install ufw -y
     # call the function network_addr    
     network_addr
-    # configure iptables    
-    yellowtext 'Configuring iptables...'
+    # configure ufw firewall   
+    yellowtext 'Configuring firewall...'
     echo
-    # allow traffic from LAN    
-    iptables -A INPUT -s "$network_address" -j ACCEPT
-    greentext 'All traffic from LAN allowed...'
-    # limit total incoming connections = 250    
-    iptables -A INPUT -p tcp --syn -m connlimit --connlimit-above 250 --connlimit-mask 0 -j DROP
-    greentext 'Limited total incoming connections to 250...'
-    # limit SSH connections to port 22 = 2
-    iptables -A INPUT -p tcp --syn --dport 22 -m connlimit --connlimit-above 2 --connlimit-mask 0 -j DROP
-    greentext 'Limited SSH connections to port 22 @ maximum of 2'
-    # limit total connections to port 5889 (Vertcoin Mainnet) to 120
-    iptables -A INPUT -p tcp --syn --dport 5889 -m connlimit --connlimit-above 120 --connlimit-mask 0 -j DROP
-    greentext 'Limited total connections to port 5889 (Vertcoin Mainnet) to 120'
-    # limit unique IP addresses to 6 connections
-    iptables -I INPUT -p tcp --syn --dport 5889 -m connlimit --connlimit-above 6 -j REJECT
-    greentext 'Limited unique IP addresses 6 connections to port 5889'
-    echo
-    # save the iptables rules; load the saved rules
-    iptables-save > /etc/iptables.conf
-    sed -i".bak" '/exit/d' /etc/rc.local
-    echo 'iptables-restore < /etc/iptables.conf' >> /etc/rc.local
-    echo 'exit 0' >> /etc/rc.local
-    greentext 'Rules saved!'
-    echo
+    ufw default deny incoming
+    ufw default allow outgoing
+    ufw allow from $network_address to any port 22 comment 'allow SSH from local LAN'
+    ufw allow 5889 comment 'allow vertcoin core'
+    ufw --force enable
+    systemctl enable ufw
+    ufw status
+    echo 
+    greentext 'Successfully configured firewall!'
+    echo 
 }
 
 # update_rasp | update the system
@@ -340,6 +329,37 @@ function load_blockchain {
     done
 }
 
+# install_p2pool | function to download and configure p2pool
+function install_p2pool {
+    echo
+    yellowtext 'Installing p2pool-vtc...'
+    # install dependencies for p2pool-vtc
+    sudo apt-get install python-rrdtool python-pygame python-scipy python-twisted python-twisted-web python-imaging python-pip libffi-dev -y
+    # clone p2pool-vtc
+    sudo -u "$user" git clone https://github.com/vertcoin-project/p2pool-vtc.git
+    pip install -r p2pool-vtc/requirements.txt 
+    cd "$userhome"/p2pool-vtc/lyra2re-hash-python/
+    sudo -u "$user" git submodule init
+    sudo -u "$user" git submodule update
+    sudo python setup.py install
+    # download alternative web frontend and install
+    cd "$userhome"/
+    sudo -u "$user" git clone https://github.com/hardcpp/P2PoolExtendedFrontEnd.git
+    cd "$userhome"/P2PoolExtendedFrontEnd
+    sudo -u "$user" mv * /home/$user/p2pool-vtc/web-static/
+    cd "$userhome"/
+    # clean up
+    rm -r P2PoolExtendedFrontEnd/
+    getnewaddress=$(sudo -u $user vertcoin-cli getnewaddress "" legacy)
+    # grab the LAN IP range and store it in variable network_address    
+    network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
+    # open both ports for network 1 & network 2
+    ufw allow 9171 comment 'allow --network 1 mining port'
+    ufw allow 9181 comment 'allow --network 2 mining port'
+    ufw --force enable
+    ufw status
+}
+
 # -------------BEGIN-MAIN-------------------
 
 # check for sudo when running the script
@@ -391,5 +411,4 @@ config_vertcoin
 load_blockchain
 echo 'Starting Vertcoin Core...'
 sudo -u "$user" vertcoind &
-echo 'Script was successful!'
-
+install_p2pool
