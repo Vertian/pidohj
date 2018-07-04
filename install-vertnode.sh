@@ -125,16 +125,16 @@ function hd_config {
 function swap_config {
     # !! notify user the ability to begin sideloading blockchain
     echo "************************************"
-    echo "* NOTE: Sideloading the blockchain *"
-    echo "* is now available. Please use an  *"
-    echo "* SFTP client such as WinSCP or    *"
-    echo "* FileZilla to connect to your     *"
-    echo "* Vertcoin node and copy the blocks*"
-    echo "* and chainstate folder to the     *"
-    echo "* /home/$user/.vertcoin/ folder.   *"
-    echo "* -------------------------------- *"
-    echo "* Username: $user                  *"
-    echo "* Port: 22                         *"
+    echo " NOTE: Sideloading the blockchain"
+    echo " is now available. Please use an"
+    echo " SFTP client such as WinSCP or"
+    echo " FileZilla to connect to your"
+    echo " Vertcoin node and copy the blocks"
+    echo " and chainstate folder to the"
+    echo " /home/$user/.vertcoin/ folder."
+    echo "--------------------------------"
+    echo " Username: $user "
+    echo " Port: 22 "
     echo "************************************"
     # continue and configure swap    
     yellowtext 'Configuring swap file to reside on USB flash drive...'
@@ -229,7 +229,7 @@ function update_rasp {
 # install_depends | install the required dependencies to run this script
 function install_depends {
     yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban 
     greentext 'Successfully installed required dependencies!'
     echo
 }
@@ -376,6 +376,38 @@ function install_p2pool {
     ufw allow 9181 comment 'allow --network 2 mining port'
     ufw --force enable
     ufw status
+    # begin configuration of p2pool
+    echo
+    yellowtext 'Configuring p2pool-vtc...'
+    echo
+    echo "Network 1 | Recommended for large miners with hashrate larger than 100Mh"
+    echo "Network 2 | Recommended for small miners with hashrate lower than 100Mh"
+    # prompt user with menu for network selection
+    echo
+    PS3="What network do you want to configure with p2pool-vtc? "
+    options=("Network 1" "Network 2")
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "Network 1")
+                p2poolnetwork=""
+                break       
+                ;;
+            "Network 2")
+                p2poolnetwork="2"                
+                break                
+                ;;
+            * ) echo "Invalid option, please select option 1 or 2.";;
+        esac
+    done
+    # echo our values into a file named start-p2pool.sh
+    echo "#!/bin/bash" >> /home/"$user"/start-p2pool.sh
+    echo "cd p2pool-vtc" >> /home/"$user"/start-p2pool.sh
+    echo "python run_p2pool.py --net vertcoin$p2poolnetwork -a $getnewaddress --max-conns 8 --outgoing-conns 4" >> /home/"$user"/start-p2pool.sh
+    # permission the script for execution
+    chmod +x start-p2pool.sh
+    greentext 'Successfully configured p2pool-vtc!'
+    echo
 }
 
 # -------------BEGIN-MAIN-------------------
@@ -393,7 +425,8 @@ clear
 while test $# -gt 0
 do
     key="$1"
-    if [ "$key" = "secure" ]; then
+    if [ "$key" = "secure" ]; 
+    then
         secure; exit 1
     else
         redtext 'Unknown parameter'; exit 1
