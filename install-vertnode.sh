@@ -215,6 +215,9 @@ function install_berkeley {
 
 # install_vertcoind | clone, build and install vertcoin core daemon
 function install_vertcoind {
+    # call install_berkeley function to enable wallet functionality
+    install_berkeley    
+    # continue on compiling vertcoin from source
     yellowtext 'Installing Vertcoin Core...'
     rm -fR "$userhome"/bin/vertcoin
     cd "$userhome"/bin
@@ -226,6 +229,32 @@ function install_vertcoind {
     sudo make install
     greentext 'Successfully installed Vertcoin Core!'
     echo
+}
+
+# grab_vtc_release | grab the latest vertcoind release from github
+function grab_vtc_release {
+    # grab the latest version number; store in variable $VERSION
+    export VERSION=$(curl -s "https://github.com/vertcoin-project/vertcoin-core/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
+    # grab the latest version release; deviation in release naming scheme will break this
+    # release naming scheme needs to be: 'vertcoind-v(release#)-linux-armhf.zip' to work
+    wget https://github.com/vertcoin-project/vertcoin-core/releases/download/$VERSION/vertcoind-v$VERSION-linux-armhf.zip
+    unzip vertcoind-v$VERSION-linux-armhf.zip
+    # clean up    
+    rm vertcoind-v$VERSION-linux-armhf.zip
+    # move vertcoin binaries to /usr/bin/ 
+    mv vertcoind vertcoin-tx vertcoin-cli /usr/bin/
+}
+
+# compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
+#                     | from source or would you like to grab the latest release binary?
+function compile_or_compiled {
+    while true; do
+        read -p "Would you like to build Vertcoin from source? " yn
+        case $yn in 
+            [Yy]*   )   install_vertcoind; break;;
+            [Nn]*   )   grab_vtc_release; break;;
+        esac
+    done
 }
 
 # config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
@@ -288,22 +317,15 @@ echo
 # call secure function | modify iptables to limit connections for security purposes
 secure
 echo
-
 # configure USB flash drive ; call hd_config function, then call swap_config function
 if [ "$DRIVE_CONF" = "true" ]; then
     hd_config
     swap_config
 fi
-
-# call install_berkeley function | install berkeley database 4.8 for wallet functionality
-install_berkeley
-echo
-
 # call install_vertcoind | clone, build and install vertcoin core daemon
-install_vertcoind
+compile_or_compiled
 echo
-
 # call config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 config_vertcoin
-
+# temporary, prompt user to load blockchain
 echo 'Script was successful! Transfer blockchain to this host and start Vertcoin'
