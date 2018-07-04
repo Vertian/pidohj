@@ -32,19 +32,20 @@
 # fail on error; debug all lines
 set -eu -o pipefail
 
-
 # colors for console output
 TEXT_RESET='\e[0m'
 TEXT_YELLOW='\e[0;33m'
 TEXT_RED='\e[1;31m'
 TEXT_GREEN='\e[0;32m'
 
-
 # script variables
 user=$(logname)
 userhome='/home/'$user
 FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
+# ~ $ ifconfig eth0 | grep "inet "
+#       inet 192.168.1.6  netmask 255.255.255.0  broadcast 192.168.1.255
+LANIP="$(ifconfig eth0 | grep "inet " | awk -F'[: ]+' '{ print $3 }')" # grab only the inet addr
 
 # -----------------------------------
 
@@ -61,7 +62,6 @@ function redtext(){
     echo -e -n "\e[1;31m$1"
     echo -e -n '\033[0m\n'
 }
-
 
 # hd_detect | USB flash drive detect; prompt for formatting
 function hd_detect {
@@ -152,9 +152,18 @@ function user_input {
     echo
 }
 
-# network_addr | grab the LAN network addresses of the host running this script
+# network_addr | grab the LAN network address range of the host running this script
 function network_addr {
     network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
+}
+
+# wait_for_continue | function for classic "Press spacebar to continue..." 
+function wait_for_continue {
+    echo    
+    echo "STFP: "$user $LANIP':22'
+    echo
+    read -n 1 -s -r -p "Press enter to continue when finished sideloading blockchain..."
+    echo
 }
 
 # secure | modify iptables to limit connections for security purposes
@@ -201,6 +210,14 @@ function update_rasp {
         if [ -f /var/run/reboot-required ]; then
             redtext 'Reboot required!'
         fi
+}
+
+# install_depends | install the required dependencies to run this script
+function install_depends {
+    yellowtext 'Installing package dependencies...'
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban
+    greentext 'Successfully installed required dependencies!'
+    echo
 }
 
 # install_berkeley | install berkeley database 4.8 for wallet functionality
@@ -250,13 +267,27 @@ function grab_vtc_release {
     mv vertcoind vertcoin-tx vertcoin-cli /usr/bin/
 }
 
+# grab_bootstrap | grab the latest bootstrap.dat from alwayshashing
+function grab_bootstrap {
+    yellowtext 'Downloading latest bootstrap.dat...'
+    echo
+    # download boostrap.dat
+    wget http://alwayshashing.com/downloads/bootstrap.dat -P /home/"$user"/.vertcoin/
+    echo
+    greentext 'Successfully downloaded bootstrap.dat!'
+    echo
+}
+
 # compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
 #                     | from source or would you like to grab the latest release binary?
 function compile_or_compiled {
+    # prompt user if they would like to build from source
     while true; do
         read -p "Would you like to build Vertcoin from source? " yn
         case $yn in 
+            # if user says yes, call install_vertcoind to compile source
             [Yy]*   )   install_vertcoind; break;;
+            # if user says no, grab latest vtc release and break from loop            
             [Nn]*   )   grab_vtc_release; break;;
         esac
     done
@@ -277,14 +308,17 @@ function config_vertcoin {
     echo 'usehd=1' >> /home/"$user"/.vertcoin/vertcoin.conf
 }
 
-# install_depends | install the required dependencies to run this script
-function install_depends {
-    yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban
-    greentext 'Successfully installed required dependencies!'
-    echo
+# load_blockchain | prompt the user for input; would you like to sideload the
+#                 | the vertcoin blockchain or grab the latest bootstrap.dat
+function load_blockchain {
+    while true; do
+        read -p "Are you going to sideload the blockchain @ $LANIP:22? " yn
+        case $yn in
+            [Yy]*   )   wait_for_continue; break;;
+            [Nn]*   )   grab_bootstrap; break;;
+        esac
+    done
 }
-
 
 
 # -------------BEGIN-MAIN-------------------
@@ -335,4 +369,5 @@ echo
 # call config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 config_vertcoin
 # temporary, prompt user to load blockchain
-echo 'Script was successful! Transfer blockchain to this host and start Vertcoin'
+load_blockchain
+echo 'Script was successful!'
