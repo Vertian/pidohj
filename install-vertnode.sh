@@ -390,6 +390,6 @@ config_vertcoin
 # prompt user to load blockchain
 load_blockchain
 echo 'Starting Vertcoin Core...'
-vertcoind &
+sudo -u "$user" vertcoind &
 echo 'Script was successful!'
 
