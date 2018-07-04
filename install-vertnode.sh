@@ -187,18 +187,18 @@ function wait_for_continue {
     echo    
     echo "STFP: "$user $LANIP':22'
     echo
-    read -n 1 -s -r -p "Press enter to continue when finished sideloading blockchain..."
+    read -n 1 -s -r -p "Press any key to continue when finished transferring blockchain..."
     echo
 }
 
 # secure | modify iptables to limit connections for security purposes
 function secure {
+    yellowtext 'Configuring firewall...'
     # install the dependancy 
     sudo apt-get install ufw -y
     # call the function network_addr    
     network_addr
     # configure ufw firewall   
-    yellowtext 'Configuring firewall...'
     echo
     ufw default deny incoming
     ufw default allow outgoing
@@ -347,6 +347,20 @@ function load_blockchain {
     done
 }
 
+# prompt_p2pool | function to prompt user with option to install p2pool
+function prompt_p2pool {
+    while true; do
+        echo
+        read -p "Would you like install p2pool-vtc? " yn
+        case $yn in 
+            # if user says yes, call install_p2pool 
+            [Yy]*   )   install_p2pool; break;;
+            # if user says no, break from loop            
+            [Nn]*   )   break;;
+        esac
+    done
+}
+
 # install_p2pool | function to download and configure p2pool
 function install_p2pool {
     echo
@@ -354,30 +368,37 @@ function install_p2pool {
     # install dependencies for p2pool-vtc
     sudo apt-get install python-rrdtool python-pygame python-scipy python-twisted python-twisted-web python-imaging python-pip libffi-dev -y
     # clone p2pool-vtc
-    sudo -u "$user" git clone https://github.com/vertcoin-project/p2pool-vtc.git
-    pip install -r p2pool-vtc/requirements.txt 
-    cd "$userhome"/p2pool-vtc/lyra2re-hash-python/
-    sudo -u "$user" git submodule init
-    sudo -u "$user" git submodule update
+    # grab latest p2pool-vtc release
+    sudo -u "$user" wget "https://github.com/vertcoin-project/p2pool-vtc/archive/v0.3.0-rc1.zip"
+    sudo -u "$user" unzip v0.3.0-rc1.zip
+    sudo rm v0.3.0-rc1.zip
+    cd "$userhome"/p2pool-vtc-0.3.0-rc1/
     sudo python setup.py install
     # download alternative web frontend and install
+    echo
+    yellowtext 'Installing alternate web frontend for p2pool-vtc...'
+    echo
     cd "$userhome"/
     sudo -u "$user" git clone https://github.com/hardcpp/P2PoolExtendedFrontEnd.git
-    cd "$userhome"/P2PoolExtendedFrontEnd
-    sudo -u "$user" mv * /home/$user/p2pool-vtc/web-static/
+    cd "$userhome"/P2PoolExtendedFrontEnd/
+    sudo -u "$user" mv * /home/$user/p2pool-vtc-0.3.0-rc1/web-static/
     cd "$userhome"/
     # clean up
     rm -r P2PoolExtendedFrontEnd/
+    echo
+    greentext 'Successfully installed alternate web frontend for p2pool-vtc!'
+    echo
     getnewaddress=$(sudo -u $user vertcoin-cli getnewaddress "" legacy)
     # grab the LAN IP range and store it in variable network_address    
     network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
     # open both ports for network 1 & network 2
     ufw allow 9171 comment 'allow --network 1 mining port'
     ufw allow 9181 comment 'allow --network 2 mining port'
+    ufw allow 9346 comment 'allow --network 1 p2p port'
+    ufw allow 9347 comment 'allow --network 2 p2p port'
     ufw --force enable
     ufw status
     # begin configuration of p2pool
-    echo
     yellowtext 'Configuring p2pool-vtc...'
     echo
     echo "Network 1 | Recommended for large miners with hashrate larger than 100Mh"
@@ -402,13 +423,19 @@ function install_p2pool {
     done
     # echo our values into a file named start-p2pool.sh
     echo "#!/bin/bash" >> /home/"$user"/start-p2pool.sh
-    echo "cd p2pool-vtc" >> /home/"$user"/start-p2pool.sh
+    echo "cd p2pool-vtc-0.3.0-rc1" >> /home/"$user"/start-p2pool.sh
     echo "python run_p2pool.py --net vertcoin$p2poolnetwork -a $getnewaddress --max-conns 8 --outgoing-conns 4" >> /home/"$user"/start-p2pool.sh
     # permission the script for execution
     chmod +x start-p2pool.sh
     greentext 'Successfully configured p2pool-vtc!'
     echo
+    yellowtext 'Starting p2pool-vtc...'
+    cd "$userhome"/
+    sudo -u "$user" nohup sh start-p2pool.sh &
 }
+
+# config_crontab | function to configure crontab to start 
+
 
 # -------------BEGIN-MAIN-------------------
 
@@ -417,10 +444,8 @@ if [ "$(id -u)" -ne 0 ]; then
     redtext "Please run this script with sudo!" >&2
     exit 1
 fi
-
 # clear the screen
 clear
-
 # check parameters
 while test $# -gt 0
 do
@@ -432,7 +457,6 @@ do
         redtext 'Unknown parameter'; exit 1
     fi
 done
-
 # call user_input function | take user input for rpcuser and rpcpass
 clear
 user_input
@@ -460,6 +484,8 @@ echo
 config_vertcoin
 # prompt user to load blockchain
 load_blockchain
-echo 'Starting Vertcoin Core...'
+greentext 'Starting Vertcoin Core...'
 sudo -u "$user" vertcoind &
-install_p2pool
+# sleep for 2 seconds
+prompt_p2pool
+# display post installation results
