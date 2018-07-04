@@ -124,8 +124,18 @@ function hd_config {
 # swap_config | configure swap file to reside on formatted flash drive
 function swap_config {
     # !! notify user the ability to begin sideloading blockchain
-    # echo "information about using WinSFTP or FileZilla to sideload blockchain"
-    #
+    echo "************************************"
+    echo "* NOTE: Sideloading the blockchain *"
+    echo "* is now available. Please use an  *"
+    echo "* SFTP client such as WinSCP or    *"
+    echo "* FileZilla to connect to your     *"
+    echo "* Vertcoin node and copy the blocks*"
+    echo "* and chainstate folder to the     *"
+    echo "* /home/$user/.vertcoin/ folder.   *"
+    echo "* -------------------------------- *"
+    echo "* Username: $user                  *"
+    echo "* Port: 22                         *"
+    echo "************************************"
     # continue and configure swap    
     yellowtext 'Configuring swap file to reside on USB flash drive...'
     sudo -u "$user" mkdir -p /home/"$user"/.vertcoin/swap
