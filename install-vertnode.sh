@@ -122,6 +122,8 @@ function swap_config {
     yellowtext 'Configuring swap file to reside on USB flash drive...'
     sudo -u "$user" mkdir -p /home/"$user"/.vertcoin/swap
     # dd will take a few minutes to complete
+    echo 
+    echo "This may take awhile, please be patient."
     dd if=/dev/zero of=/home/"$user"/.vertcoin/swap/swap.file bs=1M count=2148
     chmod 600 /home/"$user"/.vertcoin/swap/swap.file
     sudo sed -i".bak" "/CONF_SWAPFILE/d" /etc/dphys-swapfile
@@ -132,6 +134,7 @@ function swap_config {
     mkswap /home/"$user"/.vertcoin/swap/swap.file
     swapon /home/"$user"/.vertcoin/swap/swap.file
     echo "/home/$user/.vertcoin/swap/swap.file  none  swap  defaults  0    0" >> /etc/fstab
+    echo    
     greentext 'Successfully configured swap space!'
     echo
 }
