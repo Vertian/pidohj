@@ -95,10 +95,12 @@ function hd_config {
     greentext 'Successfully formatted flash drive!'
     # locally declare UUID as the value given by blkid
     UUID="$(blkid -o value -s UUID "$drive")"
+    echo
     yellowtext 'Creating Vertcoin data folder...'
     VTCDIR='/home/'$user'/.vertcoin'
     mkdir -p "$VTCDIR"
     yellowtext 'Modifying fstab configuration...'
+    echo    
     sudo sed -i".bak" "/$UUID/d" /etc/fstab
     echo "UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0" >> /etc/fstab
         if mount | grep "$drive" > /dev/null; then
@@ -134,6 +136,7 @@ function swap_config {
 function user_input {
     # check for USB flash drive
     while true; do
+        clear
         echo -e "$TEXT_YELLOW"
         read -p "Is the USB flash drive connected? It will be formatted. (y/n) " yn
         case $yn in
@@ -142,7 +145,8 @@ function user_input {
             * ) echo "Do you wish to continue? (y/n) ";;
         esac
     done
-    echo 'Vertcoin requires both an rpcuser & rpcpassword, please enter your preferred values: '
+    clear
+    echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
     read -p 'Enter username: ' rpcuser
     read -s -p 'Enter password: ' rpcpass
     echo
@@ -159,6 +163,7 @@ function secure {
     network_addr
     # configure iptables    
     yellowtext 'Configuring iptables...'
+    echo
     # allow traffic from LAN    
     iptables -A INPUT -s "$network_address" -j ACCEPT
     greentext 'All traffic from LAN allowed...'
@@ -280,6 +285,8 @@ function install_depends {
     echo
 }
 
+
+
 # -------------BEGIN-MAIN-------------------
 
 # check for sudo when running the script
@@ -305,7 +312,7 @@ done
 # call user_input function | take user input for rpcuser and rpcpass
 clear
 user_input
-echo
+clear
 greentext 'Starting Vertcoin full node installation, please be patient...'
 greentext '______________________________________________________________'
 # call update_rasp function | update the system
