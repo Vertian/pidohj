@@ -18,7 +18,7 @@
 - [x] Begin Vertcoin Sync
 - [ ] Setup crontab jobs
 - [x] Clone & build `p2pool-vtc`
-- [ ] Configure & launch `p2pool-vtc` 
+- [x] Configure & launch `p2pool-vtc` 
 - [ ] Display installation report
 
 ### [Manual Installation Walkthrough: Raspberry Pi 3](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi.md)
