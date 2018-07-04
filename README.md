@@ -5,8 +5,7 @@
 # Vertnode 
 ## An automated installation for Vertcoin full node(s) on a Raspberry Pi 3
 - [x] Install dependencies
-- [x] Modify `IPTABLES` for security
-* Play around with `ufw` configuration?
+- [x] Modify `ufw` firewall rules for security
 - [x] Find, format and configure USB flash drive
 - [x] Create and configure swap space on USB flash drive
 - [x] Download & compile Berkeley DB
@@ -18,7 +17,7 @@
 - [x] Provide option for `bootstrap.dat` sideload
 - [x] Begin Vertcoin Sync
 - [ ] Setup crontab jobs
-- [ ] Clone & build `p2pool-vtc`
+- [x] Clone & build `p2pool-vtc`
 - [ ] Configure & launch `p2pool-vtc` 
 - [ ] Display installation report
 
