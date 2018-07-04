@@ -11,7 +11,7 @@
 - [x] Create and configure swap space on USB flash drive
 - [x] Download & compile Berkeley DB
 - [x] Clone, build and install Vertcoin Core
-* Provide option to grab latest release rather than building from source
+- [x] Provide option to grab latest release rather than building from source
 - [x] Configure `~/.vertcoin/vertcoin.conf`
 - [ ] Prompt to transfer blockchain
 * Provide option for `bootstrap.dat` sideload
