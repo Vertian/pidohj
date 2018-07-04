@@ -16,7 +16,7 @@
 - [x] Prompt to transfer blockchain
 - [x] Provide option for `bootstrap.dat` sideload
 - [x] Begin Vertcoin Sync
-- [ ] Setup crontab jobs
+- [x] Setup crontab jobs
 - [x] Clone & build `p2pool-vtc`
 - [x] Configure & launch `p2pool-vtc` 
 - [ ] Display installation report
