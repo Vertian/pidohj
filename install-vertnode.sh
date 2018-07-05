@@ -73,10 +73,14 @@ function redtext(){
 
 # hd_detect | USB flash drive detect; prompt for formatting
 function hd_detect {
+    # grep the output of lsblk -dlnb for the sda device
+    # pass it to awk and print the fourth column of that row
+    # that value = the size of the sda device
+    usbsize=$(lsblk -dlnb | grep sda | awk '{print $4}')
     # list block devices that are greater than or equal to 15GB, cut the first three characters
     # make sure the microSD card that holds raspbian is 8GB or smaller to ensure find_drive picks 
     # the correct block device.
-    find_drive="$(lsblk -dlnb | awk '$4>=15008609792' | numfmt --to=iec --field=4 | cut -c1-3)"
+    find_drive="$(lsblk -dlnb | awk -v usbsize="$usbsize"'$4==usbsize' | numfmt --to=iec --field=4 | cut -c1-3)"
     drive=$FOLD1$find_drive
     drive_size="$(df -h "$drive" | sed 1d |  awk '{print $2}')"
     while true; do
@@ -449,6 +453,38 @@ function config_crontab {
     greentext 'Successfully configured Crontab!'
 }
 
+# block_device_size | function to take user input for size of microSD and USB flash drive
+#                   | and make a decision on how to format awk command in find_device variable
+function block_device_size {
+    
+    microSD=""
+    while [[ ! $microSD =~ ^[0-9]{1} ]]; do
+        echo -n "microSD GB size: "
+        read microSD
+        if [[ ! $microSD =~ ^[0-9]+$ ]] ; then
+            echo "Please enter number values."
+        fi
+    done
+    USBflashdrive=""
+    while [[ ! $USBflashdrive =~ ^[0-9]{1} ]]; do
+        echo -n "USB flash drive GB size: "
+        read USBflashdrive
+        if [[ ! $USBflashdrive =~ ^[0-9]+$ ]] ; then
+            echo "Please enter number values."
+        fi
+    done
+    
+    if [[[ "$microSD" -gt "$USBflashdrive" ]]]; then
+        echo "$microSD is larger than $USBflashdrive"
+
+    elif [[[ "$microSD" -le "$USBflashdrive" ]]]; then
+        echo "$microSD is smaller than $USBflashdrive"
+        
+    fi
+    
+
+}
+   
 # -------------BEGIN-MAIN-------------------
 
 # check for sudo when running the script
