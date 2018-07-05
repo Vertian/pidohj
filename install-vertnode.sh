@@ -73,9 +73,10 @@ function redtext(){
 
 # hd_detect | USB flash drive detect; prompt for formatting
 function hd_detect {
-    # list block devices that are less than or equal to 16GB, cut the first three characters
-    # of lsblk -dlnb and pass to df -h
-    find_drive="$(lsblk -dlnb | awk '$4<=16008609792' | numfmt --to=iec --field=4 | cut -c1-3)"
+    # list block devices that are greater than or equal to 15GB, cut the first three characters
+    # make sure the microSD card that holds raspbian is 8GB or smaller to ensure find_drive picks 
+    # the correct block device.
+    find_drive="$(lsblk -dlnb | awk '$4>=15008609792' | numfmt --to=iec --field=4 | cut -c1-3)"
     drive=$FOLD1$find_drive
     drive_size="$(df -h "$drive" | sed 1d |  awk '{print $2}')"
     while true; do
