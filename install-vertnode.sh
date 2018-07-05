@@ -452,38 +452,6 @@ function config_crontab {
     echo
     greentext 'Successfully configured Crontab!'
 }
-
-# block_device_size | function to take user input for size of microSD and USB flash drive
-#                   | and make a decision on how to format awk command in find_device variable
-function block_device_size {
-    
-    microSD=""
-    while [[ ! $microSD =~ ^[0-9]{1} ]]; do
-        echo -n "microSD GB size: "
-        read microSD
-        if [[ ! $microSD =~ ^[0-9]+$ ]] ; then
-            echo "Please enter number values."
-        fi
-    done
-    USBflashdrive=""
-    while [[ ! $USBflashdrive =~ ^[0-9]{1} ]]; do
-        echo -n "USB flash drive GB size: "
-        read USBflashdrive
-        if [[ ! $USBflashdrive =~ ^[0-9]+$ ]] ; then
-            echo "Please enter number values."
-        fi
-    done
-    
-    if [[[ "$microSD" -gt "$USBflashdrive" ]]]; then
-        echo "$microSD is larger than $USBflashdrive"
-
-    elif [[[ "$microSD" -le "$USBflashdrive" ]]]; then
-        echo "$microSD is smaller than $USBflashdrive"
-        
-    fi
-    
-
-}
    
 # -------------BEGIN-MAIN-------------------
 
