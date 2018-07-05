@@ -80,7 +80,7 @@ function hd_detect {
     # list block devices that are greater than or equal to 15GB, cut the first three characters
     # make sure the microSD card that holds raspbian is 8GB or smaller to ensure find_drive picks 
     # the correct block device.
-    find_drive="$(lsblk -dlnb | awk -v usbsize="$usbsize"'$4==usbsize' | numfmt --to=iec --field=4 | cut -c1-3)"
+    find_drive="$(lsblk -dlnb | grep sda | awk '{print $1}')"
     drive=$FOLD1$find_drive
     drive_size="$(df -h "$drive" | sed 1d |  awk '{print $2}')"
     while true; do
@@ -452,7 +452,7 @@ function config_crontab {
     echo
     greentext 'Successfully configured Crontab!'
 }
-   
+
 # -------------BEGIN-MAIN-------------------
 
 # check for sudo when running the script
