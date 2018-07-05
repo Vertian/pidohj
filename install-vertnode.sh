@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# WORK IN PROGRESS; NOT GUARANTEED TO WORK
+# TESTING IN PROGRESS
 #
 # An automated script to assist with installing Vertcoin full node(s)
 # -------------------------------------------------------------------
