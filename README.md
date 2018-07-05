@@ -21,6 +21,14 @@
 - [x] Setup crontab jobs
 - [ ] Display installation report
 
+### Instructions | How to use
+```
+git clone https://github.com/e-corp-sam-sepiol/vertnode.git
+cd vertnode/
+chmod +x install-vertnode.sh
+sudo ./install-vertnode.sh 
+```
+
 ### [Manual Installation Walkthrough: Raspberry Pi 3](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi.md)
 ### [Manual Installation Walkthrough: Raspberry Pi Zero W](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi-zero-w.md)
 ### [Manual Installation Walkthrough: Intel NUC](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/intel-nuc.md)
