@@ -11,14 +11,14 @@
 - [x] Download & compile Berkeley DB
 - [x] Clone, build and install Vertcoin Core
 - [x] Provide option to grab latest release rather than building from source
+* Add version detection for release based on lshw detection
 - [x] Configure `~/.vertcoin/vertcoin.conf`
-* Prompt user that Pi is ready to be sideloaded with blockchain
 - [x] Prompt to transfer blockchain
 - [x] Provide option for `bootstrap.dat` sideload
 - [x] Begin Vertcoin Sync
-- [x] Setup crontab jobs
 - [x] Clone & build `p2pool-vtc`
 - [x] Configure & launch `p2pool-vtc` 
+- [x] Setup crontab jobs
 - [ ] Display installation report
 
 ### [Manual Installation Walkthrough: Raspberry Pi 3](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi.md)
