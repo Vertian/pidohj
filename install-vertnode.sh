@@ -374,6 +374,7 @@ function install_p2pool {
     sudo apt-get install python-rrdtool python-pygame python-scipy python-twisted python-twisted-web python-imaging python-pip libffi-dev -y
     # clone p2pool-vtc
     # grab latest p2pool-vtc release
+    cd "$userhome"/
     sudo -u "$user" wget "https://github.com/vertcoin-project/p2pool-vtc/archive/v0.3.0-rc1.zip"
     sudo -u "$user" unzip v0.3.0-rc1.zip
     sudo rm v0.3.0-rc1.zip
