@@ -29,6 +29,16 @@ cd vertnode/
 chmod +x install-vertnode.sh
 sudo ./install-vertnode.sh 
 ```
+### Discovered testing errors
+- [ ] **Configuring firewall | Fixed with: `sudo reboot` then re-run `install_vertnode.sh`**
+
+Suspicious this error had to do with the `sudo apt-get upgrade -y` performed earlier in the script.  
+Number of times encountered: `1`
+```
+ERROR: initcaps
+[Errno 2] iptables v1.6.0: can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.
+```
 
 ### [Manual Installation Walkthrough: Raspberry Pi 3](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi.md)
 ### [Manual Installation Walkthrough: Raspberry Pi Zero W](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi-zero-w.md)
