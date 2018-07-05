@@ -23,6 +23,8 @@
 - [ ] Modify user input prompt to capture all user input at start of script
 
 ### Instructions | How to use
+**Raspberry Pi 3**
+Ensure USB flash drive is connected to Pi
 ```
 git clone https://github.com/e-corp-sam-sepiol/vertnode.git
 cd vertnode/
