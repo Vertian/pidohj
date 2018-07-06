@@ -49,7 +49,7 @@ Perhaps iptables or your kernel needs to be upgraded.
 ### [Manual Installation Walkthrough: Raspberry Pi Zero W](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi-zero-w.md)
 ### [Manual Installation Walkthrough: Intel NUC](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/intel-nuc.md)
 #### Automated Vertcoin Installation Testing
-- [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | Looks for USB flash drives (`sda`) for storage. More testing to be done. Small amount of user input required. 
+- [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`sda`) for storage.** More testing to be done. Small amount of user input required. 
 - [ ] Raspberry Pi Zero W - Not tested
 - [ ] Intel NUC - Not tested
 
