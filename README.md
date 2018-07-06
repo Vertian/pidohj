@@ -21,9 +21,9 @@
 - [x] Clone & build `p2pool-vtc`
 - [x] Configure & launch `p2pool-vtc` 
 - [x] Setup crontab jobs
-- [ ] Display installation report
+- [x] Display installation report
 - [ ] Modify user input prompt to capture all user input at start of script
-
+- [x] Script installation introduction, Vertcoin full node: what, why and how?
 ------------
 
 ### Instructions | How to use
