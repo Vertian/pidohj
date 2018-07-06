@@ -36,7 +36,7 @@ sudo ./install-vertnode.sh
 ### Testing Errors
 - [x] **Configuring firewall | Fixed with: `sudo reboot` then re-run `install_vertnode.sh`**
 
-**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi to run the `install-vertnode.sh` script.**
+**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
 
 **This error occurs when `sudo apt-get upgrade` installs a new kernel to the Raspberry Pi, it affects `iptables` which is a part of the kernel. Updating the kernel requires a reboot.**
 ```
