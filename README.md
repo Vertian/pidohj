@@ -13,7 +13,7 @@
 - [x] Download & compile Berkeley DB
 - [x] Clone, build and install Vertcoin Core
 - [x] Provide option to grab latest release rather than building from source
-* Add version detection for release based on lshw detection
+- [x] Added version detection for vertcoin release downloads based on system architecture
 - [x] Configure `~/.vertcoin/vertcoin.conf`
 - [x] Prompt to transfer blockchain
 - [x] Provide option for `bootstrap.dat` sideload
