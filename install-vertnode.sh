@@ -46,7 +46,7 @@ TEXT_YELLOW='\e[0;33m'
 TEXT_RED='\e[1;31m'
 TEXT_GREEN='\e[0;32m'
 
-# script variables
+# global script variables
 user=$(logname)
 userhome='/home/'$user
 FOLD1='/dev/'
@@ -54,6 +54,9 @@ PUBLICIP="$(curl -s ipinfo.io/ip)"
 # ~ $ ifconfig eth0 | grep "inet "
 #       inet 192.168.1.6  netmask 255.255.255.0  broadcast 192.168.1.255
 LANIP="$(ifconfig eth0 | grep "inet " | awk -F'[: ]+' '{ print $3 }')" # grab only the inet addr
+GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
+# arch detect; store system architecture into variable, use for grabbing latest release
+ARCH="$(dpkg --print-architecture)"
 
 # -----------------------------------
 
@@ -129,18 +132,15 @@ function hd_config {
 # swap_config | configure swap file to reside on formatted flash drive
 function swap_config {
     # !! notify user the ability to begin sideloading blockchain
-    echo "************************************"
-    echo " NOTE: Sideloading the blockchain"
-    echo " is now available. Please use an"
-    echo " SFTP client such as WinSCP or"
-    echo " FileZilla to connect to your"
-    echo " Vertcoin node and copy the blocks"
-    echo " and chainstate folder to the"
-    echo " /home/$user/.vertcoin/ folder."
-    echo "--------------------------------"
+    yellowtext '***************************************************************'
+    yellowtext ' NOTE: Sideloading the blockchain is now available.'
+    yellowtext ' Please use an SFTP client such as WinSCP or FileZilla'
+    yellowtext ' to connect to your Vertcoin node and copy the blocks'
+    yellowtext ' and chainstate folder to the /home/$user/.vertcoin/ directory.'
+    yellowtext '---------------------------------------------------------------'
     echo " Username: $user "
     echo " Port: 22 "
-    echo "************************************"
+    yellowtext '***************************************************************'
     # continue and configure swap    
     yellowtext 'Configuring swap file to reside on USB flash drive...'
     sudo -u "$user" mkdir -p /home/"$user"/.vertcoin/swap
@@ -161,6 +161,52 @@ function swap_config {
     greentext 'Successfully configured swap space!'
     echo
 }
+
+# user_intro | introduction to installation script, any key to continue
+function user_intro {
+    greentext 'Welcome to the Vertnode installation script!'
+    echo
+    greentext 'This script will install the Vertcoin software and allow for'
+    greentext 'easy configuration of a Vertcoin full node. Additionally the'
+    greentext 'script provides an optional installation and configuration of'
+    greentext 'p2pool-vtc.'
+    echo 
+    echo "To make this node a full node, please visit $GATEWAY with the"
+    echo "URL bar of your web browser. Login to your router and continue"
+    echo "to the port forwarding section and port forward..."
+    echo "$LANIP TCP/UDP 5889"
+    echo
+    greentext 'What is a full node? It is a Vertcoin server that contains the'
+    greentext 'full blockchain and propagates transactions throughout the Vertcoin'
+    greentext 'network via peers). Playing its part to keep the Vertcoin peer-to-peer'
+    greentext 'network healthy and strong.'
+    echo
+    yellowtext read -n 1 -s -r -p "Press any key to continue..."
+}
+
+# installation_report | report back key and contextual information
+function installation_report {
+    echo "Public IP Address: $PUBLICIP"
+    echo "Local IP Address: $LANIP"
+    echo "Default Gateway: $GATEWAY"
+    echo "Vertcoin Data: $userhome/.vertcoin/"
+    echo
+    echo "p2pool-vtc"
+    echo "Network 1: $LANIP:9171"
+    echo "Network 2: $LANIP:9181"
+    echo 
+    echo "To make this node a full node, please visit $GATEWAY with the"
+    echo "URL bar of your web browser. Login to your router and continue"
+    echo "to the port forwarding section and port forward..."
+    echo "$LANIP TCP/UDP 5889"
+    echo
+    greentext 'What is a full node? It is a Vertcoin server that contains the'
+    greentext 'full blockchain and propagates transactions throughout the Vertcoin'
+    greentext 'network via peers). Playing its part to keep the Vertcoin peer-to-peer'
+    greentext 'network healthy and strong.'
+    echo
+}
+
 
 # user_input | take user input for rpcuser and rpcpass
 function user_input {
@@ -278,10 +324,10 @@ function grab_vtc_release {
     export VERSION=$(curl -s "https://github.com/vertcoin-project/vertcoin-core/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
     # grab the latest version release; deviation in release naming scheme will break this
     # release naming scheme needs to be: 'vertcoind-v(release#)-linux-armhf.zip' to work
-    wget https://github.com/vertcoin-project/vertcoin-core/releases/download/$VERSION/vertcoind-v$VERSION-linux-armhf.zip
-    unzip vertcoind-v$VERSION-linux-armhf.zip
+    wget https://github.com/vertcoin-project/vertcoin-core/releases/download/$VERSION/vertcoind-v$VERSION-linux-$ARCH.zip
+    unzip vertcoind-v$VERSION-linux-$ARCH.zip
     # clean up    
-    rm vertcoind-v$VERSION-linux-armhf.zip
+    rm vertcoind-v$VERSION-linux-$ARCH.zip
     # move vertcoin binaries to /usr/bin/ 
     mv vertcoind vertcoin-tx vertcoin-cli /usr/bin/
 }
@@ -463,6 +509,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 # clear the screen
 clear
+user_intro
+clear
 # check parameters
 while test $# -gt 0
 do
@@ -506,3 +554,4 @@ sudo -u "$user" vertcoind &
 # sleep for 2 seconds
 prompt_p2pool
 # display post installation results
+installation_report
