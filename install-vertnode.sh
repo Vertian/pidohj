@@ -138,6 +138,7 @@ function swap_config {
     yellowtext ' to connect to your Vertcoin node and copy the blocks'
     yellowtext ' and chainstate folder to the /home/$user/.vertcoin/ directory.'
     yellowtext '---------------------------------------------------------------'
+    echo " IP Address: $LANIP"    
     echo " Username: $user "
     echo " Port: 22 "
     yellowtext '***************************************************************'
