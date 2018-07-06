@@ -33,11 +33,12 @@ sudo ./install-vertnode.sh
 ### Functioning Status
 - [x] Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
 
-### Discovered testing errors
-- [ ] **Configuring firewall | Fixed with: `sudo reboot` then re-run `install_vertnode.sh`**
+### Testing Errors
+- [x] **Configuring firewall | Fixed with: `sudo reboot` then re-run `install_vertnode.sh`**
 
-Suspicious this error had to do with the `sudo apt-get upgrade -y` performed earlier in the script on a **Raspberry Pi 3 B+**.  
-Number of times encountered: `1` 
+**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi to run the `install-vertnode.sh` script.**
+
+**This error occurs when `sudo apt-get upgrade` installs a new kernel to the Raspberry Pi, it affects `iptables` which is a part of the kernel. Updating the kernel requires a reboot.**
 ```
 ERROR: initcaps
 [Errno 2] iptables v1.6.0: can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
