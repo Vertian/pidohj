@@ -164,24 +164,24 @@ function swap_config {
 
 # user_intro | introduction to installation script, any key to continue
 function user_intro {
-    greentext 'Welcome to the Vertnode installation script!'
+    echo "Welcome to the Vertnode installation script!"
     echo
-    greentext 'This script will install the Vertcoin software and allow for'
-    greentext 'easy configuration of a Vertcoin full node. Additionally the'
-    greentext 'script provides an optional installation and configuration of'
-    greentext 'p2pool-vtc.'
+    echo "This script will install the Vertcoin software and allow for"
+    echo "easy configuration of a Vertcoin full node. Additionally the"
+    echo "script provides an optional installation and configuration of"
+    echo "p2pool-vtc."
     echo 
     echo "To make this node a full node, please visit $GATEWAY with the"
     echo "URL bar of your web browser. Login to your router and continue"
     echo "to the port forwarding section and port forward..."
     echo "$LANIP TCP/UDP 5889"
     echo
-    greentext 'What is a full node? It is a Vertcoin server that contains the'
-    greentext 'full blockchain and propagates transactions throughout the Vertcoin'
-    greentext 'network via peers). Playing its part to keep the Vertcoin peer-to-peer'
-    greentext 'network healthy and strong.'
+    echo "What is a full node? It is a Vertcoin server that contains the"
+    echo "full blockchain and propagates transactions throughout the Vertcoin"
+    echo "network via peers). Playing its part to keep the Vertcoin peer-to-peer"
+    echo "network healthy and strong."
     echo
-    yellowtext read -n 1 -s -r -p "Press any key to continue..."
+    read -n 1 -s -r -p "Press any key to continue..."
 }
 
 # installation_report | report back key and contextual information
@@ -200,10 +200,10 @@ function installation_report {
     echo "to the port forwarding section and port forward..."
     echo "$LANIP TCP/UDP 5889"
     echo
-    greentext 'What is a full node? It is a Vertcoin server that contains the'
-    greentext 'full blockchain and propagates transactions throughout the Vertcoin'
-    greentext 'network via peers). Playing its part to keep the Vertcoin peer-to-peer'
-    greentext 'network healthy and strong.'
+    echo "What is a full node? It is a Vertcoin server that contains the"
+    echo "full blockchain and propagates transactions throughout the Vertcoin"
+    echo "network via peers). Playing its part to keep the Vertcoin peer-to-peer"
+    echo "network healthy and strong."
     echo
 }
 
