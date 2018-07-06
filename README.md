@@ -36,6 +36,9 @@ cd vertnode/
 chmod +x install-vertnode.sh
 sudo ./install-vertnode.sh 
 ```
+
+------------
+
 ### Functioning Status
 - [x] Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
 
