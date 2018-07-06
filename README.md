@@ -28,6 +28,8 @@
 
 ### Instructions | How to use
 * **Raspberry Pi 3**
+
+**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
 ```
 git clone https://github.com/e-corp-sam-sepiol/vertnode.git
 cd vertnode/
