@@ -263,9 +263,7 @@ function network_addr {
 # wait_for_continue | function for classic "Press spacebar to continue..." 
 function wait_for_continue {
     echo    
-    echo "STFP: "$user $LANIP':22'
-    echo
-    read -n 1 -s -r -p "Press any key to continue when finished transferring blockchain..."
+    read -n 1 -s -r -p "Press any key to continue..."
     echo
 }
 
@@ -337,11 +335,14 @@ function install_vertcoind {
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     if [ "$RAM" -gt "$RAM_MIN" ]; then
+            # if RAM is greater than 910MB configure without memory flags
             cd "$userhome"/bin/vertcoin-core/
             ./autogen.sh        
             ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default
         else
+            # if RAM is less than 910MB configure with memory flags
             cd "$userhome"/bin/vertcoin-core/
+            ./autogen.sh 
             ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
     fi
     cd "$userhome"/bin/vertcoin-core/
@@ -386,8 +387,11 @@ function compile_or_compiled {
             echo "HARDWARE = $SYSTEM"
             echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
             echo
-            echo "Begin building vertcoin from source..."
+            echo "Preparing to build vertcoin-core from source..."
+            echo "NOTE: It is highly recommended that your Pi Zero is using an attached"
+            echo "These operations will utilize the CPU @ 100% for large amounts of time."
             echo "**************************************************************************"
+            wait_for_continue
             install_vertcoind
     fi
 
