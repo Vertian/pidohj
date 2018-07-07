@@ -75,7 +75,7 @@ We will utilize the software 'Win32 Disk Imager' to format and install Raspbian 
 Once Win32 Disk Imager is finished writing to the MicroSD card please access the 'boot' partition of the MicroSD card with Windows Explorer `Win+E`. Create a new empty text file named `ssh` like so...
 
 ![MicroSD card - ssh](https://i.imgur.com/m14rGdV.png)  
-This enables `SSH` access on the Raspberry Pi Zero W's first boot sequence. 
+This enables `SSH` access on the Raspberry Pi's first boot sequence. 
 
 ### How to enable wireless connection on boot if hard wiring is not available
 
