@@ -10,6 +10,8 @@
 # SPECIAL THANKS:
 # Thanks @b17z, this fork would not have happened without you. Thanks
 # for your help and inspiration. 
+#
+# Dedicated to the Vertcoin community. 
 # -------------------------------------------------------------------
 # Functions:
 #           color functions
