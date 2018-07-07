@@ -18,9 +18,10 @@
 - [x] Prompt to transfer blockchain
 - [x] Provide option for `bootstrap.dat` sideload
 - [x] Begin Vertcoin Sync
+- [x] Provide option to install `p2pool-vtc`
 - [x] Clone & build `p2pool-vtc`
 - [x] Configure & launch `p2pool-vtc` 
-- [x] Setup crontab jobs
+- [x] Setup crontab job(s)
 - [x] Display installation report
 - [ ] Modify user input prompt to capture all user input at start of script
 - [x] Script installation introduction, Vertcoin full node: what, why and how?
