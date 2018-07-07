@@ -141,7 +141,7 @@ function hd_config {
         else
             sudo mount -a
         fi
-    sudo chmod 777 "$VTCDIR"
+    chmod 777 $VTCDIR
     greentext 'Successfully configured USB flash drive!'
     echo
 }
