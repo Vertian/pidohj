@@ -333,16 +333,18 @@ function install_vertcoind {
     install_berkeley    
     # continue on compiling vertcoin from source
     yellowtext 'Installing Vertcoin Core...'
-    rm -fR "$userhome"/bin/vertcoin
+    rm -fR "$userhome"/bin/vertcoin-core
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
-    cd vertcoin-core/
     if [ "$RAM" -gt "$RAM_MIN" ]; then
+            cd "$userhome"/bin/vertcoin-core/
             ./autogen.sh        
             ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default
         else
+            cd "$userhome"/bin/vertcoin-core/
             ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
     fi
+    cd "$userhome"/bin/vertcoin-core/
     make
     sudo make install
     greentext 'Successfully installed Vertcoin Core!'
