@@ -139,7 +139,6 @@ function hd_config {
 function swap_config {
     # !! notify user the ability to begin sideloading blockchain
     yellowtext '********************************************************************'
-    echo " NOTE: If you intend on installing P2Pool with this script"
     echo " Please use an SFTP client such as WinSCP or FileZilla to"
     echo " sideload the blockchain by connecting to your Vertcoin node,"
     echo " copy the BLOCKS and CHAINSTATE folder to the /home/$user/.vertcoin/"
@@ -395,7 +394,6 @@ function config_vertcoin {
 function load_blockchain {
     # prompt user with menu selection
     yellowtext '********************************************************************'
-    echo " NOTE: If you intend on installing P2Pool with this script"
     echo " Please use an SFTP client such as WinSCP or FileZilla to"
     echo " sideload the blockchain by connecting to your Vertcoin node,"
     echo " copy the BLOCKS and CHAINSTATE folder to the /home/$user/.vertcoin/"
@@ -419,7 +417,7 @@ function load_blockchain {
             "Yes, I will sideload the blockchain.")
                 wait_for_continue 
                 echo
-                greentext 'Waiting two minutes for Vertcoin Core to sync...'
+                greentext 'Waiting two minutes for Vertcoin Core to start...'
                 echo
                 sudo -u "$user" vertcoind -daemon
                 sleep 120
@@ -427,18 +425,26 @@ function load_blockchain {
                 break       
                 ;;
             "No, use bootstrap.dat instead.")
-                grab_bootstrap                
+                grab_bootstrap            
+                echo
+                greentext 'Waiting two minutes for Vertcoin Core to start...'    
                 echo
                 greentext 'Starting Vertcoin Core...'
                 echo
-                sudo -u "$user" vertcoind -daemon               
+                sudo -u "$user" vertcoind -daemon 
+                sleep 120 
+                prompt_p2pool             
                 break              
                 ;;
             "No, sync on it's own.")
                 echo
+                greentext 'Waiting two minutes for Vertcoin Core to start...' 
+                echo
                 greentext 'Starting Vertcoin Core...'
                 echo
-                sudo -u "$user" vertcoind -daemon               
+                sudo -u "$user" vertcoind -daemon 
+                sleep 120
+                prompt_p2pool              
                 break         
                 ;;
             * ) echo "Invalid option, please try again";;
@@ -553,7 +559,6 @@ function config_crontab {
     greentext 'Successfully configured Crontab!'
     echo
 }
-
 
 # -------------BEGIN-MAIN-------------------
 
