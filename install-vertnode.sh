@@ -42,6 +42,12 @@
 #           config_crontab      | function to configure crontab to start 
 # -------------------------------------------------------------------
 
+# install depends for detection; check for lshw, install if not
+if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo "Installing required dependencies to run install-vertnode..."    
+    apt-get install lshw -y;
+fi
+
 # fail on error; debug all lines
 set -eu -o pipefail
 
@@ -56,11 +62,15 @@ user=$(logname)
 userhome='/home/'$user
 FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
+INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
+GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # ~ $ ifconfig eth0 | grep "inet "
 #       inet 192.168.1.6  netmask 255.255.255.0  broadcast 192.168.1.255
-LANIP="$(ifconfig eth0 | grep "inet " | awk -F'[: ]+' '{ print $3 }')" # grab only the inet addr
-GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
+# grab only the inet addr
+LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{ print $3 }')" 
 # arch detect; store system architecture into variable, use for grabbing latest release
+SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3$4$5$6$7$8$9$10$11}')"
+RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
 ARCH="$(dpkg --print-architecture)"
 P2P=''
 
@@ -143,8 +153,8 @@ function swap_config {
     echo " sideload the blockchain by connecting to your Vertcoin node,"
     echo " copy the BLOCKS and CHAINSTATE folder to the /home/$user/.vertcoin/"
     echo
-    yellowtext ' This script requires Vertcoin Core to be running to automatically'
-    yellowtext ' configure P2Pool for the user.'
+    yellowtext ' Sideloading is optional but RECOMMENED. Alternate options are'
+    yellowtext ' provided to use bootstrap.dat or sync the node on its own.'
     yellowtext '--------------------------------------------------------------------'
     echo " Using WinSCP or FileZilla please connect to: "    
     echo 
@@ -326,8 +336,14 @@ function install_vertcoind {
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     cd vertcoin-core/
-    ./autogen.sh
-    ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default
+    if ["$RAM" >= "910000"]; 
+        then
+            ./autogen.sh        
+            ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default
+        else
+            # configure with smaller heapsize when < than 910000 MB of RAM available
+            ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
+    fi
     make
     sudo make install
     greentext 'Successfully installed Vertcoin Core!'
@@ -362,6 +378,18 @@ function grab_bootstrap {
 # compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
 #                     | from source or would you like to grab the latest release binary?
 function compile_or_compiled {
+    # if the system name contains RaspberryPiZero then compile from source
+    # to avoid segmentation fault errors    
+    if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
+            echo "**************************************************************************"           
+            echo "HARDWARE = $SYSTEM"
+            echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
+            echo
+            echo "Begin building vertcoin from source..."
+            echo "**************************************************************************"
+            install_vertcoind
+    fi
+
     # prompt user if they would like to build from source
     while true; do
         read -p "Would you like to build Vertcoin from source? " yn
