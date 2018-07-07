@@ -391,7 +391,7 @@ function compile_or_compiled {
             echo "NOTE: It is highly recommended that your Pi Zero is using an attached"
             echo "These operations will utilize the CPU @ 100% for large amounts of time."
             echo "**************************************************************************"
-            wait_for_continue
+            sleep 15
             install_vertcoind
     fi
 
