@@ -63,6 +63,42 @@ Perhaps iptables or your kernel needs to be upgraded.
 
 ------------
 
+#### Download Raspbian Stretch Lite
+`https://www.raspberrypi.org/downloads/raspbian/`  
+
+We will utilize the software 'Win32 Disk Imager' to format and install Raspbian on the MicroSD card. Please follow the [guide](https://www.raspberrypi.org/documentation/installation/installing-images/windows.md) below for details on installing the Rasbian image to the MicroSD card.
+
+![Write](https://i.imgur.com/fTyqpat.png)  
+![Writing...](https://i.imgur.com/DrGi0mb.png)  
+![Done](https://i.imgur.com/cfUjvKR.png)
+
+Once Win32 Disk Imager is finished writing to the MicroSD card please access the 'boot' partition of the MicroSD card with Windows Explorer `Win+E`. Create a new empty text file named `ssh` like so...
+
+![MicroSD card - ssh](https://i.imgur.com/m14rGdV.png)  
+This enables `SSH` access on the Raspberry Pi Zero W's first boot sequence. 
+
+### How to enable wireless connection on boot if hard wiring is not available
+
+Create another new text file named `wpa_supplicant.conf` that will hold the network info...
+
+Edit the file that you just created adjusting for the name of your country code, network name and network password.
+
+```
+country=US
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid="NETWORK-NAME"
+    psk="NETWORK-PASSWORD"
+}
+```
+Please safely remove the USB Card Reader / MicroSD card as to ensure the data is not corrupted.
+
+Insert the MicroSD card that was safely removed into the microSD slot the Raspberry Pi. Once the Pi has booted it will attempt to join the wireless network using the information provided in the `wpa_supplicant.conf` file.
+
+------------
+
 ### [Manual Installation Walkthrough: Raspberry Pi 3](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi.md)
 ### [Manual Installation Walkthrough: Raspberry Pi Zero W](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi-zero-w.md)
 ### [Manual Installation Walkthrough: Intel NUC](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/intel-nuc.md)
