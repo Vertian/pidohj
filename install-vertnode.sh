@@ -206,17 +206,10 @@ function installation_report {
     echo "Local IP Address: $LANIP"
     echo "Default Gateway: $GATEWAY"
     echo "Vertcoin Data: $userhome/.vertcoin/"
-    echo
-    case "$P2P" in
-        Y|y|Yes|yes)
-                echo "p2pool-vtc"
-                echo "Network 1: $LANIP:9171"
-                echo "Network 2: $LANIP:9181"
-            ;;
-        *)
-                : 
-            ;;
-    esac
+    echo    
+    echo "p2pool-vtc -----------"    
+    echo "Network 1: $LANIP:9171"
+    echo "Network 2: $LANIP:9181"
     echo "-------------------------------------"
     echo
     echo "To make this node a full node, please visit $GATEWAY with the"
