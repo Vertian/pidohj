@@ -71,6 +71,7 @@ LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{ print $3 }')"
 # arch detect; store system architecture into variable, use for grabbing latest release
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3$4$5$6$7$8$9$10$11}')"
 RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
+RAM_MIN='910000'
 ARCH="$(dpkg --print-architecture)"
 P2P=''
 
@@ -336,12 +337,10 @@ function install_vertcoind {
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     cd vertcoin-core/
-    if ["$RAM" >= "910000"]; 
-        then
+    if [ "$RAM" -gt "$RAM_MIN" ]; then
             ./autogen.sh        
             ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default
         else
-            # configure with smaller heapsize when < than 910000 MB of RAM available
             ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
     fi
     make
