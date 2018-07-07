@@ -41,7 +41,7 @@ sudo ./install-vertnode.sh
 ------------
 
 ### Functioning Status
-- [x] Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
+- [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
 
 ## Testing Errors
 
