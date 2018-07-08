@@ -157,12 +157,13 @@ function user_input {
     clear
     echo "What would you like the maximum amount of data (in MegaBytes) uploaded daily? "
     echo "Examples:"
-    echo "          1024 = 1GB"
-    echo "          2048 = 2GB"
-    echo "          3072 = 3GB"
-    echo "          4096 = 4GB"
-    echo "          5120 = 5GB" 
-    read -p 'maxuploadtarget= ' MAXUPLOAD
+    echo "          1024 MB = 1GB"
+    echo "          2048 MB = 2GB"
+    echo "          3072 MB = 3GB"
+    echo "          4096 MB = 4GB"
+    echo "          5120 MB = 5GB" 
+    echo 
+    read -p 'maxuploadtarget=' MAXUPLOAD
 }
 
 # compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
@@ -594,6 +595,10 @@ function install_p2pool {
 
 # initiate_blockchain | take user response from load_blockchain and execute
 function initiate_blockchain {
+    # check if system = Raspberry Pi Zero and force building from source
+    if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
+            install_vertcoind
+    fi
     if [ "$LOADBLOCKMETHOD" == "wait_for_continue" ]; then
         # if user selected to install p2pool, then install it
         wait_for_continue
