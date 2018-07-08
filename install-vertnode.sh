@@ -44,6 +44,9 @@
 #           config_crontab      | function to configure crontab to start 
 # -------------------------------------------------------------------
 
+# clear the screen to begin
+clear
+
 # install depends for detection; check for lshw, install if not
 if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-vertnode..."    
@@ -76,8 +79,26 @@ RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
 RAM_MIN='910000'
 ARCH="$(dpkg --print-architecture)"
 P2P=''
+INSTALLP2POOL=''
+BUILDVERTCOIN=''
+LOADBLOCKMETHOD=''
 
 # -----------------------------------
+
+# network_addr | grab the LAN network address range of the host running this script
+function network_addr {
+    network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
+}
+
+# wait_for_continue | function for classic "Press spacebar to continue..." 
+function wait_for_continue {
+    echo 
+    echo "DO NOT CONTINUE UNTIL THE BLOCKCHAIN HAS BEEN"
+    echo "COMPLETELY COPIED OVER TO $userhome/.vertcoin/"
+    echo
+    read -n 1 -s -r -p "Press any key to continue..."
+    echo
+}
 
 # color functions
 function greentext(){
@@ -91,6 +112,188 @@ function yellowtext(){
 function redtext(){
     echo -e -n "\e[1;31m$1"
     echo -e -n '\033[0m\n'
+}
+
+# user_intro | introduction to installation script, any key to continue
+function user_intro {
+    greentext 'Welcome to the Vertnode installation script!'
+    echo
+    greentext 'This script will install the Vertcoin software and allow for'
+    greentext 'easy configuration of a Vertcoin full node. Additionally the'
+    greentext 'script provides an optional installation and configuration of'
+    greentext 'p2pool-vtc.'
+    echo 
+    echo "To make this node a full node, please visit $GATEWAY with the"
+    echo "URL bar of your web browser. Login to your router and continue"
+    echo "to the port forwarding section and port forward..."
+    echo "$LANIP TCP/UDP 5889"
+    echo
+    yellowtext 'What is a full node? It is a Vertcoin server that contains the'
+    yellowtext 'full blockchain and propagates transactions throughout the Vertcoin'
+    yellowtext 'network via peers). Playing its part to keep the Vertcoin peer-to-peer'
+    yellowtext 'network healthy and strong.'
+    echo
+    read -n 1 -s -r -p "Press any key to continue..."
+}
+
+# user_input | take user input for rpcuser and rpcpass
+function user_input {
+    # check for USB flash drive
+    while true; do
+        clear
+        echo -e "$TEXT_YELLOW"
+        read -p "Is the USB flash drive connected? It will be formatted. (y/n) " yn
+        case $yn in
+            [Yy]* ) hd_detect; break;;  # if we have hd_config value we can configure it
+            [Nn]* ) echo "Please connect USB flash drive and retry."; exit;;
+            * ) echo "Do you wish to continue? (y/n) ";;
+        esac
+    done
+    clear
+    echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
+    read -p 'Enter RPC user: ' rpcuser
+    read -s -p 'Enter RPC password: ' rpcpass
+    echo
+}
+
+# compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
+#                     | from source or would you like to grab the latest release binary?
+function compile_or_compiled {
+    # if the system name contains RaspberryPiZero then compile from source
+    # to avoid segmentation fault errors    
+    if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
+            echo "**************************************************************************"           
+            echo "HARDWARE = $SYSTEM"
+            echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
+            echo
+            echo "This script will build Vertcoin Core from source..."
+            echo "NOTE: These operations will utilize the CPU @ 100% for a long time."
+            echo "**************************************************************************"
+            sleep 15
+            BUILDVERTCOIN="install_vertcoind"
+    fi
+
+    # prompt user if they would like to build from source
+    while true; do
+        read -p "Would you like to build Vertcoin from source? (y/n) " yn
+        case $yn in 
+            # if user says yes, call install_vertcoind to compile source
+            [Yy]*   )   BUILDVERTCOIN="install_vertcoind"; break;;
+            # if user says no, grab latest vtc release and break from loop            
+            [Nn]*   )   BUILDVERTCOIN="grab_vtc_release"; break;;
+        esac
+    done
+}
+
+# prompt_p2pool | function to prompt user with option to install p2pool
+function prompt_p2pool {
+    while true; do
+        echo
+        read -p "Would you like install p2pool-vtc? (y/n) " yn
+        case $yn$P2P in 
+            # if user says yes, call install_p2pool 
+            [Yy]*   )   INSTALLP2POOL="install_p2pool"; break;;
+            # if user says no, break from loop            
+            [Nn]*   )   INSTALLP2POOL=""; break;;
+        esac
+    done
+}
+
+# load_blockchain | prompt the user for input; would you like to sideload the
+#                 | the vertcoin blockchain or grab the latest bootstrap.dat
+function load_blockchain {
+    # prompt user with menu selection
+    echo
+    PS3="Are you going to sideload the blockchain @ $LANIP:22 ? "
+    options=("Yes, I will sideload the blockchain." "No, use bootstrap.dat instead." "No, sync on it's own.")
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "Yes, I will sideload the blockchain.")
+                LOADBLOCKMETHOD="wait_for_continue"         
+                break       
+                ;;
+            "No, use bootstrap.dat instead.")
+                LOADBLOCKMETHOD="grab_bootstrap"
+                break              
+                ;;
+            "No, sync on it's own.")
+                LOADBLOCKMETHOD=""
+                break         
+                ;;
+            * ) echo "Invalid option, please try again";;
+        esac
+    done
+}
+
+# init_script
+function init_script {
+    echo    
+    greentext 'Initializing Vertnode installation script...' 
+    echo
+    yellowtext '*****************************************'
+    if [ "$BUILDVERTCOIN" == "install_vertcoind" ]; then
+        yellowtext 'Vertcoin Installation      | Build from source'
+    else
+        yellowtext 'Vertcoin Installation      | Latest vertcoin-core release'    
+    fi  
+    if [ "$INSTALLP2POOL" == "install_p2pool" ]; then
+        yellowtext 'P2Pool-vtc Installation    | True'
+    else
+        yellowtext 'P2Pool-vtc Installation    | False'    
+    fi  
+    if [ "$LOADBLOCKMETHOD" == "wait_for_continue" ]; then
+        yellowtext 'Blockchain Loading Method  | Sideload the blockchain'
+    elif [ "$LOADBLOCKMETHOD" == "grab_bootstrap" ]; then
+        yellowtext 'Blockchain Loading Method  | Grab latest bootstrap.dat'
+    else
+        yellowtext 'Blockchain Loading Method  | Sync on its own'  
+    fi  
+    yellowtext '*****************************************'
+    sleep 10
+}
+
+# update_rasp | update the system
+function update_rasp {
+    yellowtext 'Initializing system update...'
+    sudo apt-get update
+    sudo apt-get upgrade -y
+    sudo apt-get autoremove -y
+    greentext 'Successfully updated system!'
+    echo
+    # check if reboot is needed
+        if [ -f /var/run/reboot-required ]; then
+            redtext 'Reboot required!'
+        fi
+}
+
+# install_depends | install the required dependencies to run this script
+function install_depends {
+    yellowtext 'Installing package dependencies...'
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban 
+    greentext 'Successfully installed required dependencies!'
+    echo
+}
+
+# secure | modify iptables to limit connections for security purposes
+function secure {
+    yellowtext 'Configuring firewall...'
+    # install the dependancy 
+    sudo apt-get install ufw -y
+    # call the function network_addr    
+    network_addr
+    # configure ufw firewall   
+    echo
+    ufw default deny incoming
+    ufw default allow outgoing
+    ufw allow from $network_address to any port 22 comment 'allow SSH from local LAN'
+    ufw allow 5889 comment 'allow vertcoin core'
+    ufw --force enable
+    systemctl enable ufw
+    ufw status
+    echo 
+    greentext 'Successfully configured firewall!'
+    echo 
 }
 
 # hd_detect | USB flash drive detect; prompt for formatting
@@ -152,14 +355,15 @@ function hd_config {
 function swap_config {
     # !! notify user the ability to begin sideloading blockchain
     yellowtext '********************************************************************'
-    echo " Please use an SFTP client such as WinSCP or FileZilla to"
-    echo " sideload the blockchain by connecting to your Vertcoin node,"
-    echo " copy the BLOCKS and CHAINSTATE folder to the /home/$user/.vertcoin/"
+    greentext ' NOTICE: Sideloading is now available'    
     echo
-    yellowtext ' Sideloading is optional but RECOMMENED. Alternate options are'
-    yellowtext ' provided to use bootstrap.dat or sync the node on its own.'
+    echo " If you intend on sideloading the blockchain please use an " 
+    echo " SFTP client such as WinSCP or FileZilla to copy the BLOCKS"
+    echo " and CHAINSTATE folder to /home/$user/.vertcoin/"
     yellowtext '--------------------------------------------------------------------'
-    echo " Using WinSCP or FileZilla please connect to: "    
+    greentext ' HOW TO CONNECT: '
+    echo
+    echo " Using WinSCP or FileZilla please connect to... "    
     echo 
     echo " IP Address: $LANIP"    
     echo " Port: 22 "
@@ -185,130 +389,6 @@ function swap_config {
     echo "/home/$user/.vertcoin/swap/swap.file  none  swap  defaults  0    0" >> /etc/fstab
     echo    
     greentext 'Successfully configured swap space!'
-    echo
-}
-
-# user_intro | introduction to installation script, any key to continue
-function user_intro {
-    greentext 'Welcome to the Vertnode installation script!'
-    echo
-    greentext 'This script will install the Vertcoin software and allow for'
-    greentext 'easy configuration of a Vertcoin full node. Additionally the'
-    greentext 'script provides an optional installation and configuration of'
-    greentext 'p2pool-vtc.'
-    echo 
-    echo "To make this node a full node, please visit $GATEWAY with the"
-    echo "URL bar of your web browser. Login to your router and continue"
-    echo "to the port forwarding section and port forward..."
-    echo "$LANIP TCP/UDP 5889"
-    echo
-    yellowtext 'What is a full node? It is a Vertcoin server that contains the'
-    yellowtext 'full blockchain and propagates transactions throughout the Vertcoin'
-    yellowtext 'network via peers). Playing its part to keep the Vertcoin peer-to-peer'
-    yellowtext 'network healthy and strong.'
-    echo
-    read -n 1 -s -r -p "Press any key to continue..."
-}
-
-# installation_report | report back key and contextual information
-function installation_report {
-    echo
-    echo "-------------------------------------"
-    echo "Public IP Address: $PUBLICIP"
-    echo "Local IP Address: $LANIP"
-    echo "Default Gateway: $GATEWAY"
-    echo "Vertcoin Data: $userhome/.vertcoin/"
-    echo    
-    echo "p2pool-vtc -----------"    
-    echo "Network 1: $LANIP:9171"
-    echo "Network 2: $LANIP:9181"
-    echo "-------------------------------------"
-    echo
-    echo "To make this node a full node, please visit $GATEWAY with the"
-    echo "URL bar of your web browser. Login to your router and continue"
-    echo "to the port forwarding section and port forward..."
-    echo "$LANIP TCP/UDP 5889"
-    echo
-    echo "What is a full node? It is a Vertcoin server that contains the"
-    echo "full blockchain and propagates transactions throughout the Vertcoin"
-    echo "network via peers). Playing its part to keep the Vertcoin peer-to-peer"
-    echo "network healthy and strong."
-    echo
-}
-
-
-# user_input | take user input for rpcuser and rpcpass
-function user_input {
-    # check for USB flash drive
-    while true; do
-        clear
-        echo -e "$TEXT_YELLOW"
-        read -p "Is the USB flash drive connected? It will be formatted. (y/n) " yn
-        case $yn in
-            [Yy]* ) hd_detect; break;;  # if we have hd_config value we can configure it
-            [Nn]* ) echo "Please connect USB flash drive and retry."; exit;;
-            * ) echo "Do you wish to continue? (y/n) ";;
-        esac
-    done
-    clear
-    echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
-    read -p 'Enter RPC user: ' rpcuser
-    read -s -p 'Enter RPC password: ' rpcpass
-    echo
-}
-
-# network_addr | grab the LAN network address range of the host running this script
-function network_addr {
-    network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
-}
-
-# wait_for_continue | function for classic "Press spacebar to continue..." 
-function wait_for_continue {
-    echo    
-    read -n 1 -s -r -p "Press any key to continue..."
-    echo
-}
-
-# secure | modify iptables to limit connections for security purposes
-function secure {
-    yellowtext 'Configuring firewall...'
-    # install the dependancy 
-    sudo apt-get install ufw -y
-    # call the function network_addr    
-    network_addr
-    # configure ufw firewall   
-    echo
-    ufw default deny incoming
-    ufw default allow outgoing
-    ufw allow from $network_address to any port 22 comment 'allow SSH from local LAN'
-    ufw allow 5889 comment 'allow vertcoin core'
-    ufw --force enable
-    systemctl enable ufw
-    ufw status
-    echo 
-    greentext 'Successfully configured firewall!'
-    echo 
-}
-
-# update_rasp | update the system
-function update_rasp {
-    yellowtext 'Initializing system update...'
-    sudo apt-get update
-    sudo apt-get upgrade -y
-    sudo apt-get autoremove -y
-    greentext 'Successfully updated system!'
-    echo
-    # check if reboot is needed
-        if [ -f /var/run/reboot-required ]; then
-            redtext 'Reboot required!'
-        fi
-}
-
-# install_depends | install the required dependencies to run this script
-function install_depends {
-    yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban 
-    greentext 'Successfully installed required dependencies!'
     echo
 }
 
@@ -371,7 +451,7 @@ function grab_vtc_release {
 # grab_bootstrap | grab the latest bootstrap.dat
 function grab_bootstrap {
     # check package manager for pv, install if not
-    if [ $(dpkg-query -W -f='${Status}' pv 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    if [ $(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
         sudo apt-get install pv
     fi
     # clone megadown script to download bootstrap
@@ -390,36 +470,17 @@ function grab_bootstrap {
     echo
     echo "Successfully downloaded bootstrap.dat!"
     echo
-
 }
 
-# compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
-#                     | from source or would you like to grab the latest release binary?
-function compile_or_compiled {
-    # if the system name contains RaspberryPiZero then compile from source
-    # to avoid segmentation fault errors    
-    if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
-            echo "**************************************************************************"           
-            echo "HARDWARE = $SYSTEM"
-            echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
-            echo
-            echo "Preparing to build vertcoin-core from source..."
-            echo "NOTE: These operations will utilize the CPU @ 100% for a long time."
-            echo "**************************************************************************"
-            sleep 15
-            install_vertcoind
-    fi
-
-    # prompt user if they would like to build from source
-    while true; do
-        read -p "Would you like to build Vertcoin from source? (y/n) " yn
-        case $yn in 
-            # if user says yes, call install_vertcoind to compile source
-            [Yy]*   )   install_vertcoind; break;;
-            # if user says no, grab latest vtc release and break from loop            
-            [Nn]*   )   grab_vtc_release; break;;
-        esac
-    done
+# config_crontab | function to configure crontab to start 
+function config_crontab {
+    VTCRON=$({ crontab -l -u pi 2>/dev/null; echo '@reboot vertcoind -daemon'; } | crontab -u pi - )
+    echo    
+    yellowtext 'Configuring Crontab...'
+    yellowtext '** vertcoind  | start on reboot'
+    $VTCRON
+    echo
+    greentext 'Successfully configured Crontab!'
 }
 
 # config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
@@ -438,83 +499,6 @@ function config_vertcoin {
     # configure permissions for user access
     cd "$userhome"/.vertcoin/
     chmod 777 vertcoin.conf
-}
-
-# load_blockchain | prompt the user for input; would you like to sideload the
-#                 | the vertcoin blockchain or grab the latest bootstrap.dat
-function load_blockchain {
-    # prompt user with menu selection
-    yellowtext '********************************************************************'
-    echo " Please use an SFTP client such as WinSCP or FileZilla to"
-    echo " sideload the blockchain by connecting to your Vertcoin node,"
-    echo " copy the BLOCKS and CHAINSTATE folder to the /home/$user/.vertcoin/"
-    echo
-    yellowtext ' This script requires Vertcoin Core to be running to automatically'
-    yellowtext ' configure P2Pool for the user.'
-    yellowtext '--------------------------------------------------------------------'
-    echo " Using WinSCP or FileZilla please connect to: "    
-    echo 
-    echo " IP Address: $LANIP"    
-    echo " Port: 22 "
-    echo " Username: $user "
-    echo " Password: (pi default pass: raspberry)"    
-    yellowtext '********************************************************************'
-    echo
-    PS3="Are you going to sideload the blockchain @ $LANIP:22? "
-    options=("Yes, I will sideload the blockchain." "No, use bootstrap.dat instead." "No, sync on it's own.")
-    select opt in "${options[@]}"
-    do
-        case $opt in
-            "Yes, I will sideload the blockchain.")
-                wait_for_continue 
-                echo
-                greentext 'Waiting two minutes for Vertcoin Core to start...'
-                echo
-                sudo -u "$user" vertcoind -daemon
-                sleep 120
-                prompt_p2pool                
-                break       
-                ;;
-            "No, use bootstrap.dat instead.")
-                grab_bootstrap            
-                echo
-                greentext 'Waiting two minutes for Vertcoin Core to start...'    
-                echo
-                greentext 'Starting Vertcoin Core...'
-                echo
-                sudo -u "$user" vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
-                sleep 120 
-                prompt_p2pool             
-                break              
-                ;;
-            "No, sync on it's own.")
-                echo
-                greentext 'Waiting two minutes for Vertcoin Core to start...' 
-                echo
-                greentext 'Starting Vertcoin Core...'
-                echo
-                sudo -u "$user" vertcoind -daemon 
-                sleep 120
-                prompt_p2pool              
-                break         
-                ;;
-            * ) echo "Invalid option, please try again";;
-        esac
-    done
-}
-
-# prompt_p2pool | function to prompt user with option to install p2pool
-function prompt_p2pool {
-    while true; do
-        echo
-        read -p "Would you like install p2pool-vtc? (y/n) " yn
-        case $yn$P2P in 
-            # if user says yes, call install_p2pool 
-            [Yy]*   )   install_p2pool; break;;
-            # if user says no, break from loop            
-            [Nn]*   )   break;;
-        esac
-    done
 }
 
 # install_p2pool | function to download and configure p2pool
@@ -599,16 +583,80 @@ function install_p2pool {
     sudo -u "$user" nohup sh start-p2pool.sh &
 }
 
-# config_crontab | function to configure crontab to start 
-function config_crontab {
-    VTCRON=$({ crontab -l -u pi 2>/dev/null; echo '@reboot vertcoind -daemon'; } | crontab -u pi - )
+# initiate_blockchain | take user response from load_blockchain and execute
+function initiate_blockchain {
+    if [ "$LOADBLOCKMETHOD" == "wait_for_continue" ]; then
+        # if user selected to install p2pool, then install it
+        wait_for_continue
+        echo
+        greentext 'Waiting two minutes for Vertcoin Core to start...' 
+        echo
+        greentext 'Starting Vertcoin Core...'
+        echo
+        sudo -u "$user" vertcoind -daemon 
+        sleep 120  
+    elif [ "$LOADBLOCKMETHOD" == "grab_bootstrap" ]; then
+        grab_bootstrap
+        echo
+        greentext 'Waiting two minutes for Vertcoin Core to start...' 
+        echo
+        greentext 'Starting Vertcoin Core...'
+        echo
+        sudo -u "$user" vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
+        sleep 120           
+    else
+        # else just sync vertcoin on its own
+        echo
+        greentext 'Waiting two minutes for Vertcoin Core to start...' 
+        echo
+        greentext 'Starting Vertcoin Core...'
+        echo
+        sudo -u "$user" vertcoind -daemon 
+        sleep 120         
+    fi 
+}
+
+# post installation_report | report back key and contextual information
+function installation_report {
+    echo
+    echo "-------------------------------------"
+    echo "Public IP Address: $PUBLICIP"
+    echo "Local IP Address: $LANIP"
+    echo "Default Gateway: $GATEWAY"
+    echo "Vertcoin Data: $userhome/.vertcoin/"
     echo    
-    yellowtext 'Configuring Crontab...'
-    yellowtext '** vertcoind  | start on reboot'
-    $VTCRON
+    echo "p2pool-vtc -----------"    
+    echo "Network 1: $LANIP:9171"
+    echo "Network 2: $LANIP:9181"
+    echo "-------------------------------------"
     echo
-    greentext 'Successfully configured Crontab!'
+    echo "To make this node a full node, please visit $GATEWAY with the"
+    echo "URL bar of your web browser. Login to your router and continue"
+    echo "to the port forwarding section and port forward..."
+    echo "$LANIP TCP/UDP 5889"
     echo
+    echo "What is a full node? It is a Vertcoin server that contains the"
+    echo "full blockchain and propagates transactions throughout the Vertcoin"
+    echo "network via peers). Playing its part to keep the Vertcoin peer-to-peer"
+    echo "network healthy and strong."
+    echo
+    echo "Useful commands to know:"
+    echo "------------------------------------------------------------------------------"
+    echo " htop                                 | task manager / resource monitor"
+    echo " ifconfig                             | display network interface IP addresses"
+    echo " vertcoin-cli getblockchaininfo       | display blockchain information"
+    echo " vertcoin-cli getblockcount           | display current number of blocks"
+    echo " vertcoin-cli getconnectioncount      | display number of connections"
+    echo " vertcoin-cli getnettotals            | display total number of bytes sent/recv"
+    echo " vertcoin-cli getnewaddress           | generate bech32 (segwit) address"
+    echo " vertcoin-cli getnewaddress "" legacy | generate legacy address"
+    echo
+    echo " # display latest vertcoin log information: " 
+    echo " tail -f ~/.vertcoin/debug.log"
+    echo
+    echo " # display latest p2pool log information: " 
+    echo " tail -f ~/p2pool-vtc-0.3.0-rc1/data/vertcoin$p2poolnetwork/log"
+    echo "------------------------------------------------------------------------------"
 }
 
 # -------------BEGIN-MAIN-------------------
@@ -637,8 +685,14 @@ done
 clear
 user_input
 clear
-greentext 'Starting Vertcoin full node installation, please be patient...'
-greentext '______________________________________________________________'
+compile_or_compiled
+clear
+prompt_p2pool
+clear
+# prompt user to load blockchain
+load_blockchain
+clear
+init_script
 echo
 # call update_rasp function | update the system
 update_rasp
@@ -655,13 +709,41 @@ if [ "$DRIVE_CONF" = "true" ]; then
     swap_config
 fi
 # call install_vertcoind | clone, build and install vertcoin core daemon
-compile_or_compiled
 echo
+# check for user response to compile from source
+if [ "$BUILDVERTCOIN" == "install_vertcoind" ]; then
+    # if user selected to compile vertcoin from source, then compile
+    install_vertcoind
+    break
+else
+    # grab latest vtc release
+    grab_vtc_release 
+    break     
+fi   
+# configure crontab for vertcoin
+config_crontab
 # call config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 config_vertcoin
-# configure crontab
-config_crontab
-# prompt user to load blockchain
-load_blockchain
+# execute on blockchain loading method
+initiate_blockchain
+# check for user response to install p2pool
+if [ "$INSTALLP2POOL" == "install_p2pool" ]; then
+    # if user selected to install p2pool, then install it
+    install_p2pool
+    break
+else
+    # else do nothing and proceed 
+    :        
+fi     
+# if user chose sideload blockchain wait for continue
+if [ "$LOADBLOCKMETHOD" == "wait_for_continue" ]; then
+    # if user selected to sideload blockchain then wait to make sure
+    # the blockchain has been completely copied over before starting vertcoin
+    wait_for_continue
+    break
+else
+    # else proceed starting vertcoin and initializing sync
+    :        
+fi     
 # display post installation results
 installation_report
