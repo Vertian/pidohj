@@ -252,8 +252,8 @@ function user_input {
     done
     clear
     echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
-    read -p 'Enter username: ' rpcuser
-    read -s -p 'Enter password: ' rpcpass
+    read -p 'Enter RPC user: ' rpcuser
+    read -s -p 'Enter RPC password: ' rpcpass
     echo
 }
 
@@ -390,8 +390,7 @@ function compile_or_compiled {
             echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
             echo
             echo "Preparing to build vertcoin-core from source..."
-            echo "NOTE: It is highly recommended that your Pi Zero is using an attached"
-            echo "These operations will utilize the CPU @ 100% for large amounts of time."
+            echo "NOTE: These operations will utilize the CPU @ 100% for a long time."
             echo "**************************************************************************"
             sleep 15
             install_vertcoind
@@ -399,7 +398,7 @@ function compile_or_compiled {
 
     # prompt user if they would like to build from source
     while true; do
-        read -p "Would you like to build Vertcoin from source? " yn
+        read -p "Would you like to build Vertcoin from source? (y/n) " yn
         case $yn in 
             # if user says yes, call install_vertcoind to compile source
             [Yy]*   )   install_vertcoind; break;;
@@ -422,6 +421,9 @@ function config_vertcoin {
     echo 'maxconnections=40' >> /home/"$user"/.vertcoin/vertcoin.conf
     echo 'maxuploadtarget=5000' >> /home/"$user"/.vertcoin/vertcoin.conf
     echo 'usehd=1' >> /home/"$user"/.vertcoin/vertcoin.conf
+    # configure permissions for user access
+    cd "$userhome"/.vertcoin/
+    chmod 777 vertcoin.conf
 }
 
 # load_blockchain | prompt the user for input; would you like to sideload the
@@ -491,7 +493,7 @@ function load_blockchain {
 function prompt_p2pool {
     while true; do
         echo
-        read -p "Would you like install p2pool-vtc? " yn
+        read -p "Would you like install p2pool-vtc? (y/n) " yn
         case $yn$P2P in 
             # if user says yes, call install_p2pool 
             [Yy]*   )   install_p2pool; break;;
