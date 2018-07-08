@@ -82,6 +82,7 @@ P2P=''
 INSTALLP2POOL=''
 BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
+MAXUPLOAD=''
 
 # -----------------------------------
 
@@ -153,7 +154,15 @@ function user_input {
     echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
     read -p 'Enter RPC user: ' rpcuser
     read -s -p 'Enter RPC password: ' rpcpass
-    echo
+    clear
+    echo "What would you like the maximum amount of data (in MegaBytes) uploaded daily? "
+    echo "Examples:"
+    echo "          1024 = 1GB"
+    echo "          2048 = 2GB"
+    echo "          3072 = 3GB"
+    echo "          4096 = 4GB"
+    echo "          5120 = 5GB" 
+    read -p 'maxuploadtarget= ' MAXUPLOAD
 }
 
 # compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
@@ -494,7 +503,7 @@ function config_vertcoin {
     echo 'maxorphantx=10' >> /home/"$user"/.vertcoin/vertcoin.conf
     echo 'maxmempool=50' >> /home/"$user"/.vertcoin/vertcoin.conf
     echo 'maxconnections=40' >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'maxuploadtarget=5000' >> /home/"$user"/.vertcoin/vertcoin.conf
+    echo "maxuploadtarget=$MAXUPLOAD" >> /home/"$user"/.vertcoin/vertcoin.conf
     echo 'usehd=1' >> /home/"$user"/.vertcoin/vertcoin.conf
     # configure permissions for user access
     cd "$userhome"/.vertcoin/
