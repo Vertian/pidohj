@@ -633,6 +633,7 @@ function initiate_blockchain {
 # post installation_report | report back key and contextual information
 function installation_report {
     echo
+    echo "VERTNODE INSTALLATION SCRIPT COMPLETE"
     echo "-------------------------------------"
     echo "Public IP Address: $PUBLICIP"
     echo "Local IP Address: $LANIP"
@@ -663,13 +664,19 @@ function installation_report {
     echo " vertcoin-cli getconnectioncount      | display number of connections"
     echo " vertcoin-cli getnettotals            | display total number of bytes sent/recv"
     echo " vertcoin-cli getnewaddress           | generate bech32 (segwit) address"
-    echo " vertcoin-cli getnewaddress "" legacy | generate legacy address"
+    echo " vertcoin-cli getnewaddress "\"""\"" legacy | generate legacy address"
     echo
     echo " # display latest vertcoin log information: " 
     echo " tail -f ~/.vertcoin/debug.log"
     echo
-    echo " # display latest p2pool log information: " 
-    echo " tail -f ~/p2pool-vtc-0.3.0-rc1/data/vertcoin$p2poolnetwork/log"
+    if [ "$INSTALLP2POOL" == "install_p2pool" ]; then
+        # is p2pool was installed display this information
+        echo " # display latest p2pool log information: " 
+        echo " tail -f ~/p2pool-vtc-0.3.0-rc1/data/vertcoin$p2poolnetwork/log"
+    else
+        # else do nothing and proceed 
+        :        
+    fi  
     echo "------------------------------------------------------------------------------"
 }
 
