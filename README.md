@@ -2,6 +2,14 @@
   <img src="https://github.com/e-corp-sam-sepiol/Documentation/blob/master/images/vertcoin-branding.png" width="343" height="68" /> <img src="https://i.imgur.com/1RKi4wd.png" width="90">
 </p>
 
+#### Why a Vertcoin Full node?
+Vertcoin is a digital currency supported by a peer-to-peer network. In order to run efficiently and effectively, it needs peers run by different people... and the more the better.
+
+#### Why a Raspberry Pi?
+Raspberry Pi is an inexpensive computing hardware platform that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it.
+
+`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.
+
 ------------
 
 # Vertnode 
@@ -54,7 +62,7 @@ Please safely remove the USB Card Reader / MicroSD card as to ensure the data is
 
 Insert the MicroSD card that was safely removed into the microSD slot the Raspberry Pi. Once the Pi has booted it will attempt to join the wireless network using the information provided in the `wpa_supplicant.conf` file.
 
-### Checklist
+### Functionality Checklist
 - [x] Install dependencies
 - [x] Modify `ufw` firewall rules for security
 - [x] Find, format and configure USB flash drive
@@ -74,6 +82,8 @@ Insert the MicroSD card that was safely removed into the microSD slot the Raspbe
 - [x] Display installation report
 - [ ] Modify user input prompt to capture all user input at start of script
 - [x] Script installation introduction, Vertcoin full node: what, why and how?
+- [x] Add derived memory flag configuration based on RAM amount on hardware when building from source
+- [x] Add hardware detection for Raspberry Pi Zero to ensure building from source to avoid segmentation fault
 ------------
 
 ### Instructions | How to use
