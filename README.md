@@ -80,7 +80,7 @@ Insert the MicroSD card that was safely removed into the microSD slot the Raspbe
 - [x] Configure & launch `p2pool-vtc` 
 - [x] Setup crontab job(s)
 - [x] Display installation report
-- [ ] Modify user input prompt to capture all user input at start of script
+- [x] Modify user input prompt to capture all user input at start of script
 - [x] Script installation introduction, Vertcoin full node: what, why and how?
 - [x] Add derived memory flag configuration based on RAM amount on hardware when building from source
 - [x] Add hardware detection for Raspberry Pi Zero to ensure building from source to avoid segmentation fault
