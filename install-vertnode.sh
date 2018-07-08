@@ -749,7 +749,6 @@ initiate_blockchain
 if [ "$INSTALLP2POOL" == "install_p2pool" ]; then
     # if user selected to install p2pool, then install it
     install_p2pool
-    break
 else
     # else do nothing and proceed 
     :        
