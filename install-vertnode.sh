@@ -371,7 +371,7 @@ function grab_vtc_release {
 # grab_bootstrap | grab the latest bootstrap.dat
 function grab_bootstrap {
     # check package manager for pv, install if not
-    if [ $(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    if [ $(dpkg-query -W -f='${Status}' pv 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
         sudo apt-get install pv
     fi
     # clone megadown script to download bootstrap
