@@ -73,7 +73,7 @@ Insert the MicroSD card that was safely removed into the microSD slot the Raspbe
 - [x] Added version detection for vertcoin release downloads based on system architecture
 - [x] Configure `~/.vertcoin/vertcoin.conf`
 - [x] Prompt to transfer blockchain
-- [x] Provide option for `bootstrap.dat` sideload
+- [x] Provide option for `bootstrap.dat` sideload; added mega.nz functionality for up to date bootstrap
 - [x] Begin Vertcoin Sync
 - [x] Provide option to install `p2pool-vtc`
 - [x] Clone & build `p2pool-vtc`
