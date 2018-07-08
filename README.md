@@ -110,24 +110,6 @@ Perhaps iptables or your kernel needs to be upgraded.
 - [ ] Intel NUC - Not tested
 
 ------------
-### Raspberry Pi
-#### Download Raspbian Stretch Lite
-`https://www.raspberrypi.org/downloads/raspbian/`  
-
-We will utilize the software 'Win32 Disk Imager' to format and install Raspbian on the MicroSD card. Please follow the [guide](https://www.raspberrypi.org/documentation/installation/installing-images/windows.md) below for details on installing the Rasbian image to the MicroSD card.
-
-![Write](https://i.imgur.com/fTyqpat.png)  
-![Writing...](https://i.imgur.com/DrGi0mb.png)  
-![Done](https://i.imgur.com/cfUjvKR.png)
-
-Once Win32 Disk Imager is finished writing to the MicroSD card please access the 'boot' partition of the MicroSD card with Windows Explorer `Win+E`. Create a new empty text file named `ssh` like so...
-
-![MicroSD card - ssh](https://i.imgur.com/m14rGdV.png)  
-This enables `SSH` access on the Raspberry Pi's first boot sequence. 
-
-
-
-------------
 
 ### [Manual Installation Walkthrough: Raspberry Pi 3](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi.md)
 ### [Manual Installation Walkthrough: Raspberry Pi Zero W](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi-zero-w.md)
