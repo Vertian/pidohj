@@ -170,8 +170,9 @@ function user_input {
 #                     | from source or would you like to grab the latest release binary?
 function compile_or_compiled {
     # if the system name contains RaspberryPiZero then compile from source
-    # to avoid segmentation fault errors    
-    if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
+    # to avoid segmentation fault errors   
+    while true; do
+        if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
             echo "**************************************************************************"           
             echo "HARDWARE = $SYSTEM"
             echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
@@ -181,10 +182,9 @@ function compile_or_compiled {
             echo "**************************************************************************"
             sleep 15
             BUILDVERTCOIN="install_vertcoind"
-    fi
-
-    # prompt user if they would like to build from source
-    while true; do
+            break
+        fi
+            # prompt user if they would like to build from source
         read -p "Would you like to build Vertcoin from source? (y/n) " yn
         case $yn in 
             # if user says yes, call install_vertcoind to compile source
@@ -461,7 +461,7 @@ function grab_vtc_release {
 # grab_bootstrap | grab the latest bootstrap.dat
 function grab_bootstrap {
     # check package manager for pv, install if not
-    if [ $(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    if [ $(dpkg-query -W -f='${Status}' pv 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
         sudo apt-get install pv
     fi
     # clone megadown script to download bootstrap
