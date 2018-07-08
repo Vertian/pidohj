@@ -384,12 +384,13 @@ function grab_bootstrap {
     echo "Downloading latest bootstrap.dat (Generated 7/8/2018)..."
     # download boostrap.dat    
     ./megadown 'https://mega.nz/#!eSRSjaLL!wY5gE6JhL2zODZIARoTCr2eNKgNIwBzmz9yIxZiu_R4' -o $userhome/.vertcoin/
+    cd $userhome
+    # clean up, megadown not needed
+    rm -r megadown/    
     echo
     echo "Successfully downloaded bootstrap.dat!"
     echo
-    cd $userhome
-    # clean up, megadown not needed
-    rm -r megadown
+
 }
 
 # compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
@@ -481,7 +482,7 @@ function load_blockchain {
                 echo
                 greentext 'Starting Vertcoin Core...'
                 echo
-                sudo -u "$user" vertcoind -daemon 
+                sudo -u "$user" vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
                 sleep 120 
                 prompt_p2pool             
                 break              
