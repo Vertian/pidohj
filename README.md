@@ -84,23 +84,12 @@ Insert the MicroSD card that was safely removed into the microSD slot the Raspbe
 - [x] Script installation introduction, Vertcoin full node: what, why and how?
 - [x] Add derived memory flag configuration based on RAM amount on hardware when building from source
 - [x] Add hardware detection for Raspberry Pi Zero to ensure building from source to avoid segmentation fault
-------------
-
-### Instructions | How to use
-* **Raspberry Pi 3**
-
-**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
-```
-git clone https://github.com/e-corp-sam-sepiol/vertnode.git
-cd vertnode/
-chmod +x install-vertnode.sh
-sudo ./install-vertnode.sh 
-```
 
 ------------
 
 ### Functioning Status
 - [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
+- [ ] **Testing** Raspberry Pi Zero (W) | Single Core ARMv6 1 Ghz | 433MB RAM |
 
 ## Testing Errors
 
