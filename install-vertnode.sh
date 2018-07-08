@@ -368,15 +368,25 @@ function grab_vtc_release {
     mv vertcoind vertcoin-tx vertcoin-cli /usr/bin/
 }
 
-# grab_bootstrap | grab the latest bootstrap.dat from alwayshashing
+# grab_bootstrap | grab the latest bootstrap.dat
 function grab_bootstrap {
-    yellowtext 'Downloading latest bootstrap.dat...'
+    # check package manager for pv, install if not
+    if [ $(dpkg-query -W -f='${Status}' nano 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+        sudo apt-get install pv
+    fi
+    # clone megadown script to download bootstrap
+    git clone https://github.com/tonikelope/megadown.git
+    cd $userhome/megadown/
     echo
-    # download boostrap.dat
-    wget http://alwayshashing.com/downloads/bootstrap.dat -P /home/"$user"/.vertcoin/
+    echo "Downloading latest bootstrap.dat..."
+    # download boostrap.dat    
+    ./megadown 'https://mega.nz/#!Eh8CVRra!ECLWsKe5l_EsPS6wwOHD5T5RmMz8RbDYdCKTe16uksg' -o $userhome/.vertcoin/
     echo
-    greentext 'Successfully downloaded bootstrap.dat!'
+    echo "Successfully downloaded bootstrap.dat!"
     echo
+    cd $userhome
+    # clean up, megadown not needed
+    rm -r megadown
 }
 
 # compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
