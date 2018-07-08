@@ -735,11 +735,9 @@ echo
 if [ "$BUILDVERTCOIN" == "install_vertcoind" ]; then
     # if user selected to compile vertcoin from source, then compile
     install_vertcoind
-    break
 else
     # grab latest vtc release
-    grab_vtc_release 
-    break     
+    grab_vtc_release     
 fi   
 # configure crontab for vertcoin
 config_crontab
