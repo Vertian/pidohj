@@ -158,19 +158,32 @@ function user_input {
         esac
     done
     clear
-    echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
-    read -p 'Enter RPC user: ' rpcuser
-    read -s -p 'Enter RPC password: ' rpcpass
-    clear
-    echo "What would you like the maximum amount of data (in MegaBytes) uploaded daily? "
-    echo "Examples:"
-    echo "          1024 MB = 1GB"
-    echo "          2048 MB = 2GB"
-    echo "          3072 MB = 3GB"
-    echo "          4096 MB = 4GB"
-    echo "          5120 MB = 5GB" 
-    echo 
-    read -p 'maxuploadtarget=' MAXUPLOAD
+    while true; do
+        echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
+        read -p 'Enter RPC user: ' rpcuser
+        read -s -p 'Enter RPC password: ' rpcpass
+        clear
+        echo "What would you like the maximum amount of data (in MegaBytes) uploaded daily? "
+        echo "Examples:"
+        echo "          1024 MB = 1GB"
+        echo "          2048 MB = 2GB"
+        echo "          3072 MB = 3GB"
+        echo "          4096 MB = 4GB"
+        echo "          5120 MB = 5GB" 
+        echo 
+        read -p 'maxuploadtarget=' MAXUPLOAD
+        # little bit of macgyvering here. this if statement is using -eq for something 
+        # other then what it was intended, but it checks for an integer, if it doesn't 
+        # find an integer then it returns both an error which you can toss to /dev/null 
+        # and a value of false.
+        if [ $MAXUPLOAD -eq $MAXUPLOAD 2>/dev/null ]
+            then
+                # if MAXUPLOAD is an integer break from loop and continue
+                break
+            else
+                echo "$MAXUPLOAD isn't a number. Please try again."
+        fi
+    done
 }
 
 # compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
