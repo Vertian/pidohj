@@ -72,9 +72,15 @@ GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # ~ $ ifconfig eth0 | grep "inet "
 #       inet 192.168.1.6  netmask 255.255.255.0  broadcast 192.168.1.255
 # grab only the inet addr
-LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{ print $3 }')" 
 # arch detect; store system architecture into variable, use for grabbing latest release
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3$4$5$6$7$8$9$10$11}')"
+# check if system is a raspberry pi, grep for only inet if true, print the 2nd column
+if echo "$SYSTEM" | grep -qe 'RaspberryPi.*' ; then
+    LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}')" 
+else
+# else grep for inet addr and print the 3rd column
+    LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+fi
 RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
 RAM_MIN='910000'
 ARCH="$(dpkg --print-architecture)"
@@ -83,6 +89,7 @@ INSTALLP2POOL=''
 BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
+
 
 # -----------------------------------
 
@@ -280,7 +287,7 @@ function update_rasp {
 # install_depends | install the required dependencies to run this script
 function install_depends {
     yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban 
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile 
     greentext 'Successfully installed required dependencies!'
     echo
 }
