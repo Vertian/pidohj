@@ -5,7 +5,7 @@
 ------------
 
 # Vertnode 
-## An automated solution for intalling Vertcoin node(s)
+## An automated solution for installing Vertcoin node(s)
 ### Supported
 - [x] **Raspberry Pi | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)** 
