@@ -19,7 +19,11 @@ Raspberry Pi is an inexpensive computing hardware platform that generates little
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)** 
 - [ ] **[Testing] |** **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
 
-**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
+**`RECOMMENDED:`** When you first boot your Raspberry Pi ensure that you 
+```
+sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot
+``` 
+**and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
 ```
 git clone https://github.com/e-corp-sam-sepiol/vertnode.git
 cd vertnode/
