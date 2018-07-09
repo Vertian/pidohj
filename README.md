@@ -22,6 +22,14 @@ cd vertnode/
 chmod +x install-vertnode.sh
 sudo ./install-vertnode.sh 
 ```
+
+---------------
+### TO-DO Checklist
+- [ ] add `gawk` to install_depends function; raspbian does not include `gawk`. Thanks @vertion
+- [ ] add conditional swap space sizes based on system RAM 
+- [ ] add contextual information to `maxuploadtarget` when user sets the variable
+- [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
+
 ---------------
 
 ### FAQ
