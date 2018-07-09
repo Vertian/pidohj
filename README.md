@@ -15,8 +15,9 @@ Raspberry Pi is an inexpensive computing hardware platform that generates little
 # Vertnode 
 ## An automated solution for intalling Vertcoin node(s)
 ### Supported
-- [x] **Raspberry Pi | Raspbian**
-- [x] **Raspberry Pi Zero / Wireless | Raspbian** 
+- [x] **Raspberry Pi | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)**
+- [x] **Raspberry Pi Zero / Wireless | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)** 
+- [ ] **[Testing] |** **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
 
 **`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
 ```
@@ -107,7 +108,7 @@ Perhaps iptables or your kernel needs to be upgraded.
 ### Vertnode | Automated Vertcoin full node Installation Testing Results
 - [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`sda`) for storage.** 
 - [x] Raspberry Pi Zero W - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`sda`) for storage.** 
-- [ ] Intel NUC - Not tested
+- [x] Intel NUC - Testing
 
 ------------
 
