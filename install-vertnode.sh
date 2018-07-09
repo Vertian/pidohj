@@ -443,7 +443,7 @@ function install_vertcoind {
     if [ $RELEASE = "Ubuntu" ]; then
         add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
-        sudo apt-get install libdb4.8-dev libdb4.8++-dev
+        sudo apt-get install libdb4.8-dev libdb4.8++-dev -y
     else
         # call install_berkeley function to enable wallet functionality
         install_berkeley        
@@ -476,7 +476,7 @@ function grab_vtc_release {
     if [ $RELEASE = "Ubuntu" ]; then
         add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
-        sudo apt-get install libdb4.8-dev libdb4.8++-dev        
+        sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
     fi
     # grab the latest version number; store in variable $VERSION
     export VERSION=$(curl -s "https://github.com/vertcoin-project/vertcoin-core/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
