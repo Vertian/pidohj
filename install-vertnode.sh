@@ -504,7 +504,7 @@ function grab_bootstrap {
 
 # config_crontab | function to configure crontab to start 
 function config_crontab {
-    VTCRON=$({ crontab -l -u pi 2>/dev/null; echo '@reboot vertcoind -daemon'; } | crontab -u pi - )
+    VTCRON=$({ crontab -l -u $user 2>/dev/null; echo '@reboot vertcoind -daemon'; } | crontab -u $user - )
     echo    
     yellowtext 'Configuring Crontab...'
     yellowtext '** vertcoind  | start on reboot'
