@@ -300,7 +300,7 @@ function update_rasp {
 # install_depends | install the required dependencies to run this script
 function install_depends {
     yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile 
     greentext 'Successfully installed required dependencies!'
     echo
 }
@@ -439,8 +439,14 @@ function install_berkeley {
 
 # install_vertcoind | clone, build and install vertcoin core daemon
 function install_vertcoind {
-    # call install_berkeley function to enable wallet functionality
-    install_berkeley    
+    if [ $(cat /etc/*-release | grep Ubuntu) == "Ubuntu" ]; then
+        add-apt-repository ppa:bitcoin/bitcoin -y
+        sudo apt-get update 
+        sudo apt-get install libdb4.8-dev libdb4.8++-dev
+    else
+        # call install_berkeley function to enable wallet functionality
+        install_berkeley        
+    fi
     # continue on compiling vertcoin from source
     yellowtext 'Installing Vertcoin Core...'
     rm -fR "$userhome"/bin/vertcoin-core
@@ -466,6 +472,11 @@ function install_vertcoind {
 
 # grab_vtc_release | grab the latest vertcoind release from github
 function grab_vtc_release {
+    if [ $(cat /etc/*-release | grep Ubuntu) == "Ubuntu" ]; then
+        add-apt-repository ppa:bitcoin/bitcoin -y
+        sudo apt-get update 
+        sudo apt-get install libdb4.8-dev libdb4.8++-dev        
+    fi
     # grab the latest version number; store in variable $VERSION
     export VERSION=$(curl -s "https://github.com/vertcoin-project/vertcoin-core/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
     # grab the latest version release; deviation in release naming scheme will break this
