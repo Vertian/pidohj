@@ -17,7 +17,7 @@ Raspberry Pi is an inexpensive computing hardware platform that generates little
 ### Supported
 - [x] **Raspberry Pi | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)** 
-- [ ] **[Testing] |** **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
+- [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
 
 **`RECOMMENDED:`** When you first boot your Raspberry Pi ensure that you 
 ```
