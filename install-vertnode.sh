@@ -439,7 +439,7 @@ function install_berkeley {
 
 # install_vertcoind | clone, build and install vertcoin core daemon
 function install_vertcoind {
-    if [ $(cat /etc/*-release | grep Ubuntu) == "Ubuntu" ]; then
+    if [ $(cat /etc/*-release | grep Ubuntu) = "Ubuntu" ]; then
         add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
         sudo apt-get install libdb4.8-dev libdb4.8++-dev
@@ -472,7 +472,7 @@ function install_vertcoind {
 
 # grab_vtc_release | grab the latest vertcoind release from github
 function grab_vtc_release {
-    if [ $(cat /etc/*-release | grep Ubuntu) == "Ubuntu" ]; then
+    if [ $(cat /etc/*-release | grep Ubuntu) = "Ubuntu" ]; then
         add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
         sudo apt-get install libdb4.8-dev libdb4.8++-dev        
