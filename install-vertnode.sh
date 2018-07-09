@@ -74,6 +74,7 @@ GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab only the inet addr
 # arch detect; store system architecture into variable, use for grabbing latest release
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3$4$5$6$7$8$9$10$11}')"
+RELEASE="$(cat /etc/*-release | gawk -F= '/^NAME/{print $2}' | tr -d '"')"
 # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
 if echo "$SYSTEM" | grep -qe 'RaspberryPi.*' ; then
     LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}')" 
@@ -439,7 +440,7 @@ function install_berkeley {
 
 # install_vertcoind | clone, build and install vertcoin core daemon
 function install_vertcoind {
-    if [ $(cat /etc/*-release | grep Ubuntu) = "Ubuntu" ]; then
+    if [ $RELEASE = "Ubuntu" ]; then
         add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
         sudo apt-get install libdb4.8-dev libdb4.8++-dev
@@ -472,7 +473,7 @@ function install_vertcoind {
 
 # grab_vtc_release | grab the latest vertcoind release from github
 function grab_vtc_release {
-    if [ $(cat /etc/*-release | grep Ubuntu) = "Ubuntu" ]; then
+    if [ $RELEASE = "Ubuntu" ]; then
         add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
         sudo apt-get install libdb4.8-dev libdb4.8++-dev        
