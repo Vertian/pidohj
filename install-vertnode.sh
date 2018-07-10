@@ -74,6 +74,7 @@ userhome='/home/'$user
 FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}')"
+# check if the system is a rock64
 if echo "$SYSTEM" | grep Rock64 ; then
     INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//')"
 else
@@ -421,7 +422,8 @@ function swap_config {
     echo " IP Address: $LANIP"    
     echo " Port: 22 "
     echo " Username: $user "
-    echo " Password: (pi default pass: raspberry)"    
+    echo " Password: (pi default pass: raspberry)" 
+    echo "           (rock64 default pass: rock64)"    
     yellowtext '********************************************************************'
     echo
     # continue and configure swap    
@@ -453,7 +455,12 @@ function install_berkeley {
     sudo -u "$user" wget http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz
     sudo -u "$user" tar -xzvf db-4.8.30.NC.tar.gz
     cd db-4.8.30.NC/build_unix/
-    ../dist/configure --enable-cxx
+    # check if system is rock64, specify build type if true
+    if echo "$SYSTEM" | grep Rock64 ; then
+        ../dist/configure --enable-cxx --build=aarch64-unknown-linux-gnu
+    else
+        ../dist/configure --enable-cxx
+    fi
     make
     sudo make install
     greentext 'Successfully installed Berkeley (4.8) database!'
@@ -462,30 +469,44 @@ function install_berkeley {
 
 # install_vertcoind | clone, build and install vertcoin core daemon
 function install_vertcoind {
-    if [ $RELEASE = "Ubuntu" ]; then
-        add-apt-repository ppa:bitcoin/bitcoin -y
-        sudo apt-get update 
-        sudo apt-get install libdb4.8-dev libdb4.8++-dev -y
-    else
-        # call install_berkeley function to enable wallet functionality
-        install_berkeley        
-    fi
+    while true; do
+        if [ $RELEASE = "Debian GNU/Linux" ]; then
+            # call install_berkeley function to enable wallet functionality
+            install_berkeley            
+            break    
+        elif [ $RELEASE = "Ubuntu" ]; then
+            add-apt-repository ppa:bitcoin/bitcoin -y
+            sudo apt-get update 
+            sudo apt-get install libdb4.8-dev libdb4.8++-dev -y 
+            break        
+        else  
+            install_berkeley
+        fi
+    done    
     # continue on compiling vertcoin from source
     yellowtext 'Installing Vertcoin Core...'
     rm -fR "$userhome"/bin/vertcoin-core
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
-    if [ "$RAM" -gt "$RAM_MIN" ]; then
-            # if RAM is greater than 910MB configure without memory flags
-            cd "$userhome"/bin/vertcoin-core/
-            ./autogen.sh        
-            ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default
-        else
-            # if RAM is less than 910MB configure with memory flags
-            cd "$userhome"/bin/vertcoin-core/
-            ./autogen.sh 
-            ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
-    fi
+    while true; do        
+       if echo "$SYSTEM" | grep Rock64 ; then
+                ./autogen.sh        
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
+                break
+       elif [ "$RAM" -gt "$RAM_MIN" ]; then
+                # if RAM is greater than 910MB configure without memory flags
+                cd "$userhome"/bin/vertcoin-core/
+                ./autogen.sh        
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default 
+                break
+       else
+                # if RAM is less than 910MB configure with memory flags
+                cd "$userhome"/bin/vertcoin-core/
+                ./autogen.sh 
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
+                break
+        fi
+    done
     cd "$userhome"/bin/vertcoin-core/
     make
     sudo make install
@@ -495,11 +516,15 @@ function install_vertcoind {
 
 # grab_vtc_release | grab the latest vertcoind release from github
 function grab_vtc_release {
-    if [ $RELEASE = "Ubuntu" ]; then
-        add-apt-repository ppa:bitcoin/bitcoin -y
-        sudo apt-get update 
-        sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
-    fi
+    while true; do
+        if [ $RELEASE = "Debian GNU/Linux" ]; then
+            break    
+        elif [ $RELEASE = "Ubuntu" ]; then
+            add-apt-repository ppa:bitcoin/bitcoin -y
+            sudo apt-get update 
+            sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
+        fi
+    done
     # grab the latest version number; store in variable $VERSION
     export VERSION=$(curl -s "https://github.com/vertcoin-project/vertcoin-core/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
     # grab the latest version release; deviation in release naming scheme will break this
@@ -629,6 +654,8 @@ function install_p2pool {
     # echo our values into a file named start-p2pool.sh
     echo "#!/bin/bash" >> /home/"$user"/start-p2pool.sh
     echo "cd p2pool-vtc-0.3.0-rc1" >> /home/"$user"/start-p2pool.sh
+    # sleep an additional 2 minutes to make sure vertcoind is alive and can give an address
+    sleep 120
     echo "python run_p2pool.py --net vertcoin$p2poolnetwork -a $getnewaddress --max-conns 8 --outgoing-conns 4" >> /home/"$user"/start-p2pool.sh
     # permission the script for execution
     chmod +x start-p2pool.sh
