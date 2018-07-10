@@ -53,6 +53,12 @@ if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -
     apt-get install lshw -y;
 fi
 
+# install depends for detection; check for gawk, install if not
+if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo "Installing required dependencies to run install-vertnode..."    
+    apt-get install gawk -y;
+fi
+
 # fail on error; debug all lines
 set -eu -o pipefail
 
@@ -67,19 +73,31 @@ user=$(logname)
 userhome='/home/'$user
 FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
-INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
+SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}')"
+if echo "$SYSTEM" | grep Rock64 ; then
+    INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//')"
+else
+    INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
+fi
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # ~ $ ifconfig eth0 | grep "inet "
 #       inet 192.168.1.6  netmask 255.255.255.0  broadcast 192.168.1.255
 # grab only the inet addr
 # arch detect; store system architecture into variable, use for grabbing latest release
-SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3$4$5$6$7$8$9$10$11}')"
 RELEASE="$(cat /etc/*-release | gawk -F= '/^NAME/{print $2}' | tr -d '"')"
 # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
 if echo "$SYSTEM" | grep -qe 'RaspberryPi.*' ; then
     LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}')" 
+elif echo "$SYSTEM" | grep Rock64 ; then
+    # check if system is a rock64
+    # check for facter
+    if [ $(dpkg-query -W -f='${Status}' facter 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+        echo "Installing required dependencies to run install-vertnode..."    
+        apt-get install facter -y;
+    fi
+    LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
 else
-# else grep for inet addr and print the 3rd column
+    # else grep for inet addr and print the 3rd column
     LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
 fi
 RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
@@ -150,7 +168,7 @@ function user_input {
     # check for USB flash drive
     while true; do
         clear
-        echo -e "$TEXT_YELLOW"
+        echo -e "$TEXT_GREEN"
         read -p "Is the USB flash drive connected? It will be formatted. (y/n) " yn
         case $yn in
             [Yy]* ) hd_detect; break;;  # if we have hd_config value we can configure it
@@ -159,12 +177,16 @@ function user_input {
         esac
     done
     clear
+    echo -e "$TEXT_GREEN"
     echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
     read -p 'Enter RPC user: ' rpcuser
     read -s -p 'Enter RPC password: ' rpcpass
     clear    
     while true; do
-        echo "What would you like the maximum amount of data (in MegaBytes) uploaded daily? "
+        echo -e "$TEXT_GREEN"
+        echo "What would you like the maximum amount of data (in MegaBytes) "
+        echo "that you would like to allow your Vertcoin node to upload daily? "
+        echo
         echo "Examples:"
         echo "          1024 MB = 1GB"
         echo "          2048 MB = 2GB"
@@ -301,7 +323,7 @@ function update_rasp {
 # install_depends | install the required dependencies to run this script
 function install_depends {
     yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip gawk 
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip 
     greentext 'Successfully installed required dependencies!'
     echo
 }
