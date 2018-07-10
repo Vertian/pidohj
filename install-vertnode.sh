@@ -463,6 +463,7 @@ function install_berkeley {
     fi
     make
     sudo make install
+    export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
     greentext 'Successfully installed Berkeley (4.8) database!'
     echo
 }
