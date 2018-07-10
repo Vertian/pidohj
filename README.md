@@ -7,9 +7,10 @@
 # Vertnode 
 ## An automated solution for installing Vertcoin node(s)
 ### Supported
-- [x] **Raspberry Pi | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)**
-- [x] **Raspberry Pi Zero / Wireless | [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)** 
+- [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
+- [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
+- [ ] **TESTING |** **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 
 **`RECOMMENDED:`** When you first boot your Raspberry Pi ensure that you 
 ```
