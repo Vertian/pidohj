@@ -469,20 +469,14 @@ function install_berkeley {
 
 # install_vertcoind | clone, build and install vertcoin core daemon
 function install_vertcoind {
-    while true; do
-        if [ $RELEASE = "Debian GNU/Linux" ]; then
-            # call install_berkeley function to enable wallet functionality
-            install_berkeley            
-            break    
-        elif [ $RELEASE = "Ubuntu" ]; then
-            add-apt-repository ppa:bitcoin/bitcoin -y
-            sudo apt-get update 
-            sudo apt-get install libdb4.8-dev libdb4.8++-dev -y 
-            break        
-        else  
-            install_berkeley
-        fi
-    done    
+    # if operating system = ubuntu install berkeley db from ppa
+    if [ $RELEASE = "Ubuntu" ]; then
+        add-apt-repository ppa:bitcoin/bitcoin -y
+        sudo apt-get update 
+        sudo apt-get install libdb4.8-dev libdb4.8++-dev -y 
+    else
+        install_berkeley      
+    fi   
     # continue on compiling vertcoin from source
     yellowtext 'Installing Vertcoin Core...'
     rm -fR "$userhome"/bin/vertcoin-core
