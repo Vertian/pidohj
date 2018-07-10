@@ -12,11 +12,11 @@
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
 - [ ] **TESTING |** **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 
-**`RECOMMENDED:`** When you first boot your Raspberry Pi ensure that you 
+**`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or hardware running Debian / Ubuntu ensure that you 
 ```
 sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot
 ``` 
-**and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
+**and `ssh` back into your system before running the `install-vertnode.sh` script.**
 ```
 git clone https://github.com/e-corp-sam-sepiol/vertnode.git
 cd vertnode/
@@ -117,6 +117,7 @@ Insert the MicroSD card that was safely removed into the microSD slot the Raspbe
 ### Functioning Status
 - [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
 - [x] **Success!** Raspberry Pi Zero (W) | Single Core ARMv6 1 Ghz | 433MB RAM |
+- [x] **Success!** Intel NUC | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
 
 ## Testing Errors
 
@@ -132,9 +133,9 @@ Perhaps iptables or your kernel needs to be upgraded.
 ```
 ------------
 ### Vertnode | Automated Vertcoin full node Installation Testing Results
-- [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`sda`) for storage.** 
-- [x] Raspberry Pi Zero W - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`sda`) for storage.** 
-- [x] Intel NUC - Testing
+- [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`removable block device`) for storage.** 
+- [x] Raspberry Pi Zero W - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`removable block device`) for storage.** 
+- [x] Intel NUC - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`removable block device`) for storage.** 
 
 ------------
 
