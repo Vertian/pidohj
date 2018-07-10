@@ -490,6 +490,7 @@ function install_vertcoind {
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     while true; do        
        if echo "$SYSTEM" | grep Rock64 ; then
+                cd "$userhome"/bin/vertcoin-core/
                 ./autogen.sh        
                 ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
                 break
