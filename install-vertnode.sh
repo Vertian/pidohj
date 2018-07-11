@@ -657,7 +657,7 @@ function install_p2pool {
     yellowtext 'Configuring Crontab...'    
     yellowtext '** p2pool-vtc | start on reboot'    
     # define p2poolcron variable and store command to echo new cronjob into crontab    
-    P2POOLCRON=$({ crontab -l -u pi 2>/dev/null; echo '@reboot sleep 120; nohup sh /home/pi/start-p2pool.sh'; } | crontab -u pi - ) 
+    P2POOLCRON=$({ crontab -l -u $user 2>/dev/null; echo '@reboot sleep 120; nohup sh /home/pi/start-p2pool.sh'; } | crontab -u $user - ) 
     # echo cronjob value into crontab
     $P2POOLCRON
     echo
