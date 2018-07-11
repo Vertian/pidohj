@@ -463,7 +463,10 @@ function install_berkeley {
     fi
     make
     sudo make install
-    export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
+    # if the system is a rock64 export the location of berkeleydb
+    if echo "$SYSTEM" | grep Rock64 ; then
+            export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
+    fi
     greentext 'Successfully installed Berkeley (4.8) database!'
     echo
 }
