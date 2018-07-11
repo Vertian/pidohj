@@ -121,7 +121,7 @@ MAXUPLOAD=''
 
 # network_addr | grab the LAN network address range of the host running this script
 function network_addr {
-    network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
+    network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}' | awk 'NR==1{print $1}')
 }
 
 # wait_for_continue | function for classic "Press spacebar to continue..." 
@@ -455,6 +455,7 @@ function swap_config {
 
 # install_berkeley | install berkeley database 4.8 for wallet functionality
 function install_berkeley {
+    rock64system=""
     yellowtext 'Installing Berkeley (4.8) database...'
     sudo -u "$user" mkdir -p "$userhome"/bin
     cd "$userhome"/bin
@@ -470,7 +471,7 @@ function install_berkeley {
     make
     sudo make install
     # if the system is a rock64 export the location of berkeleydb
-    if echo "$SYSTEM" | grep Rock64 ; then
+    if [ $KERNEL = "rock64" ]; then
             export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
     fi
     greentext 'Successfully installed Berkeley (4.8) database!'
@@ -486,7 +487,7 @@ function install_vertcoind {
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     while true; do        
-       if echo "$SYSTEM" | grep Rock64 ; then
+       if [ $KERNEL = "rock64" ]; then
                 cd "$userhome"/bin/vertcoin-core/
                 ./autogen.sh        
                 ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
