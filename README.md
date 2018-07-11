@@ -13,7 +13,7 @@
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
 
 
-**`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or hardware running Debian / Ubuntu ensure that you 
+**`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or `amd64` compatible hardware running Debian / Ubuntu ensure that you 
 ```
 sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot
 ``` 
