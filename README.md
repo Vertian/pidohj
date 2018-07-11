@@ -29,6 +29,7 @@ sudo ./install-vertnode.sh
 ### TO-DO Checklist
 - [ ] adjust swap file size based on RAM 
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
+- [ ] check $LANIP variable for compatibility with Raspbian (`ifconfig`)
 
 ### Functioning Status
 - [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
