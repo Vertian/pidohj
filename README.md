@@ -15,7 +15,7 @@
 
 **`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or `amd64` compatible hardware running Debian / Ubuntu ensure that you 
 ```
-sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot
+sudo apt-get update ; sudo apt-get upgrade -y ; sudo apt-get install git -y ; sudo reboot
 ``` 
 **and `ssh` back into your system before running the `install-vertnode.sh` script.**
 ```
