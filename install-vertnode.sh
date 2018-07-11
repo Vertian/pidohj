@@ -73,40 +73,13 @@ user=$(logname)
 userhome='/home/'$user
 FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
-KERNEL="$(uname -a | awk '{print $2}')"
-# check kernel if hardware is rock64, install facter if true
-if [ $KERNEL = "rock64" ]; then
-    echo "Rock64 Media Board detected! Installing required dependencies..."
-    sudo apt-get install facter -y
-fi
-# grab system name
-SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}')"
-# check if the system is a rock64
-if echo "$SYSTEM" | grep Rock64 ; then
-    INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//')"
-else
-    INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
-fi
+# grab the first column of system name
+SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}'
+)"
 # grab the default gateway ip address
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab the release name of operating system
 RELEASE="$(cat /etc/*-release | gawk -F= '/^NAME/{print $2}' | tr -d '"')"
-# check if system is a raspberry pi, grep for only inet if true, print the 2nd column
-if echo "$SYSTEM" | grep -qe 'RaspberryPi.*' ; then
-    LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}')" 
-elif echo "$SYSTEM" | grep Rock64 ; then
-    # check if system is a rock64, if false install facter
-    if [ $(dpkg-query -W -f='${Status}' facter 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-        echo "Installing required dependencies to run install-vertnode..."    
-        apt-get install facter -y;
-    fi
-    # grab ip address for rock64 
-    LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
-else
-    # CHECK FOR RASPBERRY PI COMPATIBILITY, ifconfig displays differently in Ubuntu and Raspbian
-    # else grep for inet addr and print the 3rd column
-    LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
-fi
 RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
 RAM_MIN='910000'
 ARCH="$(dpkg --print-architecture)"
@@ -115,6 +88,37 @@ INSTALLP2POOL=''
 BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
+# find the active interface
+while true; do
+    if [ "$SYSTEM" = "Raspberry" ]; then
+        INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
+        break
+    elif [ "$SYSTEM" = "Rockchip" ]; then
+        sudo apt-get install facter -y
+        INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//')"
+        break
+    else
+        INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
+        break
+    fi
+done
+# check the active interface for its ip address
+while true; do
+    # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
+    if [ "$SYSTEM" = "Raspberry" ]; then
+        # grab ip address for raspberry pi    
+        LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}' | awk 'NR==1{print $1}')"
+        break 
+    elif [ "$SYSTEM" = "Rockchip" ]; then
+        # grab ip address for rock64 
+        LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
+        break
+    else
+        # grap ip address for ubuntu
+        LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+        break
+    fi
+done
 
 # -----------------------------------
 
