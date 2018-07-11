@@ -73,6 +73,7 @@ user=$(logname)
 userhome='/home/'$user
 FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
+KERNEL="$(uname -a | awk '{print $2}')"
 # grab the first column of system name
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}'
 )"
@@ -381,7 +382,7 @@ function hd_detect {
     # make sure the microSD card that holds raspbian is 8GB or smaller to ensure find_drive picks 
     # the correct block device.
     find_drive="$(lsblk -dlnb | awk '{if($3 == 1){print}}' | awk '{print $1}')"
-    drive=$FOLD1$find_drive
+    drive=$FOLD1$find_drive 
     drive_size="$(df -h "$drive" | sed 1d |  awk '{print $2}')"
     while true; do
         echo -e "$TEXT_RED"
