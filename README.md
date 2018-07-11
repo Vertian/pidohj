@@ -10,7 +10,7 @@
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
-- [ ] **TESTING |** **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
+- [x] ** **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 
 **`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or hardware running Debian / Ubuntu ensure that you 
 ```
@@ -26,10 +26,14 @@ sudo ./install-vertnode.sh
 
 ---------------
 ### TO-DO Checklist
-- [x] add `gawk` to install_depends function; raspbian does not include `gawk`. Thanks @vertion
-- [ ] add conditional swap space sizes based on system RAM 
-- [ ] add contextual information to `maxuploadtarget` when user sets the variable
+- [ ] adjust swap file size based on RAM 
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
+
+### Functioning Status
+- [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
+- [x] **Success!** Raspberry Pi Zero (W) | Single Core ARMv6 1 Ghz | 433MB RAM |
+- [x] **Success!** Intel NUC | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
+- [x] **Success!** Rock64 Media Board | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
 
 ---------------
 
@@ -113,11 +117,6 @@ Insert the MicroSD card that was safely removed into the microSD slot the Raspbe
 - [x] Add hardware detection for Raspberry Pi Zero to ensure building from source to avoid segmentation fault
 
 ------------
-
-### Functioning Status
-- [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
-- [x] **Success!** Raspberry Pi Zero (W) | Single Core ARMv6 1 Ghz | 433MB RAM |
-- [x] **Success!** Intel NUC | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
 
 ## Testing Errors
 
