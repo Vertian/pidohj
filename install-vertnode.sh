@@ -50,13 +50,13 @@ clear
 # install depends for detection; check for lshw, install if not
 if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-vertnode..."    
-    apt-get install lshw -y;
+    apt-get install lshw -y
 fi
 
 # install depends for detection; check for gawk, install if not
 if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-vertnode..."    
-    apt-get install gawk -y;
+    apt-get install gawk -y
 fi
 
 # fail on error; debug all lines
@@ -73,6 +73,12 @@ user=$(logname)
 userhome='/home/'$user
 FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
+KERNEL="$(uname -a | awk '{print $2}')"
+# check kernel if hardware is rock64, install facter if true
+if [ $KERNEL = "rock64" ]; then
+    echo "Rock64 Media Board detected! Installing required dependencies..."
+    sudo apt-get install facter -y
+fi
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}')"
 # check if the system is a rock64
 if echo "$SYSTEM" | grep Rock64 ; then
