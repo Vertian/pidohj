@@ -237,7 +237,7 @@ function compile_or_compiled {
             BUILDVERTCOIN="install_vertcoind"
             break
         fi
-        if [ $KERNEL = "rock64" ]; then
+        if [ "$SYSTEM" = "Rockchip" ]; then
             echo "**************************************************************************"           
             echo "HARDWARE = $SYSTEM"
             echo "No precompiled releases are made available for $SYSTEM $ARCH."
