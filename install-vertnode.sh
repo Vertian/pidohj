@@ -234,6 +234,18 @@ function compile_or_compiled {
             BUILDVERTCOIN="install_vertcoind"
             break
         fi
+        if [ $KERNEL = "rock64" ]; then
+            echo "**************************************************************************"           
+            echo "HARDWARE = $SYSTEM"
+            echo "No precompiled releases are made available for $SYSTEM $ARCH."
+            echo
+            echo "This script will build Vertcoin Core from source..."
+            echo "NOTE: These operations will utilize the CPU @ 100% for some time."
+            echo "**************************************************************************"
+            sleep 15
+            BUILDVERTCOIN="install_vertcoind"
+            break
+        fi
             # prompt user if they would like to build from source
         read -p "Would you like to build Vertcoin from source? (y/n) " yn
         case $yn in 
@@ -516,12 +528,13 @@ function install_vertcoind {
 # grab_vtc_release | grab the latest vertcoind release from github
 function grab_vtc_release {
     while true; do
-        if [ $RELEASE = "Debian GNU/Linux" ]; then
+        if [ "$RELEASE" = "Debian GNU/Linux" ]; then
             break    
-        elif [ $RELEASE = "Ubuntu" ]; then
+        elif [ "$RELEASE" = "Ubuntu" ]; then
             add-apt-repository ppa:bitcoin/bitcoin -y
             sudo apt-get update 
             sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
+            break
         fi
     done
     # grab the latest version number; store in variable $VERSION
