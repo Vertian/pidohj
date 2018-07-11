@@ -79,6 +79,7 @@ if [ $KERNEL = "rock64" ]; then
     echo "Rock64 Media Board detected! Installing required dependencies..."
     sudo apt-get install facter -y
 fi
+# grab system name
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}')"
 # check if the system is a rock64
 if echo "$SYSTEM" | grep Rock64 ; then
@@ -86,24 +87,23 @@ if echo "$SYSTEM" | grep Rock64 ; then
 else
     INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
 fi
+# grab the default gateway ip address
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
-# ~ $ ifconfig eth0 | grep "inet "
-#       inet 192.168.1.6  netmask 255.255.255.0  broadcast 192.168.1.255
-# grab only the inet addr
-# arch detect; store system architecture into variable, use for grabbing latest release
+# grab the release name of operating system
 RELEASE="$(cat /etc/*-release | gawk -F= '/^NAME/{print $2}' | tr -d '"')"
 # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
 if echo "$SYSTEM" | grep -qe 'RaspberryPi.*' ; then
     LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}')" 
 elif echo "$SYSTEM" | grep Rock64 ; then
-    # check if system is a rock64
-    # check for facter
+    # check if system is a rock64, if false install facter
     if [ $(dpkg-query -W -f='${Status}' facter 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
         echo "Installing required dependencies to run install-vertnode..."    
         apt-get install facter -y;
     fi
+    # grab ip address for rock64 
     LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
 else
+    # CHECK FOR RASPBERRY PI COMPATIBILITY, ifconfig displays differently in Ubuntu and Raspbian
     # else grep for inet addr and print the 3rd column
     LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
 fi
@@ -115,7 +115,6 @@ INSTALLP2POOL=''
 BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
-
 
 # -----------------------------------
 
