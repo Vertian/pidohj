@@ -5,12 +5,13 @@
 ------------
 
 # Vertnode 
-## An automated solution for installing Vertcoin node(s)
+## An automated solution for installing Vertcoin node(s) on Single Board Computers and `amd64` compatible hardware
 ### Supported
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
+- [x] **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
-- [x] ** **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
+
 
 **`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or hardware running Debian / Ubuntu ensure that you 
 ```
