@@ -91,10 +91,10 @@ LOADBLOCKMETHOD=''
 MAXUPLOAD=''
 # find the active interface
 while true; do
-    if [ "$SYSTEM" = "Raspberry" ]; then
+    if [[ $SYSTEM = "Raspberry" ]]; then
         INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
         break
-    elif [ "$SYSTEM" = "Rockchip" ]; then
+    elif [[ $SYSTEM = "Rockchip" ]]; then
         sudo apt-get install facter -y
         INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//')"
         break
@@ -106,11 +106,11 @@ done
 # check the active interface for its ip address
 while true; do
     # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
-    if [ "$SYSTEM" = "Raspberry" ]; then
+    if [[ $SYSTEM = "Raspberry" ]]; then
         # grab ip address for raspberry pi    
         LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}' | awk 'NR==1{print $1}')"
         break 
-    elif [ "$SYSTEM" = "Rockchip" ]; then
+    elif [[ $SYSTEM = "Rockchip" ]]; then
         # grab ip address for rock64 
         LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
         break
@@ -238,7 +238,7 @@ function compile_or_compiled {
             BUILDVERTCOIN="install_vertcoind"
             break
         fi
-        if [ "$SYSTEM" = "Rockchip" ]; then
+        if [[ $SYSTEM = "Rockchip" ]]; then
             echo "**************************************************************************"           
             echo "HARDWARE = $SYSTEM"
             echo "No precompiled releases are made available for $SYSTEM $ARCH."
@@ -475,7 +475,7 @@ function install_berkeley {
     sudo -u "$user" tar -xzvf db-4.8.30.NC.tar.gz
     cd db-4.8.30.NC/build_unix/
     # check if system is rock64, specify build type if true
-    if echo "$SYSTEM" | grep Rock64 ; then
+    if [[ $SYSTEM = "Rockchip" ]]; then
         ../dist/configure --enable-cxx --build=aarch64-unknown-linux-gnu
     else
         ../dist/configure --enable-cxx
@@ -483,7 +483,7 @@ function install_berkeley {
     make
     sudo make install
     # if the system is a rock64 export the location of berkeleydb
-    if [[ $KERNEL = "rock64" ]]; then
+    if [[ $SYSTEM = "Rockchip" ]]; then
             export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
     fi
     greentext 'Successfully installed Berkeley (4.8) database!'
@@ -511,7 +511,7 @@ function install_vertcoind {
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     while true; do        
-       if [[ $KERNEL = "rock64" ]]; then
+       if [[ $SYSTEM = "Rockchip" ]]; then
                 cd "$userhome"/bin/vertcoin-core/
                 ./autogen.sh        
                 ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
