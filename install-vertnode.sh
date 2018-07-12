@@ -207,7 +207,7 @@ function user_input {
         echo 
         read -p 'maxuploadtarget=' MAXUPLOAD
         # little bit of macgyvering here. this if statement uses -eq for something 
-        # other then it was intended. it checks for an integer, if it doesn't 
+        # other then it was intended. it checks for an integer, if it doesnt 
         # find an one then it returns an error which is passed to /dev/null 
         # and a value of false.
         if [ $MAXUPLOAD -eq $MAXUPLOAD 2>/dev/null ]
