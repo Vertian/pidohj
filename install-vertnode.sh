@@ -308,19 +308,19 @@ function init_script {
     greentext 'Initializing Vertnode installation script...' 
     echo
     yellowtext '*****************************************'
-    if [ "$BUILDVERTCOIN" == "install_vertcoind" ]; then
+    if [[ $BUILDVERTCOIN = "install_vertcoind" ]]; then
         yellowtext 'Vertcoin Installation      | Build from source'
     else
         yellowtext 'Vertcoin Installation      | Latest vertcoin-core release'    
     fi  
-    if [ "$INSTALLP2POOL" == "install_p2pool" ]; then
+    if [[ $INSTALLP2POOL = "install_p2pool" ]]; then
         yellowtext 'P2Pool-vtc Installation    | True'
     else
         yellowtext 'P2Pool-vtc Installation    | False'    
     fi  
-    if [ "$LOADBLOCKMETHOD" == "wait_for_continue" ]; then
+    if [[ $LOADBLOCKMETHOD = "wait_for_continue" ]]; then
         yellowtext 'Blockchain Loading Method  | Sideload the blockchain'
-    elif [ "$LOADBLOCKMETHOD" == "grab_bootstrap" ]; then
+    elif [[ $LOADBLOCKMETHOD = "grab_bootstrap" ]]; then
         yellowtext 'Blockchain Loading Method  | Grab latest bootstrap.dat'
     else
         yellowtext 'Blockchain Loading Method  | Sync on its own'  
@@ -337,10 +337,6 @@ function update_rasp {
     sudo apt-get autoremove -y
     greentext 'Successfully updated system!'
     echo
-    # check if reboot is needed
-        if [ -f /var/run/reboot-required ]; then
-            redtext 'Reboot required!'
-        fi
 }
 
 # install_depends | install the required dependencies to run this script
@@ -487,11 +483,23 @@ function install_berkeley {
     make
     sudo make install
     # if the system is a rock64 export the location of berkeleydb
-    if [ $KERNEL = "rock64" ]; then
+    if [[ $KERNEL = "rock64" ]]; then
             export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
     fi
     greentext 'Successfully installed Berkeley (4.8) database!'
     echo
+}
+
+# userinput_vertcoin | begin configuration, building and installation of vertcoin
+function userinput_vertcoin {
+    # check for user response to compile from source
+    if [[ $BUILDVERTCOIN = "install_vertcoind" ]]; then
+        # if user selected to compile vertcoin from source, then compile
+        install_vertcoind
+    else
+        # grab latest vtc release
+        grab_vtc_release   
+    fi   
 }
 
 # install_vertcoind | clone, build and install vertcoin core daemon
@@ -503,7 +511,7 @@ function install_vertcoind {
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     while true; do        
-       if [ $KERNEL = "rock64" ]; then
+       if [[ $KERNEL = "rock64" ]]; then
                 cd "$userhome"/bin/vertcoin-core/
                 ./autogen.sh        
                 ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
@@ -531,16 +539,11 @@ function install_vertcoind {
 
 # grab_vtc_release | grab the latest vertcoind release from github
 function grab_vtc_release {
-    while true; do
-        if [ "$RELEASE" = "Debian GNU/Linux" ]; then
-            break    
-        elif [ "$RELEASE" = "Ubuntu" ]; then
-            add-apt-repository ppa:bitcoin/bitcoin -y
-            sudo apt-get update 
-            sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
-            break
-        fi
-    done
+    if [[ $RELEASE = "Ubuntu" ]]; then
+        add-apt-repository ppa:bitcoin/bitcoin -y
+        sudo apt-get update 
+        sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
+    fi
     # grab the latest version number; store in variable $VERSION
     export VERSION=$(curl -s "https://github.com/vertcoin-project/vertcoin-core/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
     # grab the latest version release; deviation in release naming scheme will break this
@@ -604,6 +607,22 @@ function config_vertcoin {
     # configure permissions for user access
     cd "$userhome"/.vertcoin/
     chmod 777 vertcoin.conf
+}
+
+# userinput_p2pool | configure p2pool based on user input
+function userinput_p2pool {
+    while true; do
+            # check for user response to install p2pool
+        if [[ $INSTALLP2POOL = "install_p2pool" ]]; then
+            # if user selected to install p2pool, then install it
+            install_p2pool
+            break
+        else
+            # else do nothing and break from loop
+            :        
+            break
+        fi
+    done 
 }
 
 # install_p2pool | function to download and configure p2pool
@@ -692,11 +711,7 @@ function install_p2pool {
 
 # initiate_blockchain | take user response from load_blockchain and execute
 function initiate_blockchain {
-    # check if system = Raspberry Pi Zero and force building from source
-    if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
-            install_vertcoind
-    fi
-    if [ "$LOADBLOCKMETHOD" == "wait_for_continue" ]; then
+    if [[ $LOADBLOCKMETHOD = "wait_for_continue" ]]; then
         # if user selected to install p2pool, then install it
         wait_for_continue
         echo
@@ -706,7 +721,7 @@ function initiate_blockchain {
         echo
         sudo -u "$user" vertcoind -daemon 
         sleep 120  
-    elif [ "$LOADBLOCKMETHOD" == "grab_bootstrap" ]; then
+    elif [[ $LOADBLOCKMETHOD = "grab_bootstrap" ]]; then
         grab_bootstrap
         echo
         greentext 'Waiting two minutes for Vertcoin Core to start...' 
@@ -766,7 +781,7 @@ function installation_report {
     echo " # display latest vertcoin log information: " 
     echo " tail -f ~/.vertcoin/debug.log"
     echo
-    if [ "$INSTALLP2POOL" == "install_p2pool" ]; then
+    if [[ $INSTALLP2POOL = "install_p2pool" ]]; then
         # is p2pool was installed display this information
         echo " # display latest p2pool log information: " 
         echo " tail -f ~/p2pool-vtc-0.3.0-rc1/data/vertcoin$p2poolnetwork/log"
@@ -811,54 +826,26 @@ clear
 load_blockchain
 clear
 init_script
-echo
 # call update_rasp function | update the system
 update_rasp
-echo
 # call install_depends function | install the required dependencies to run this script
 install_depends
-echo
 # call secure function | modify iptables to limit connections for security purposes
 secure
-echo
 # configure USB flash drive ; call hd_config function, then call swap_config function
 if [ "$DRIVE_CONF" = "true" ]; then
     hd_config
     swap_config
 fi
-# call install_vertcoind | clone, build and install vertcoin core daemon
-echo
-# check for user response to compile from source
-if [ "$BUILDVERTCOIN" == "install_vertcoind" ]; then
-    # if user selected to compile vertcoin from source, then compile
-    install_vertcoind
-else
-    # grab latest vtc release
-    grab_vtc_release     
-fi   
+# call userinput_vertcoin and build from source or grab release
+userinput_vertcoin
 # configure crontab for vertcoin
 config_crontab
 # call config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
 config_vertcoin
 # execute on blockchain loading method
 initiate_blockchain
-# check for user response to install p2pool
-if [ "$INSTALLP2POOL" == "install_p2pool" ]; then
-    # if user selected to install p2pool, then install it
-    install_p2pool
-else
-    # else do nothing and proceed 
-    :        
-fi     
-# if user chose sideload blockchain wait for continue
-if [ "$LOADBLOCKMETHOD" == "wait_for_continue" ]; then
-    # if user selected to sideload blockchain then wait to make sure
-    # the blockchain has been completely copied over before starting vertcoin
-    wait_for_continue
-    break
-else
-    # else proceed starting vertcoin and initializing sync
-    :        
-fi     
+# call userinput_p2pool
+userinput_p2pool 
 # display post installation results
 installation_report
