@@ -12,6 +12,9 @@
 - [x] **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/)**
 
+**`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
+
+### **`USB flash drive required: 8GB >`**
 
 **`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or `amd64` compatible hardware running Debian / Ubuntu ensure that you 
 ```
