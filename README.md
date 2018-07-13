@@ -29,7 +29,7 @@ sudo ./install-vertnode.sh
 ### TO-DO Checklist
 - [ ] adjust swap file size based on RAM 
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
-- [ ] check $LANIP variable for compatibility with Raspbian (`ifconfig`)
+
 
 ### Functioning Status
 - [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
@@ -99,29 +99,6 @@ Please safely remove the USB Card Reader / MicroSD card as to ensure the data is
 
 Insert the MicroSD card that was safely removed into the microSD slot the Raspberry Pi. Once the Pi has booted it will attempt to join the wireless network using the information provided in the `wpa_supplicant.conf` file.
 
-### Functionality Checklist
-- [x] Install dependencies
-- [x] Modify `ufw` firewall rules for security
-- [x] Find, format and configure USB flash drive
-- [x] Create and configure swap space on USB flash drive
-- [x] Download & compile Berkeley DB
-- [x] Clone, build and install Vertcoin Core
-- [x] Provide option to grab latest release rather than building from source
-- [x] Added version detection for vertcoin release downloads based on system architecture
-- [x] Configure `~/.vertcoin/vertcoin.conf`
-- [x] Prompt to transfer blockchain
-- [x] Provide option for `bootstrap.dat` sideload; added mega.nz functionality for up to date bootstrap
-- [x] Begin Vertcoin Sync
-- [x] Provide option to install `p2pool-vtc`
-- [x] Clone & build `p2pool-vtc`
-- [x] Configure & launch `p2pool-vtc` 
-- [x] Setup crontab job(s)
-- [x] Display installation report
-- [x] Modify user input prompt to capture all user input at start of script
-- [x] Script installation introduction, Vertcoin full node: what, why and how?
-- [x] Add derived memory flag configuration based on RAM amount on hardware when building from source
-- [x] Add hardware detection for Raspberry Pi Zero to ensure building from source to avoid segmentation fault
-
 ------------
 
 ## Testing Errors
@@ -138,9 +115,10 @@ Perhaps iptables or your kernel needs to be upgraded.
 ```
 ------------
 ### Vertnode | Automated Vertcoin full node Installation Testing Results
-- [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`removable block device`) for storage.** 
-- [x] Raspberry Pi Zero W - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`removable block device`) for storage.** 
-- [x] Intel NUC - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drives (`removable block device`) for storage.** 
+- [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
+- [x] Raspberry Pi Zero W - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
+- [x] Intel NUC - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
+- [x] Rock64 Media Board - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
 
 ------------
 
