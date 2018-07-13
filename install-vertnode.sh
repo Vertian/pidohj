@@ -92,14 +92,17 @@ MAXUPLOAD=''
 # find the active interface
 while true; do
     if [[ $SYSTEM = "Raspberry" ]]; then
-        INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
+        # grab only the first row of data, user may want wifi + lan
+        INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//' | awk 'NR==1{print $1}')"
         break
     elif [[ $SYSTEM = "Rockchip" ]]; then
         sudo apt-get install facter -y
-        INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//')"
+        # grab only the first row of data, user may want wifi + lan
+        INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//' | awk 'NR==1{print $1}')"
         break
     else
-        INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//')"
+        # grab only the first row of data, user may want wifi + lan
+        INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//' | awk 'NR==1{print $1}')"
         break
     fi
 done
