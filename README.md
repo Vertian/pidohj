@@ -65,6 +65,24 @@ Intel’s Next Unit of Computing (NUC) models are well equipped for light- to me
 #### What if I don't have an Intel NUC?
 The Intel NUC was chosen because of it's entry level hardware, and the wide distribution of hardware with similar capability to the Intel NUC existing in the world today. If you do not have an Intel NUC don't worry, if your CPU supports `amd64` architecture, has 2GB or more of `RAM` and 16GB+ of hard drive space the steps performed below apply when using Ubuntu 16.04. The headless server edition is recommended, a GUI is not needed to run a Vertcoin Core full node. 
 
+#### What is a Full Node?
+
+Vertcoin’s peer-to-peer network is composed of network "nodes," run mostly by volunteers. Those running vertcoin nodes have a direct and authoritative view of the vertcoin blockchain, with a local copy of all the transactions, independently validated by their own system and can initiate transactions directly on the vertcoin network. 
+
+By running a node, you don’t have to rely on any third party to validate a transaction. Moreover, **by running a vertcoin node you contribute to the vertcoin network by making it more robust**. A full-node client consumes substantial computer resources (e.g., more than `4 GB` of disk, `~1 GB` of `RAM` at most) but offers complete autonomy and independent transaction verification.
+
+**Running a node, however, requires a permanently connected system with enough resources to process all vertcoin transactions.** Vertcoin nodes also transmit and receive vertcoin transactions and blocks, consuming internet bandwidth. If your internet connection is limited, has a low data cap, or is metered (charged by the gigabit), you should probably not run a vertcoin node on it, or run it in a way that limits its bandwidth usage.
+
+Despite these resource requirements, hundreds of volunteers run vertcoin nodes. **Some are running on systems as simple as a [Raspberry Pi](https://www.canakit.com/raspberry-pi-3-model-b-plus.html) (a $35 USD computer the size of a pack of cards)**. Many volunteers also run vertcoin nodes on rented servers, usually some variant of Linux. A Virtual Private Server (VPS) or Cloud Computing Server instance can be used to run a vertcoin node. Such servers can be rented for $25 to $50 USD per month from a variety of providers.
+
+#### Why run a headless node on a Single Board Computer?
+
+1. You want to support vertcoin. Running a node makes the network more robust and able to serve more wallets, more users, and more transactions. 
+2. You are building or using applications such as mining that must validate transactions according to vertcoin’s consensus rules.
+3. You are developing vertcoin software and need to rely on a vertcoin node for programmable (API) access to the network and blockchain.
+
+**The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
+
 ---------------
 
 ### How to install Raspbian
@@ -132,6 +150,9 @@ Perhaps iptables or your kernel needs to be upgraded.
 ### [Manual Installation Walkthrough: Intel NUC](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/intel-nuc.md)
 
 ------------
+
+![NodeMap](https://i.imgur.com/rzj5SU2.png)
+## [Vertcoin Node Scanner](https://scanner.vertcoin.org/nodes)
 
 <p align="center">
   <img src="https://i.imgur.com/zgx4uiu.jpg">
