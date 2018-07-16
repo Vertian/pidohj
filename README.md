@@ -31,10 +31,12 @@ sudo ./install-vertnode.sh
 
 ---------------
 ### TO-DO Checklist
+- [ ] fix rock64 `libcxx` error (berkeley db) when starting vertcoin 
 - [ ] add support for Orange Pi One single board computer
 - [ ] adjust swap file size based on RAM 
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
 - [ ] add `lit` and `lit-af` optional installation
+- [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
 
 
 ### Functioning Status
