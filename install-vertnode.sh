@@ -75,8 +75,7 @@ FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
 KERNEL="$(uname -a | awk '{print $2}')"
 # grab the first column of system name
-SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}'
-)"
+SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}')"
 # grab the default gateway ip address
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab the release name of operating system
@@ -470,7 +469,6 @@ function swap_config {
 
 # install_berkeley | install berkeley database 4.8 for wallet functionality
 function install_berkeley {
-    rock64system=""
     yellowtext 'Installing Berkeley (4.8) database...'
     sudo -u "$user" mkdir -p "$userhome"/bin
     cd "$userhome"/bin
@@ -487,7 +485,13 @@ function install_berkeley {
     sudo make install
     # if the system is a rock64 export the location of berkeleydb
     if [[ $SYSTEM = "Rockchip" ]]; then
-            export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
+        # set the current environment berkeley db location
+        export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
+        # echo the same location into .bashrc for persistence
+        echo 'export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/' >> /home/"$user"/.bashrc
+    else
+        # do nothing
+        :
     fi
     greentext 'Successfully installed Berkeley (4.8) database!'
     echo
@@ -795,6 +799,12 @@ function installation_report {
         :        
     fi  
     echo "------------------------------------------------------------------------------"
+}
+
+# Under Construction
+function install_lit {
+    # cd "$userhome"/
+    # git clone https://github.com/mit-dci/lit
 }
 
 # -------------BEGIN-MAIN-------------------
