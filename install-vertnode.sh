@@ -202,11 +202,11 @@ function user_input {
         echo "that you would like to allow your Vertcoin node to upload daily? "
         echo
         echo "Examples:"
-        echo "          1024 MB = 1GB"
-        echo "          2048 MB = 2GB"
-        echo "          3072 MB = 3GB"
-        echo "          4096 MB = 4GB"
-        echo "          5120 MB = 5GB" 
+        echo "          1024 = 1GB"
+        echo "          2048 = 2GB"
+        echo "          3072 = 3GB"
+        echo "          4096 = 4GB"
+        echo "          5120 = 5GB" 
         echo 
         read -p 'maxuploadtarget=' MAXUPLOAD
         # little bit of macgyvering here. this if statement uses -eq for something 
@@ -310,7 +310,7 @@ function init_script {
     echo    
     greentext 'Initializing Vertnode installation script...' 
     echo
-    yellowtext '*****************************************'
+    yellowtext '****************************************************************'
     if [[ $BUILDVERTCOIN = "install_vertcoind" ]]; then
         yellowtext 'Vertcoin Installation      | Build from source'
     else
@@ -328,7 +328,7 @@ function init_script {
     else
         yellowtext 'Blockchain Loading Method  | Sync on its own'  
     fi  
-    yellowtext '*****************************************'
+    yellowtext '****************************************************************'
     sleep 10
 }
 
@@ -634,7 +634,6 @@ function install_p2pool {
     yellowtext 'Installing p2pool-vtc...'
     # install dependencies for p2pool-vtc
     sudo apt-get install python-rrdtool python-pygame python-scipy python-twisted python-twisted-web python-imaging python-pip libffi-dev -y
-    # clone p2pool-vtc
     # grab latest p2pool-vtc release
     cd "$userhome"/
     sudo -u "$user" wget "https://github.com/vertcoin-project/p2pool-vtc/archive/v0.3.0-rc1.zip"
@@ -718,6 +717,7 @@ function initiate_blockchain {
         # if user selected to install p2pool, then install it
         wait_for_continue
         echo
+        # wait two minutes to ensure vertcoin core is alive before moving on
         greentext 'Waiting two minutes for Vertcoin Core to start...' 
         echo
         greentext 'Starting Vertcoin Core...'
@@ -727,6 +727,7 @@ function initiate_blockchain {
     elif [[ $LOADBLOCKMETHOD = "grab_bootstrap" ]]; then
         grab_bootstrap
         echo
+        # wait two minutes to ensure vertcoin core is alive before moving on
         greentext 'Waiting two minutes for Vertcoin Core to start...' 
         echo
         greentext 'Starting Vertcoin Core...'
@@ -736,6 +737,7 @@ function initiate_blockchain {
     else
         # else just sync vertcoin on its own
         echo
+        # wait two minutes to ensure vertcoin core is alive before moving on
         greentext 'Waiting two minutes for Vertcoin Core to start...' 
         echo
         greentext 'Starting Vertcoin Core...'
