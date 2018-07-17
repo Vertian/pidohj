@@ -753,6 +753,9 @@ function userinput_lit {
 function install_lit { 
     # go home first
     cd "$userhome"/
+    echo
+    greentext 'Installing golang...'
+    echo
     while true; do
         # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
         if [[ $SYSTEM = "Raspberry" ]]; then
@@ -781,7 +784,9 @@ function install_lit {
     export PATH=$PATH:/usr/local/go/bin
     # display go version
     go version
+    echo
     # install lit
+    greentext 'Installing lit & lit-af...'
     cd "$userhome"/
     git clone https://github.com/mit-dci/lit
     cd "$userhome"/lit/
