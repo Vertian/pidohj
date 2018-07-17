@@ -773,10 +773,10 @@ function install_lit {
         fi
     done
     # install golang
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
     mkdir -p /home/$user/go
-    echo 'export GOPATH=$HOME/go' >> ~/.bashrc
-    source ~/.bashrc
+    echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
+    source /home/"$user"/.bashrc
     echo    
     # display go version
     go version
