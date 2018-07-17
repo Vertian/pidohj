@@ -772,32 +772,20 @@ function install_lit {
             break
         fi
     done
-    # install golang
+    # echo enviornment variables to .bashrc which is loaded on each new shell
     echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
-    mkdir -p /home/$user/go
+    sudo -u "$user" mkdir -p /home/$user/go
     echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
-    source /home/"$user"/.bashrc
-    echo    
+    # export environment variables to current shell     
+    export GOPATH=$HOME/go    
+    export PATH=$PATH:/usr/local/go/bin
     # display go version
     go version
-    echo
     # install lit
-    go get github.com/mit-dci/lit
-    # ensure system has depends
-    go get ./...
-    cd "$userhome"/go/src/github.com/mit-dci/lit/
-    # refresh from git repo before building    
-    git pull
-    # build lit
-    go build
-    # build lit-af
-    cd "$userhome"/go/src/github.com/mit-dci/lit/cmd/lit-af/
-    go build
-    # copy lit-af to lit directory
-    cp lit-af /home/$user/go/src/github.com/mit-dci/lit/
-    # go home and create symlink to lit
     cd "$userhome"/
-    ln -s /home/$user/go/src/github.com/mit-dci/lit/ lit
+    git clone https://github.com/mit-dci/lit
+    cd "$userhome"/lit/
+    make
 }
 
 # initiate_blockchain | take user response from load_blockchain and execute
