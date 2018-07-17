@@ -882,8 +882,8 @@ function installation_report {
     fi  
     if [[ $INSTALL_LIT = "install_lit" ]]; then
         # if lit was installed display this information
-        echo " ./lit/lit -v --vtc https://vtc.blkidx.org/ | start lit with remote indexer"
-        echo " ./lit/lit -v --vtc localhost               | start lit with localhost vtc node"
+        echo " ./lit/lit -v --vtc https://vtc.blkidx.org/ | start lit with remote indexer, vtc mainnet"
+        echo " ./lit/lit -v --vtc localhost               | start lit with localhost vtc node, vtc mainnet"
         echo     
         echo " When lit is running open another SSH session:"
         echo " ./lit/lit-af                               | start lit-af to interact with LN" 
