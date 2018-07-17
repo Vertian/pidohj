@@ -1,6 +1,5 @@
 #!/bin/bash
-# install lit & lit-af
-# IN DEVELOPMENT - NON-FUNCTIONING STATUS
+# bash script to install golang
 
 # install depends for detection; check for lshw, install if not
 if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
@@ -19,7 +18,7 @@ userhome='/home/'$user
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}')"
 
 # download and install new version of golang, lit and lit-af
-function install_lit { 
+function install_go { 
     # go home first
     cd "$userhome"/
     while true; do
@@ -41,33 +40,15 @@ function install_lit {
             break
         fi
     done
-    # install golang
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
-    mkdir -p /home/$user/go
-    echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
-    cd "$userhome"/
-    source .bashrc
-    echo    
+    # echo enviornment variables to .bashrc which is loaded on each new shell
+    #echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
+    sudo -u "$user" mkdir -p /home/$user/go
+    #echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
+    # export environment variables to current shell     
+    export GOPATH=$HOME/go    
+    export PATH=$PATH:/usr/local/go/bin
     # display go version
     go version
-    echo
-    # install lit
-    go get github.com/mit-dci/lit
-    # ensure system has depends
-    go get ./...
-    cd "$userhome"/go/src/github.com/mit-dci/lit/
-    # refresh from git repo before building    
-    git pull
-    # build lit
-    go build
-    # build lit-af
-    cd "$userhome"/go/src/github.com/mit-dci/lit/cmd/lit-af/
-    go build
-    # copy lit-af to lit directory
-    cp lit-af /home/$user/go/src/github.com/mit-dci/lit/
-    # go home and create symlink to lit
-    cd "$userhome"/
-    ln -s /home/$user/go/src/github.com/mit-dci/lit/ lit
 }
 
-install_lit
+install_go
