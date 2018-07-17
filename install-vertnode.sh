@@ -80,11 +80,13 @@ SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab the release name of operating system
 RELEASE="$(cat /etc/*-release | gawk -F= '/^NAME/{print $2}' | tr -d '"')"
+#'
 RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
 RAM_MIN='910000'
 ARCH="$(dpkg --print-architecture)"
 P2P=''
 INSTALLP2POOL=''
+INSTALL_LIT=''
 BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
@@ -273,6 +275,20 @@ function prompt_p2pool {
             [Yy]*   )   INSTALLP2POOL="install_p2pool"; break;;
             # if user says no, break from loop            
             [Nn]*   )   INSTALLP2POOL=""; break;;
+        esac
+    done
+}
+
+# prompt_lit | function to prompt user with option to install lit
+function prompt_lit {
+    while true; do
+        echo
+        read -p "Would you like install lit & lit-af? (y/n) " yn
+        case $yn in 
+            # if user says yes, call install_lit
+            [Yy]*   )   INSTALL_LIT="install_lit"; break;;
+            # if user says no, break from loop            
+            [Nn]*   )   INSTALL_LIT=""; break;;
         esac
     done
 }
@@ -715,6 +731,71 @@ function install_p2pool {
     sudo -u "$user" nohup sh start-p2pool.sh &
 }
 
+# userinput_lit | configure lit based on user input
+function userinput_lit {
+    while true; do
+            # check for user response to install lit
+        if [[ $INSTALL_LIT = "install_lit" ]]; then
+            # if user selected to install lit, then get lit
+            install_lit
+            break
+        else
+            # else do nothing and break from loop
+            :        
+            break
+        fi
+    done 
+}
+
+# download and install new version of golang, lit and lit-af
+function install_lit { 
+    while true; do
+        # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
+        if [[ $SYSTEM = "Raspberry" ]]; then
+            # grab armhf arch for raspberry pi  
+            curl -L -O https://dl.google.com/go/go1.10.3.linux-armv6l.tar.gz
+            tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
+            break 
+        elif [[ $SYSTEM = "Rockchip" ]]; then
+            # grab arm64 arch for rock64 
+            curl -L -O https://dl.google.com/go/go1.10.3.linux-arm64.tar.gz
+            tar -C /usr/local -xzf go1.10.3.linux-arm64.tar.gz
+            break
+        else
+            # grab amd64 arch
+            curl -L -O https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
+            tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz
+            break
+        fi
+    done
+    # install golang
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+    mkdir -p /home/$user/go
+    echo 'export GOPATH=$HOME/go' >> ~/.bashrc
+    source ~/.bashrc
+    echo    
+    # display go version
+    go version
+    echo
+    # install lit
+    go get github.com/mit-dci/lit
+    # ensure system has depends
+    go get ./...
+    cd "$userhome"/go/src/github.com/mit-dci/lit/
+    # refresh from git repo before building    
+    git pull
+    # build lit
+    go build
+    # build lit-af
+    cd "$userhome"/go/src/github.com/mit-dci/lit/cmd/lit-af/
+    go build
+    # copy lit-af to lit directory
+    cp lit-af /home/$user/go/src/github.com/mit-dci/lit/
+    # go home and create symlink to lit
+    cd "$userhome"/
+    ln -s /home/$user/go/src/github.com/mit-dci/lit/ lit
+}
+
 # initiate_blockchain | take user response from load_blockchain and execute
 function initiate_blockchain {
     if [[ $LOADBLOCKMETHOD = "wait_for_continue" ]]; then
@@ -791,20 +872,27 @@ function installation_report {
     echo " tail -f ~/.vertcoin/debug.log"
     echo
     if [[ $INSTALLP2POOL = "install_p2pool" ]]; then
-        # is p2pool was installed display this information
+        # if p2pool was installed display this information
         echo " # display latest p2pool log information: " 
         echo " tail -f ~/p2pool-vtc-0.3.0-rc1/data/vertcoin$p2poolnetwork/log"
+        echo
+    else
+        # else do nothing and proceed 
+        :        
+    fi  
+    if [[ $INSTALL_LIT = "install_lit" ]]; then
+        # if lit was installed display this information
+        echo " ./lit/lit -v --vtc https://vtc.blkidx.org/ | start lit with remote indexer"
+        echo " ./lit/lit -v --vtc localhost               | start lit with localhost vtc node"
+        echo     
+        echo " When lit is running open another SSH session:"
+        echo " ./lit/lit-af                               | start lit-af to interact with LN" 
+        echo
     else
         # else do nothing and proceed 
         :        
     fi  
     echo "------------------------------------------------------------------------------"
-}
-
-# Under Construction
-function install_lit {
-    # cd "$userhome"/
-    # git clone https://github.com/mit-dci/lit
 }
 
 # -------------BEGIN-MAIN-------------------
@@ -837,6 +925,8 @@ compile_or_compiled
 clear
 prompt_p2pool
 clear
+prompt_lit
+clear
 # prompt user to load blockchain
 load_blockchain
 clear
@@ -862,5 +952,7 @@ config_vertcoin
 initiate_blockchain
 # call userinput_p2pool
 userinput_p2pool 
+# call userinput_lit
+userinput_lit
 # display post installation results
 installation_report
