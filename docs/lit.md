@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="https://i.imgur.com/PJxYRgW.png" width="200" height="200" />
+</p>
+
+<p align="center">
   <img src="https://i.imgur.com/eJyg30C.png" width="343" height="68" />
 </p>
 
