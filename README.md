@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="https://i.imgur.com/PJxYRgW.png" width="200" height="200" />
+</p>
+
+<p align="center">
   <img src="https://github.com/e-corp-sam-sepiol/Documentation/blob/master/images/vertcoin-branding.png" width="343" height="68" /> <img src="https://i.imgur.com/1RKi4wd.png" width="90">
 </p>
 
@@ -11,6 +15,8 @@
 ## An automated solution for installing Vertcoin node(s) on Single Board Computers and `amd64` compatible hardware
 **`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 ### **`USB flash drive required: 8GB >`**
+### **`Optional P2Pool Installation`**
+### **`Optional lit & lit-af Installation`**
 ### Supported
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
@@ -31,11 +37,9 @@ sudo ./install-vertnode.sh
 
 ---------------
 ### TO-DO Checklist
-- [ ] fix rock64 `libcxx` error (berkeley db) when starting vertcoin 
 - [ ] add support for Orange Pi One single board computer
 - [ ] adjust swap file size based on RAM 
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
-- [ ] add `lit` and `lit-af` optional installation
 - [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
 
 
