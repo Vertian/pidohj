@@ -38,6 +38,8 @@
 #                               | grab the latest bootstrap.dat
 #           prompt_p2pool       | function to prompt user with option to install p2pool
 #           install_p2pool      | function to download and configure p2pool
+#           userinput_lit       | function to prompt user with option to install lit and lit-af
+#           install_lit         | function to download and install golang, lit and lit-af
 #           user_intro          | introduction to installation script, any key to continue
 #           installation_report | report back key and contextual information
 #           wait_for_continue   | function for classic "Press spacebar to continue..." 
@@ -749,6 +751,8 @@ function userinput_lit {
 
 # download and install new version of golang, lit and lit-af
 function install_lit { 
+    # go home first
+    cd "$userhome"/
     while true; do
         # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
         if [[ $SYSTEM = "Raspberry" ]]; then
