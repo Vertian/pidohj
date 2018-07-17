@@ -14,6 +14,14 @@
 # Vertnode 
 ## An automated solution for installing Vertcoin node(s) on Single Board Computers and `amd64` compatible hardware
 **`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
+
+### Functioning Status
+- [x] **VTC Node, P2Pool |** **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
+- [x] **VTC Node, P2Pool |** **Raspberry Pi Zero (W)** | Single Core ARMv6 1 Ghz | 433MB RAM |
+- [x] **VTC Node, P2Pool |** **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
+- [x] **VTC Node, P2Pool |** **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
+- [ ] **`lit` & `lit-af` |** **Unstable / Non-functioning**
+
 ### **`USB flash drive required: 8GB >`**
 ### **`Optional P2Pool Installation`**
 ### **`Optional lit & lit-af Installation`**<img src="https://i.imgur.com/c6GEfJS.png" width="30" height="30" />
@@ -36,18 +44,13 @@ sudo ./install-vertnode.sh
 ```
 
 ---------------
+
 ### TO-DO Checklist
 - [ ] add support for Orange Pi One single board computer
 - [ ] adjust swap file size based on RAM 
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
 - [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
-
-
-### Functioning Status
-- [x] **Success!** Raspberry Pi 3 B+ | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
-- [x] **Success!** Raspberry Pi Zero (W) | Single Core ARMv6 1 Ghz | 433MB RAM |
-- [x] **Success!** Intel NUC | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
-- [x] **Success!** Rock64 Media Board | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
+- [ ] fix `go` errors when fetching `go version`
 
 ---------------
 
