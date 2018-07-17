@@ -16,7 +16,7 @@
 **`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 ### **`USB flash drive required: 8GB >`**
 ### **`Optional P2Pool Installation`**
-### **`Optional lit & lit-af Installation`**
+### **`Optional lit & lit-af Installation`**<img src="https://i.imgur.com/c6GEfJS.png" width="30" height="30" />
 ### Supported
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
