@@ -20,7 +20,7 @@
 - [x] **VTC Node, P2Pool |** **Raspberry Pi Zero (W)** | Single Core ARMv6 1 Ghz | 433MB RAM |
 - [x] **VTC Node, P2Pool |** **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
 - [x] **VTC Node, P2Pool |** **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
-- [ ] **`lit` & `lit-af` |** **Unstable / Non-functioning**
+- [x] **`lit` & `lit-af` |** **Success! Working!**
 
 ### **`USB flash drive required: 8GB >`**
 ### **`Optional P2Pool Installation`**
@@ -51,6 +51,7 @@ sudo ./install-vertnode.sh
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
 - [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
 - [ ] fix `go` errors when fetching `go version`
+- [ ] add `md5` hash checksum to `vertcoind` and `golang` downloads
 
 ---------------
 
