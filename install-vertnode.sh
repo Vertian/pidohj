@@ -100,8 +100,6 @@ BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
 
-
-
 # find the active interface
 while true; do
     if [[ $SYSTEM = "Raspberry" ]]; then
@@ -116,6 +114,13 @@ while true; do
     else
         # grab only the first row of data, user may want wifi + lan
         INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//' | awk 'NR==1{print $1}')"
+        if [[ $RELEASE = "Debian GNU/Linux" ]]; then
+            # if debian is detected install facter for grabbing the ip address        
+            sudo apt-get install facter -y 
+        else
+            # do nothing        
+            :
+        fi
         break
     fi
 done
@@ -131,8 +136,16 @@ while true; do
         LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
         break
     else
-        # grap ip address for ubuntu
-        LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+        if [[ $RELEASE = "Debian GNU/Linux" ]]; then
+            # grab debian ip address        
+            LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
+        elif [[ $RELEASE = "Ubuntu" ]]; then
+            # grap ip address for ubuntu
+            LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+        else
+            # grap ip address using ifconfig
+            LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+        fi
         break
     fi
 done
