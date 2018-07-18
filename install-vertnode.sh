@@ -784,9 +784,16 @@ function install_lit {
             tar -C /usr/local -xzf go1.10.3.linux-arm64.tar.gz
             break
         else
-            # grab amd64 arch
-            curl -L -O https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
-            tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz
+                if [[ $KERNEL = "orangepione" ]]; then  
+                    curl -L -O https://dl.google.com/go/go1.10.3.linux-armv6l.tar.gz
+                    tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
+                else
+                    # grab amd64 arch
+                    curl -L -O https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
+                    tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz
+                fi
+            # do nothing        
+            :
             break
         fi
     done
