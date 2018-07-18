@@ -16,22 +16,23 @@
 **`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 
 ### Functioning Status
-- [x] **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
-- [x] **Raspberry Pi Zero (W)** | Single Core ARMv6 1 Ghz | 433MB RAM |
-- [x] **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
-- [x] **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
-- [x] **`lit` & `lit-af` |** **Success! Working!**
-- [ ] **Orange Pi One** | H3 Quad-core Cortex-A7 1.2 GHz | 512MB RAM |
+- [x] `Working` **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
+- [x] `Working` **Raspberry Pi Zero (W)** | Single Core ARMv6 1 Ghz | 433MB RAM |
+- [x] `Working` **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
+- [x] `Working` **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
+- [x] `Working` **Orange Pi One** | H3 Quad-core Cortex-A7 1.2 GHz | 512MB RAM |
+- [x] `Working` **`lit` & `lit-af`**
 
-### **`USB flash drive required: 8GB >`**
-### **`Optional P2Pool Installation`**
 ### **`Optional lit & lit-af Installation`**<img src="https://i.imgur.com/c6GEfJS.png" width="30" height="30" />
+### **`Optional P2Pool Installation`**
+### **`USB flash drive required: 8GB >`**
+
 ### Supported
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
 - [x] **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/ubuntu-16.04.4-server-amd64.iso)**
-- [ ] **Orange Pi One | [Armbian Stretch](https://dl.armbian.com/orangepione/Debian_stretch_next.7z) | [Getting Started](https://docs.armbian.com/User-Guide_Getting-Started/)**
+- [x] **Orange Pi One | [Armbian Stretch](https://dl.armbian.com/orangepione/Debian_stretch_next.7z) | [Getting Started](https://docs.armbian.com/User-Guide_Getting-Started/)**
 
 **`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or `amd64` compatible hardware running Debian / Ubuntu ensure that you insert a USB flash drive and...
 ```
@@ -48,11 +49,11 @@ sudo ./install-vertnode.sh
 ---------------
 
 ### TO-DO Checklist
-- [ ] add support for Orange Pi One single board computer
+- [x] add support for Orange Pi One single board computer
 - [ ] adjust swap file size based on RAM 
 - [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
 - [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
-- [ ] fix `go` errors when fetching `go version`
+- [x] fix `go` errors when fetching `go version`
 - [ ] add `md5` hash checksum to `vertcoind` and `golang` downloads
 
 ---------------
