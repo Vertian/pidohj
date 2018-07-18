@@ -798,6 +798,9 @@ function install_lit {
     git clone https://github.com/mit-dci/lit
     cd "$userhome"/lit/
     make
+    cd "$userhome"/
+    # clean up home directory
+    rm go1.*.tar.gz
 }
 
 # initiate_blockchain | take user response from load_blockchain and execute
