@@ -726,6 +726,8 @@ function install_p2pool {
     # echo our values into a file named start-p2pool.sh
     echo "#!/bin/bash" >> /home/"$user"/start-p2pool.sh
     echo "cd p2pool-vtc-0.3.0-rc1" >> /home/"$user"/start-p2pool.sh
+    echo
+    greentext 'Waiting 2 minutes, vertcoind must be active before continuing...'
     # sleep an additional 2 minutes to make sure vertcoind is alive and can give an address
     sleep 120
     echo "python run_p2pool.py --net vertcoin$p2poolnetwork -a $getnewaddress --max-conns 8 --outgoing-conns 4" >> /home/"$user"/start-p2pool.sh
