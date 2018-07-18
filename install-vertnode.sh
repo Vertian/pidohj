@@ -61,12 +61,6 @@ if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -
     apt-get install gawk -y
 fi
 
-# install depends for detection; check for curl, install if not
-if [ $(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-    echo "Installing required dependencies to run install-vertnode..."    
-    apt-get install curl -y
-fi
-
 # fail on error; debug all lines
 set -eu -o pipefail
 
@@ -84,7 +78,6 @@ PUBLICIP="$(curl -s ipinfo.io/ip)"
 KERNEL="$(uname -a | awk '{print $2}')"
 # grab the first column of system name
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}')"
-VM="$(lshw -short | grep generic | awk '{print $3}')"
 # grab the default gateway ip address
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab the release name of operating system
@@ -99,7 +92,6 @@ INSTALL_LIT=''
 BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
-
 # find the active interface
 while true; do
     if [[ $SYSTEM = "Raspberry" ]]; then
@@ -114,13 +106,6 @@ while true; do
     else
         # grab only the first row of data, user may want wifi + lan
         INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//' | awk 'NR==1{print $1}')"
-        if [[ $RELEASE = "Debian GNU/Linux" ]]; then
-            # if debian is detected install facter for grabbing the ip address        
-            sudo apt-get install facter -y 
-        else
-            # do nothing        
-            :
-        fi
         break
     fi
 done
@@ -136,16 +121,8 @@ while true; do
         LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
         break
     else
-        if [[ $RELEASE = "Debian GNU/Linux" ]]; then
-            # grab debian ip address        
-            LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
-        elif [[ $RELEASE = "Ubuntu" ]]; then
-            # grap ip address for ubuntu
-            LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
-        else
-            # grap ip address using ifconfig
-            LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
-        fi
+        # grap ip address for ubuntu
+        LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
         break
     fi
 done
@@ -439,45 +416,27 @@ function hd_detect {
 # hd_config | configure USB flash drive
 function hd_config {
     drive=$drive"1"
-    if mount | grep "$drive" > /dev/null; then
-        umount -l "$drive" > /dev/null
-    fi
-    while true; do
-        # check for virtualbox and skip hdd formatting
-        if [[ $VM = "VirtualBox" ]]; then
-            # skip hard drive format            
-            :
-            break
-        else
-            yellowtext 'Formatting USB flash drive...'
-            # format usb disk as ext4 filesystem    
-            sudo mkfs.ext4 -F "$drive" -L storage
-            greentext 'Successfully formatted flash drive!'
-            # locally declare UUID as the value given by blkid
-            UUID="$(blkid -o value -s UUID "$drive")"
-            break
+        if mount | grep "$drive" > /dev/null; then
+            umount -l "$drive" > /dev/null
         fi
-    done 
+    yellowtext 'Formatting USB flash drive...'
+    # format usb disk as ext4 filesystem    
+    sudo mkfs.ext4 -F "$drive" -L storage
+    greentext 'Successfully formatted flash drive!'
+    # locally declare UUID as the value given by blkid
+    UUID="$(blkid -o value -s UUID "$drive")"
     echo
     yellowtext 'Creating Vertcoin data folder...'
     VTCDIR='/home/'$user'/.vertcoin'
     mkdir -p "$VTCDIR"
-    while true; do
-        # check for virtualbox and skip fstab configuration
-        if [[ $VM = "VirtualBox" ]]; then
-            # skip fstab configuration  
+    yellowtext 'Modifying fstab configuration...'
+    echo    
+    sudo sed -i".bak" "/$UUID/d" /etc/fstab
+    echo "UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0" >> /etc/fstab
+        if mount | grep "$drive" > /dev/null; then
             :
-            break
         else
-            yellowtext 'Modifying fstab configuration...'
-            echo    
-            sudo sed -i".bak" "/$UUID/d" /etc/fstab
-            echo "UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0" >> /etc/fstab
-            if mount | grep "$drive" > /dev/null; then
-                :
-            else
-                sudo mount -a
-            fi    
+            sudo mount -a
         fi
     chmod 777 $VTCDIR
     greentext 'Successfully configured USB flash drive!'
@@ -832,8 +791,6 @@ function install_lit {
     git clone https://github.com/mit-dci/lit
     cd "$userhome"/lit/
     make
-    # clean up tar file
-    rm go1.*tar.gz
 }
 
 # initiate_blockchain | take user response from load_blockchain and execute
