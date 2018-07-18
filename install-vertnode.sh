@@ -61,6 +61,12 @@ if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -
     apt-get install gawk -y
 fi
 
+# install depends for detection; check for curl, install if not
+if [ $(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo "Installing required dependencies to run install-vertnode..."    
+    apt-get install curl -y
+fi
+
 # fail on error; debug all lines
 set -eu -o pipefail
 
@@ -78,6 +84,7 @@ PUBLICIP="$(curl -s ipinfo.io/ip)"
 KERNEL="$(uname -a | awk '{print $2}')"
 # grab the first column of system name
 SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}')"
+VM="$(lshw -short | grep generic | awk '{print $3}')"
 # grab the default gateway ip address
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab the release name of operating system
@@ -92,6 +99,9 @@ INSTALL_LIT=''
 BUILDVERTCOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
+
+
+
 # find the active interface
 while true; do
     if [[ $SYSTEM = "Raspberry" ]]; then
@@ -416,27 +426,45 @@ function hd_detect {
 # hd_config | configure USB flash drive
 function hd_config {
     drive=$drive"1"
-        if mount | grep "$drive" > /dev/null; then
-            umount -l "$drive" > /dev/null
+    if mount | grep "$drive" > /dev/null; then
+        umount -l "$drive" > /dev/null
+    fi
+    while true; do
+        # check for virtualbox and skip hdd formatting
+        if [[ $VM = "VirtualBox" ]]; then
+            # skip hard drive format            
+            :
+            break
+        else
+            yellowtext 'Formatting USB flash drive...'
+            # format usb disk as ext4 filesystem    
+            sudo mkfs.ext4 -F "$drive" -L storage
+            greentext 'Successfully formatted flash drive!'
+            # locally declare UUID as the value given by blkid
+            UUID="$(blkid -o value -s UUID "$drive")"
+            break
         fi
-    yellowtext 'Formatting USB flash drive...'
-    # format usb disk as ext4 filesystem    
-    sudo mkfs.ext4 -F "$drive" -L storage
-    greentext 'Successfully formatted flash drive!'
-    # locally declare UUID as the value given by blkid
-    UUID="$(blkid -o value -s UUID "$drive")"
+    done 
     echo
     yellowtext 'Creating Vertcoin data folder...'
     VTCDIR='/home/'$user'/.vertcoin'
     mkdir -p "$VTCDIR"
-    yellowtext 'Modifying fstab configuration...'
-    echo    
-    sudo sed -i".bak" "/$UUID/d" /etc/fstab
-    echo "UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0" >> /etc/fstab
-        if mount | grep "$drive" > /dev/null; then
+    while true; do
+        # check for virtualbox and skip fstab configuration
+        if [[ $VM = "VirtualBox" ]]; then
+            # skip fstab configuration  
             :
+            break
         else
-            sudo mount -a
+            yellowtext 'Modifying fstab configuration...'
+            echo    
+            sudo sed -i".bak" "/$UUID/d" /etc/fstab
+            echo "UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0" >> /etc/fstab
+            if mount | grep "$drive" > /dev/null; then
+                :
+            else
+                sudo mount -a
+            fi    
         fi
     chmod 777 $VTCDIR
     greentext 'Successfully configured USB flash drive!'
