@@ -13,7 +13,8 @@
 
 # Vertnode 
 ## An automated solution for installing Vertcoin node(s) on Single Board Computers and `amd64` compatible hardware
-**`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
+
+**`NOTE:` The steps provided below produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 
 ### Functioning Status
 - [x] `Working` **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
@@ -59,8 +60,6 @@ sudo ./install-vertnode.sh
 ---------------
 
 ### FAQ
-
-**`NOTE:` The steps provided in the `README` produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 
 #### Why a Vertcoin Full node?
 Vertcoin is a digital currency supported by a peer-to-peer network. In order to run efficiently and effectively, it needs peers run by different people... and the more the better.
@@ -150,12 +149,6 @@ ERROR: initcaps
 [Errno 2] iptables v1.6.0: can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
 Perhaps iptables or your kernel needs to be upgraded.
 ```
-------------
-### Vertnode | Automated Vertcoin full node Installation Testing Results
-- [x] Raspberry Pi 3 - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
-- [x] Raspberry Pi Zero W - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
-- [x] Intel NUC - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
-- [x] Rock64 Media Board - **Installs Vertcoin full node** | **Installs p2pool-vtc node** | **Looks for USB flash drive (`removable block device`) for storage.** 
 
 ------------
 
