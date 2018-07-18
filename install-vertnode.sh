@@ -61,6 +61,12 @@ if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -
     apt-get install gawk -y
 fi
 
+# install depends for detection; check for git, install if not
+if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo "Installing required dependencies to run install-vertnode..."    
+    apt-get install git -y
+fi
+
 # fail on error; debug all lines
 set -eu -o pipefail
 
@@ -362,7 +368,7 @@ function update_rasp {
 # install_depends | install the required dependencies to run this script
 function install_depends {
     yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip 
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip python 
     greentext 'Successfully installed required dependencies!'
     echo
 }
