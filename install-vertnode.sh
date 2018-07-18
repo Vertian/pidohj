@@ -784,9 +784,10 @@ function install_lit {
     export PATH=$PATH:/usr/local/go/bin
     # display go version
     go version
-    echo
     # install lit
-    greentext 'Installing lit & lit-af...'
+    echo
+    greentext 'Installing lit, lit-af...'
+    echo
     cd "$userhome"/
     git clone https://github.com/mit-dci/lit
     cd "$userhome"/lit/
