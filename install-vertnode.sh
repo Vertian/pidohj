@@ -127,8 +127,15 @@ while true; do
         LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
         break
     else
-        # grap ip address for ubuntu
-        LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+            if [[ $KERNEL = "orangepione" ]]; then  
+                # grab ip address for orange pi one
+                LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}' | awk 'NR==1{print $1}')"
+            else
+                # grap ip address for ubuntu
+                LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+            fi
+        # do nothing        
+        :
         break
     fi
 done
@@ -368,7 +375,7 @@ function update_rasp {
 # install_depends | install the required dependencies to run this script
 function install_depends {
     yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip python 
+    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip python python2.7-dev
     greentext 'Successfully installed required dependencies!'
     echo
 }
