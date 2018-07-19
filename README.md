@@ -33,9 +33,9 @@
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
 - [x] **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/ubuntu-16.04.4-server-amd64.iso)**
-- [x] **Orange Pi One | [Armbian Stretch](https://dl.armbian.com/orangepione/Debian_stretch_next.7z) | [Getting Started](https://docs.armbian.com/User-Guide_Getting-Started/)**
+- [x] **Orange Pi One | [Armbian Stretch](https://dl.armbian.com/orangepione/Debian_stretch_next.7z) | [Getting Started](https://docs.armbian.com/User-Guide_Getting-Started/) |** `login` root `pass` 1234
 
-**`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC or `amd64` compatible hardware running Debian / Ubuntu ensure that you insert a USB flash drive and...
+**`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC, Orange Pi One or `amd64` compatible hardware running Debian / Ubuntu ensure that you insert a USB flash drive and...
 ```
 sudo apt-get update ; sudo apt-get upgrade -y ; sudo apt-get install git -y ; sudo reboot
 ``` 
