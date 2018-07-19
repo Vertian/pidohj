@@ -158,6 +158,30 @@ Perhaps iptables or your kernel needs to be upgraded.
 
 ------------
 
+### Shopping List
+|                                                              Name                                                             |        Price        |                                         URL                                        |
+|:-----------------------------------------------------------------------------------------------------------------------------:|:-------------------:|:----------------------------------------------------------------------------------:|
+|                                                         Raspberry Pi                                                          | -------             | ----------------------------------                                                 |
+| CanaKit Raspberry Pi 3 with 2.5A Micro USB Power Supply                                                                       | $42-$45 USD         | https://www.amazon.com/CanaKit-Raspberry-Micro-Supply-Listed/dp/B01C6FFNY4/        |
+|                                                                                         C4 Labs Zebra Case - Raspberry Pi 3B+ | $14.95 USD          | https://www.amazon.com/C4-Labs-Zebra-Case-Raspberry/dp/B00M6G9YBM/                 |
+| CanaKit Raspberry Pi Zero W (Wireless) Complete Starter Kit - 16 GB                                                           | $32.99 USD          | https://www.amazon.com/CanaKit-Raspberry-Wireless-Complete-Starter/dp/B072N3X39J/  |
+|                                                                      Zebra Zero Heatsink Case Black Ice for Raspberry Pi Zero | $6.95 USD           | https://www.amazon.com/Zebra-Heatsink-Raspberry-Wireless-C4Labs/dp/B01HP636I4/     |
+|                                                Pine64 Rock64 Media Board 1-4GB                                                | $24.95 - $44.95 USD | https://www.pine64.org/?product=rock64-media-board-computer                        |
+|                                               Orange Pi One Project Board ARMv7                                               | $19.99 USD          | https://www.amazon.com/Orange-Pi-One-Project-Board/dp/B01CD48E94/                  |
+| LoveRPi 8" MicroUSB to 4.0mm x 1.7mm Barrel Plug Adapter with Click Button Power Switch for Banana Pi M2 and Orange Pi Boards | $5.99 USD           | https://www.amazon.com/LoveRPi-MicroUSB-Barrel-Adapter-Button/dp/B01CMZVQQ2/       |
+|                                                          LoveRPi 2.5A 4.0mm x 1.7mm Barrel Plug Power Supply Adapter Charger  | ~7.00 USD           | https://www.amazon.com/LoveRPi-Barrel-Supply-Adapter-Charger/dp/B01CMZ96EG/        |
+|                                                 Sandisk Ultra 16GB Micro SDHC                                                 | $8.17 USD           | https://www.amazon.com/Sandisk-Ultra-Micro-UHS-I-Adapter/dp/B073K14CVB/            |
+|                                           Kingston Digital DataTraveler 16GB USB 2.0                                          | $5.99 USD           | https://www.amazon.com/Kingston-Digital-DataTraveler-DTSE9H-16GBZ/dp/B006W8U2WU/   |
+|                                                           Intel NUC                                                           | -------             | NOTE the memory type the Intel NUC takes, DDR3 or DDR4 and purchase accordingly    |
+|                                                                                                            Intel NUC NUC5CPYH | $115.13 USD         | https://www.amazon.com/Intel-NUC5CPYH-Graphics-2-5-Inch-BOXNUC5CPYH/dp/B00XPVRR5M/ |
+|                                                                                                         Intel NUC BOXNUC6CAYH | $127.02 USD         | https://www.amazon.com/dp/B01MSZTD8N/                                              |
+|                                                                                                   Intel NUC 7 Pentium Mini PC |  $169.99 USD        | https://www.amazon.com/Intel-NUC7-Pentium-Mini-BOXNUC7PJYH1/dp/B07C9GF256/         |
+|                                                                                                       Crucial 4GB Single DDR4 | $40.25 USD          | https://www.amazon.com/Crucial-PC4-19200-Unbuffered-SODIMM-260-Pin/dp/B019FRDKWI/  |
+|                                                                                                       Crucial 4GB Single DDR3 | $37.48 USD          | https://www.amazon.com/dp/B009RBN6I6/                                              |
+|                                                                                                        SanDisk SSD PLUS 120GB | $44.95 USD          | https://www.amazon.com/dp/B01F9G414U/                                              |
+
+------------------------
+
 ![NodeMap](https://i.imgur.com/rzj5SU2.png)
 ## [Vertcoin Node Scanner](https://scanner.vertcoin.org/nodes)
 
