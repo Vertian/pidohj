@@ -56,6 +56,7 @@ sudo ./install-vertnode.sh
 - [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
 - [x] fix `go` errors when fetching `go version`
 - [ ] add `md5` hash checksum to `vertcoind` and `golang` downloads
+- [ ] force compiling from souce on raspberry pi zero
 
 ---------------
 
