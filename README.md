@@ -57,6 +57,7 @@ sudo ./install-vertnode.sh
 - [x] fix `go` errors when fetching `go version`
 - [ ] add `md5` hash checksum to `vertcoind` and `golang` downloads
 - [ ] force compiling from souce on raspberry pi zero
+- [ ] add TOR network option
 
 ---------------
 
