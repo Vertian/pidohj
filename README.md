@@ -8,6 +8,7 @@
 
 ## [Vertcoin.org](https://vertcoin.org/)
 ## [Vertcoin Node Scanner](https://scanner.vertcoin.org/nodes)
+## [`lit` `lit-af` /mit-dci/lit](https://github.com/mit-dci/lit)
 
 ------------
 
@@ -27,6 +28,8 @@
 ### **`Optional lit & lit-af Installation`**<img src="https://i.imgur.com/c6GEfJS.png" width="30" height="30" />
 ### **`Optional P2Pool Installation`**
 ### **`USB flash drive required: 8GB >`**
+## [`lit` `lit-af` Vertnode Documentation](https://github.com/e-corp-sam-sepiol/vertnode/blob/master/docs/lit.md)
+
 
 ### Supported
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
