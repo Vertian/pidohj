@@ -83,7 +83,7 @@ FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
 KERNEL="$(uname -a | awk '{print $2}')"
 # grab the first column of system name
-SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print $1}')"
+SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print}')"
 # grab the default gateway ip address
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab the release name of operating system
@@ -100,11 +100,11 @@ LOADBLOCKMETHOD=''
 MAXUPLOAD=''
 # find the active interface
 while true; do
-    if [[ $SYSTEM = "Raspberry" ]]; then
+    if [[ $SYSTEM = "Raspberry Pi Zero"* ]]; then
         # grab only the first row of data, user may want wifi + lan
         INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//' | awk 'NR==1{print $1}')"
         break
-    elif [[ $SYSTEM = "Rockchip" ]]; then
+    elif [[ $SYSTEM = "Rockchip"* ]]; then
         sudo apt-get install facter -y
         # grab only the first row of data, user may want wifi + lan
         INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//' | awk 'NR==1{print $1}')"
@@ -118,11 +118,11 @@ done
 # check the active interface for its ip address
 while true; do
     # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
-    if [[ $SYSTEM = "Raspberry" ]]; then
+    if [[ $SYSTEM = "Raspberry"* ]]; then
         # grab ip address for raspberry pi    
         LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}' | awk 'NR==1{print $1}')"
         break 
-    elif [[ $SYSTEM = "Rockchip" ]]; then
+    elif [[ $SYSTEM = "Rockchip"* ]]; then
         # grab ip address for rock64 
         LANIP="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $3}')"
         break
@@ -245,7 +245,7 @@ function compile_or_compiled {
     # if the system name contains RaspberryPiZero then compile from source
     # to avoid segmentation fault errors   
     while true; do
-        if echo "$SYSTEM" | grep -qe 'RaspberryPiZero.*' ; then
+        if [[ $SYSTEM = "Raspberry Pi Zero"* ]]; then
             echo "**************************************************************************"           
             echo "HARDWARE = $SYSTEM"
             echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
@@ -257,7 +257,7 @@ function compile_or_compiled {
             BUILDVERTCOIN="install_vertcoind"
             break
         fi
-        if [[ $SYSTEM = "Rockchip" ]]; then
+        if [[ $SYSTEM = "Rockchip"* ]]; then
             echo "**************************************************************************"           
             echo "HARDWARE = $SYSTEM"
             echo "No precompiled releases are made available for $SYSTEM $ARCH."
@@ -507,23 +507,17 @@ function install_berkeley {
     sudo -u "$user" tar -xzvf db-4.8.30.NC.tar.gz
     cd db-4.8.30.NC/build_unix/
     # check if system is rock64, specify build type if true
-    if [[ $SYSTEM = "Rockchip" ]]; then
+    if [[ $SYSTEM = "Rockchip"* ]]; then
         ../dist/configure --enable-cxx --build=aarch64-unknown-linux-gnu
     else
         ../dist/configure --enable-cxx
     fi
     make
     sudo make install
-    # if the system is a rock64 export the location of berkeleydb
-    if [[ $SYSTEM = "Rockchip" ]]; then
-        # set the current environment berkeley db location
-        export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/
-        # echo the same location into .bashrc for persistence
-        echo 'export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/' >> /home/"$user"/.bashrc
-    else
-        # do nothing
-        :
-    fi
+    # set the current environment berkeley db location
+    export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
+    # echo the same location into .bashrc for persistence
+    echo 'export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/' >> /home/"$user"/.bashrc
     greentext 'Successfully installed Berkeley (4.8) database!'
     echo
 }
@@ -549,7 +543,7 @@ function install_vertcoind {
     cd "$userhome"/bin
     git clone https://github.com/vertcoin-project/vertcoin-core.git
     while true; do        
-       if [[ $SYSTEM = "Rockchip" ]]; then
+       if [[ $SYSTEM = "Rockchip"* ]]; then
                 cd "$userhome"/bin/vertcoin-core/
                 ./autogen.sh        
                 ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
@@ -773,12 +767,12 @@ function install_lit {
     echo
     while true; do
         # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
-        if [[ $SYSTEM = "Raspberry" ]]; then
+        if [[ $SYSTEM = "Raspberry"* ]]; then
             # grab armhf arch for raspberry pi  
             curl -L -O https://dl.google.com/go/go1.10.3.linux-armv6l.tar.gz
             tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
             break 
-        elif [[ $SYSTEM = "Rockchip" ]]; then
+        elif [[ $SYSTEM = "Rockchip"* ]]; then
             # grab arm64 arch for rock64 
             curl -L -O https://dl.google.com/go/go1.10.3.linux-arm64.tar.gz
             tar -C /usr/local -xzf go1.10.3.linux-arm64.tar.gz
