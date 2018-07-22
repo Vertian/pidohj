@@ -73,6 +73,9 @@ Vertcoin is a digital currency supported by a peer-to-peer network. In order to 
 #### Why a Raspberry Pi?
 Raspberry Pi is an inexpensive computing hardware platform that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it.
 
+#### Why a Orange Pi One?
+Orange Pi One is inexpensive computing hardware that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it.
+
 #### Why a Rock64 Media Board?
 ROCK64 is a credit card size 4K60P HDR10 Media Board Computer powered by Rockchip RK3328 Quad-Core ARM Cortex A53 64-Bit Processor and support up to 4GB 1600MHz LPDDR3 memory. The Rock64 Media Board is an inexpensive computing hardware platform that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it. The Rock64 Media Board costs a little bit more than the Raspberry Pi 3, but provides better hardware and significantly more memory. 
 
