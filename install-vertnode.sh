@@ -46,36 +46,35 @@
 #           config_crontab      | function to configure crontab to start 
 # -------------------------------------------------------------------
 
+# hinder root from running script
+if [[ $EUID -eq 0 ]]; then
+  echo "Please do not run this script as root." 1>&2
+  exit 1
+fi
 # clear the screen to begin
 clear
-
 # install depends for detection; check for lshw, install if not
 if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-vertnode..."    
-    apt-get install lshw -y
+    sudo apt-get install lshw -y
 fi
-
 # install depends for detection; check for gawk, install if not
 if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-vertnode..."    
-    apt-get install gawk -y
+    sudo apt-get install gawk -y
 fi
-
 # install depends for detection; check for git, install if not
 if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-vertnode..."    
-    apt-get install git -y
+    sudo apt-get install git -y
 fi
-
 # fail on error; debug all lines
 set -eu -o pipefail
-
 # colors for console output
 TEXT_RESET='\e[0m'
 TEXT_YELLOW='\e[0;33m'
 TEXT_RED='\e[1;31m'
 TEXT_GREEN='\e[0;32m'
-
 # global script variables
 user=$(logname)
 userhome='/home/'$user
@@ -83,7 +82,7 @@ FOLD1='/dev/'
 PUBLICIP="$(curl -s ipinfo.io/ip)"
 KERNEL="$(uname -a | awk '{print $2}')"
 # grab the first column of system name
-SYSTEM="$(lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print}')"
+SYSTEM="$(sudo lshw -short | grep system | awk -F'[: ]+' '{print $3" "$4" "$5" "$6" "$7" "$8" "$9" "$10" "$11}' | awk '{print}')"
 # grab the default gateway ip address
 GATEWAY="$(ip r | grep "via " | awk -F'[: ]+' '{print $3}')"
 # grab the release name of operating system
@@ -389,13 +388,13 @@ function secure {
     network_addr
     # configure ufw firewall   
     echo
-    ufw default deny incoming
-    ufw default allow outgoing
-    ufw allow from $network_address to any port 22 comment 'allow SSH from local LAN'
-    ufw allow 5889 comment 'allow vertcoin core'
-    ufw --force enable
-    systemctl enable ufw
-    ufw status
+    sudo ufw default deny incoming
+    sudo ufw default allow outgoing
+    sudo ufw allow from $network_address to any port 22 comment 'allow SSH from local LAN'
+    sudo ufw allow 5889 comment 'allow vertcoin core'
+    sudo ufw --force enable
+    sudo systemctl enable ufw
+    sudo ufw status
     echo 
     greentext 'Successfully configured firewall!'
     echo 
@@ -430,28 +429,28 @@ function hd_detect {
 function hd_config {
     drive=$drive"1"
         if mount | grep "$drive" > /dev/null; then
-            umount -l "$drive" > /dev/null
+            sudo umount -l "$drive" > /dev/null
         fi
     yellowtext 'Formatting USB flash drive...'
     # format usb disk as ext4 filesystem    
     sudo mkfs.ext4 -F "$drive" -L storage
     greentext 'Successfully formatted flash drive!'
     # locally declare UUID as the value given by blkid
-    UUID="$(blkid -o value -s UUID "$drive")"
+    UUID="$(sudo blkid -o value -s UUID "$drive")"
     echo
     yellowtext 'Creating Vertcoin data folder...'
     VTCDIR='/home/'$user'/.vertcoin'
     mkdir -p "$VTCDIR"
     yellowtext 'Modifying fstab configuration...'
     echo    
-    sudo sed -i".bak" "/$UUID/d" /etc/fstab
-    echo "UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0" >> /etc/fstab
+    sudo sed -i".bak" "/$UUID/d" /etc/fstab    
+    sudo sh -c "echo 'UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0' >> /etc/fstab"
         if mount | grep "$drive" > /dev/null; then
             :
         else
             sudo mount -a
         fi
-    chmod 777 $VTCDIR
+    sudo chmod 777 $VTCDIR
     greentext 'Successfully configured USB flash drive!'
     echo
 }
@@ -479,20 +478,20 @@ function swap_config {
     echo
     # continue and configure swap    
     yellowtext 'Configuring swap file to reside on USB flash drive...'
-    sudo -u "$user" mkdir -p /home/"$user"/.vertcoin/swap
+    mkdir -p /home/"$user"/.vertcoin/swap
     # dd will take a few minutes to complete
     echo 
     echo "This may take awhile, please be patient."
     dd if=/dev/zero of=/home/"$user"/.vertcoin/swap/swap.file bs=1M count=2148
-    chmod 600 /home/"$user"/.vertcoin/swap/swap.file
+    sudo chmod 600 /home/"$user"/.vertcoin/swap/swap.file
     sudo sed -i".bak" "/CONF_SWAPFILE/d" /etc/dphys-swapfile
     sudo sed -i".bak" "/CONF_SWAPSIZE/d" /etc/dphys-swapfile
-    echo "CONF_SWAPFILE=/home/$user/.vertcoin/swap/swap.file" >> /etc/dphys-swapfile
+    sudo sh -c "echo 'CONF_SWAPFILE=/home/$user/.vertcoin/swap/swap.file' >> /etc/dphys-swapfile"
     # set aside 2GB of memory for swap    
-    echo "CONF_SWAPSIZE=2048" >> /etc/dphys-swapfile
-    mkswap /home/"$user"/.vertcoin/swap/swap.file
-    swapon /home/"$user"/.vertcoin/swap/swap.file
-    echo "/home/$user/.vertcoin/swap/swap.file  none  swap  defaults  0    0" >> /etc/fstab
+    sudo sh -c "echo 'CONF_SWAPSIZE=2048' >> /etc/dphys-swapfile"
+    sudo mkswap /home/"$user"/.vertcoin/swap/swap.file
+    sudo swapon /home/"$user"/.vertcoin/swap/swap.file
+    sudo sh -c "echo '/home/$user/.vertcoin/swap/swap.file  none  swap  defaults  0    0' >> /etc/fstab"
     echo    
     greentext 'Successfully configured swap space!'
     echo
@@ -501,10 +500,10 @@ function swap_config {
 # install_berkeley | install berkeley database 4.8 for wallet functionality
 function install_berkeley {
     yellowtext 'Installing Berkeley (4.8) database...'
-    sudo -u "$user" mkdir -p "$userhome"/bin
+    mkdir -p "$userhome"/bin
     cd "$userhome"/bin
-    sudo -u "$user" wget http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz
-    sudo -u "$user" tar -xzvf db-4.8.30.NC.tar.gz
+    wget http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz
+    tar -xzvf db-4.8.30.NC.tar.gz
     cd db-4.8.30.NC/build_unix/
     # check if system is rock64, specify build type if true
     if [[ $SYSTEM = "Rockchip"* ]]; then
@@ -572,7 +571,7 @@ function install_vertcoind {
 # grab_vtc_release | grab the latest vertcoind release from github
 function grab_vtc_release {
     if [[ $RELEASE = "Ubuntu" ]]; then
-        add-apt-repository ppa:bitcoin/bitcoin -y
+        sudo add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
         sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
     fi
@@ -585,7 +584,7 @@ function grab_vtc_release {
     # clean up    
     rm vertcoind-v$VERSION-linux-$ARCH.zip
     # move vertcoin binaries to /usr/bin/ 
-    mv vertcoind vertcoin-tx vertcoin-cli /usr/bin/
+    sudo mv vertcoind vertcoin-tx vertcoin-cli /usr/bin/
 }
 
 # grab_bootstrap | grab the latest bootstrap.dat
@@ -638,7 +637,7 @@ function config_vertcoin {
     echo 'usehd=1' >> /home/"$user"/.vertcoin/vertcoin.conf
     # configure permissions for user access
     cd "$userhome"/.vertcoin/
-    chmod 777 vertcoin.conf
+    sudo chmod 777 vertcoin.conf
 }
 
 # userinput_p2pool | configure p2pool based on user input
@@ -665,8 +664,8 @@ function install_p2pool {
     sudo apt-get install python-rrdtool python-pygame python-scipy python-twisted python-twisted-web python-imaging python-pip libffi-dev -y
     # grab latest p2pool-vtc release
     cd "$userhome"/
-    sudo -u "$user" wget "https://github.com/vertcoin-project/p2pool-vtc/archive/v0.3.0-rc1.zip"
-    sudo -u "$user" unzip v0.3.0-rc1.zip
+    wget "https://github.com/vertcoin-project/p2pool-vtc/archive/v0.3.0-rc1.zip"
+    unzip v0.3.0-rc1.zip
     sudo rm v0.3.0-rc1.zip
     cd "$userhome"/p2pool-vtc-0.3.0-rc1/
     sudo python setup.py install
@@ -675,25 +674,25 @@ function install_p2pool {
     yellowtext 'Installing alternate web frontend for p2pool-vtc...'
     echo
     cd "$userhome"/
-    sudo -u "$user" git clone https://github.com/hardcpp/P2PoolExtendedFrontEnd.git
+    git clone https://github.com/hardcpp/P2PoolExtendedFrontEnd.git
     cd "$userhome"/P2PoolExtendedFrontEnd/
-    sudo -u "$user" mv * /home/$user/p2pool-vtc-0.3.0-rc1/web-static/
+    mv * /home/$user/p2pool-vtc-0.3.0-rc1/web-static/
     cd "$userhome"/
     # clean up
-    rm -r P2PoolExtendedFrontEnd/
+    sudo rm -r P2PoolExtendedFrontEnd/
     echo
     greentext 'Successfully installed alternate web frontend for p2pool-vtc!'
     echo
-    getnewaddress=$(sudo -u $user vertcoin-cli getnewaddress "" legacy)
+    getnewaddress=$(vertcoin-cli getnewaddress "" legacy)
     # grab the LAN IP range and store it in variable network_address    
     network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
     # open both ports for network 1 & network 2
-    ufw allow 9171 comment 'allow --network 1 mining port'
-    ufw allow 9181 comment 'allow --network 2 mining port'
-    ufw allow 9346 comment 'allow --network 1 p2p port'
-    ufw allow 9347 comment 'allow --network 2 p2p port'
-    ufw --force enable
-    ufw status
+    sudo ufw allow 9171 comment 'allow --network 1 mining port'
+    sudo ufw allow 9181 comment 'allow --network 2 mining port'
+    sudo ufw allow 9346 comment 'allow --network 1 p2p port'
+    sudo ufw allow 9347 comment 'allow --network 2 p2p port'
+    sudo ufw --force enable
+    sudo ufw status
     # begin configuration of p2pool
     yellowtext 'Configuring p2pool-vtc...'
     echo
@@ -739,7 +738,7 @@ function install_p2pool {
     echo
     yellowtext 'Starting p2pool-vtc...'
     cd "$userhome"/
-    sudo -u "$user" nohup sh start-p2pool.sh &
+    nohup ./start-p2pool.sh &
 }
 
 # userinput_lit | configure lit based on user input
@@ -770,21 +769,21 @@ function install_lit {
         if [[ $SYSTEM = "Raspberry"* ]]; then
             # grab armhf arch for raspberry pi  
             curl -L -O https://dl.google.com/go/go1.10.3.linux-armv6l.tar.gz
-            tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
+            sudo tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
             break 
         elif [[ $SYSTEM = "Rockchip"* ]]; then
             # grab arm64 arch for rock64 
             curl -L -O https://dl.google.com/go/go1.10.3.linux-arm64.tar.gz
-            tar -C /usr/local -xzf go1.10.3.linux-arm64.tar.gz
+            sudo tar -C /usr/local -xzf go1.10.3.linux-arm64.tar.gz
             break
         else
                 if [[ $KERNEL = "orangepione" ]]; then  
                     curl -L -O https://dl.google.com/go/go1.10.3.linux-armv6l.tar.gz
-                    tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
+                    sudo tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
                 else
                     # grab amd64 arch
                     curl -L -O https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
-                    tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz
+                    sudo tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz
                 fi
             # do nothing        
             :
@@ -793,7 +792,7 @@ function install_lit {
     done
     # echo enviornment variables to .bashrc which is loaded on each new shell
     echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
-    sudo -u "$user" mkdir -p /home/$user/go
+    mkdir -p /home/$user/go
     echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
     # export environment variables to current shell     
     export GOPATH=$HOME/go    
@@ -810,7 +809,7 @@ function install_lit {
     make
     cd "$userhome"/
     # clean up home directory
-    rm go1.*.tar.gz
+    sudo rm go1.*.tar.gz
 }
 
 # initiate_blockchain | take user response from load_blockchain and execute
@@ -824,8 +823,17 @@ function initiate_blockchain {
         echo
         greentext 'Starting Vertcoin Core...'
         echo
-        sudo -u "$user" vertcoind -daemon 
-        sleep 120  
+        if [[ $BUILDVERTCOIN="install_vertcoind" ]]; then
+            # if vertcoin was built from source set berkeleydb path 
+            # env variable was exported to .bashrc but not active until new terminal session
+            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
+            vertcoind -daemon
+            sleep 120 
+        else
+            # just launch vertcoin because vertcoin was compiled for us
+            vertcoind -daemon 
+            sleep 120 
+        fi         
     elif [[ $LOADBLOCKMETHOD = "grab_bootstrap" ]]; then
         grab_bootstrap
         echo
@@ -834,7 +842,17 @@ function initiate_blockchain {
         echo
         greentext 'Starting Vertcoin Core...'
         echo
-        sudo -u "$user" vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
+        if [[ $BUILDVERTCOIN="install_vertcoind" ]]; then
+            # if vertcoin was built from source set berkeleydb path 
+            # env variable was exported to .bashrc but not active until new terminal session
+            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
+            vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
+            sleep 120 
+        else
+            # just launch vertcoin because vertcoin was compiled for us
+            vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
+            sleep 120 
+        fi
         sleep 120           
     else
         # else just sync vertcoin on its own
@@ -844,8 +862,17 @@ function initiate_blockchain {
         echo
         greentext 'Starting Vertcoin Core...'
         echo
-        sudo -u "$user" vertcoind -daemon 
-        sleep 120         
+        if [[ $BUILDVERTCOIN="install_vertcoind" ]]; then
+            # if vertcoin was built from source set berkeleydb path 
+            # env variable was exported to .bashrc but not active until new terminal session
+            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
+            vertcoind -daemon        
+            sleep 120 
+        else
+            # just launch vertcoin because vertcoin was compiled for us
+            vertcoind -daemon 
+            sleep 120 
+        fi       
     fi 
 }
 
@@ -914,11 +941,7 @@ function installation_report {
 
 # -------------BEGIN-MAIN-------------------
 
-# check for sudo when running the script
-if [ "$(id -u)" -ne 0 ]; then
-    redtext "Please run this script with sudo!" >&2
-    exit 1
-fi
+
 # clear the screen
 clear
 user_intro
