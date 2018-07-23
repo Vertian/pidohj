@@ -128,10 +128,10 @@ while true; do
     else
             if [[ $KERNEL = "orangepione" ]]; then  
                 # grab ip address for orange pi one
-                LANIP="$(ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}' | awk 'NR==1{print $1}')"
+                LANIP="$(sudo ifconfig $INTERFACE | grep "inet " | awk -F'[: ]+' '{print $3}' | awk 'NR==1{print $1}')"
             else
                 # grap ip address for ubuntu
-                LANIP="$(ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
+                LANIP="$(sudo ifconfig $INTERFACE | grep "inet addr" | awk -F'[: ]+' '{print $4}')"
             fi
         # do nothing        
         :
