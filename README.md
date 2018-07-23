@@ -47,7 +47,7 @@ sudo apt-get update ; sudo apt-get upgrade -y ; sudo apt-get install git -y ; su
 git clone https://github.com/e-corp-sam-sepiol/vertnode.git
 cd vertnode/
 chmod +x install-vertnode.sh
-sudo ./install-vertnode.sh 
+./install-vertnode.sh 
 ```
 
 ---------------
@@ -61,7 +61,7 @@ sudo ./install-vertnode.sh
 - [ ] add `md5` hash checksum to `vertcoind` and `golang` downloads
 - [x] force compiling from souce on raspberry pi zero
 - [ ] add TOR network option
-- [ ] fix libdb_cxx.so missing directory error when running vertcoin after compiling from source
+- [x] fix libdb_cxx.so missing directory error when running vertcoin after compiling from source
 
 ---------------
 
