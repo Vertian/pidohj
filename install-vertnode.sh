@@ -268,6 +268,17 @@ function compile_or_compiled {
             BUILDVERTCOIN="install_vertcoind"
             break
         fi
+        if [[ $KERNEL = "orangepione" ]]; then
+            echo "**************************************************************************"           
+            echo "HARDWARE = $KERNEL"
+            echo "The latest release of Vertcoin will be utilized for $KERNEL $ARCH."
+            echo
+            echo "$KERNEL currently experiences issues building Vertcoin from source"
+            echo "**************************************************************************"
+            sleep 15
+            BUILDVERTCOIN="grab_vtc_release"
+            break
+        fi
             # prompt user if they would like to build from source
         read -p "Would you like to build Vertcoin from source? (y/n) " yn
         case $yn in 
