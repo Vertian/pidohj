@@ -48,9 +48,9 @@ function install_go {
         fi
     done
     # echo enviornment variables to .bashrc which is loaded on each new shell
-    #echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
     sudo -u "$user" mkdir -p /home/$user/go
-    #echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
+    echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
     # export environment variables to current shell     
     export GOPATH=$HOME/go    
     export PATH=$PATH:/usr/local/go/bin
