@@ -2,7 +2,7 @@
 #
 # TESTING IN PROGRESS
 #
-# An automated script to assist with installing Vertcoin full node(s)
+# An automated script to assist with installing Dogecoin full node(s)
 # -------------------------------------------------------------------
 # AUTHORS:
 # jochemin   | Twitter: @jochemin | BTC Donations --> 3FM6FypcrSVhdHh7cpVQMrhPXPZ6zcXeYU
@@ -11,7 +11,7 @@
 # Thanks @b17z, this fork would not have happened without you. Thanks
 # for your help and inspiration. 
 #
-# Dedicated to the Vertcoin community. 
+# Dedicated to the dogecoin community. 
 # -------------------------------------------------------------------
 # Functions:
 #           color functions
@@ -26,14 +26,14 @@
 #           secure              | modify iptables to limit connections for security purposes
 #           update_rasp         | update the system
 #           install_berkeley    | install berkeley database 4.8 for wallet functionality
-#           install_vertcoind   | clone, build and install vertcoin core daemon
-#           config_vertcoin     | create ~/.vertcoin/vertcoin.conf to configure vertcoind
+#           install_dogecoind   | clone, build and install dogecoin core daemon
+#           config_dogecoin     | create ~/.dogecoin/dogecoin.conf to configure dogecoind
 #           install_depends     | install the required dependencies to run this script
-#           grab_vtc_release    | grab the latest vertcoind release from github
+#           grab_doge_release    | grab the latest dogecoind release from github
 #           wait_for_continue   | function for classic "Press spacebar to continue..." 
-#           grab_vtc_release    | grab the latest vertcoind release from github
+#           grab_doge_release    | grab the latest dogecoind release from github
 #           grab_bootstrap      | grab the latest bootstrap.dat from alwayshashing
-#           compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
+#           compile_or_compiled | prompt the user for input; would you like to build dogecoin core 
 #           load_blockchain     | prompt the user for input; would you like to sideload the chain or 
 #                               | grab the latest bootstrap.dat
 #           prompt_p2pool       | function to prompt user with option to install p2pool
@@ -55,17 +55,17 @@ fi
 clear
 # install depends for detection; check for lshw, install if not
 if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-    echo "Installing required dependencies to run install-vertnode..."    
+    echo "Installing required dependencies to run install-dogecoinnode..."    
     sudo apt-get install lshw -y
 fi
 # install depends for detection; check for gawk, install if not
 if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-    echo "Installing required dependencies to run install-vertnode..."    
+    echo "Installing required dependencies to run install-dogecoinnode..."    
     sudo apt-get install gawk -y
 fi
 # install depends for detection; check for git, install if not
 if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-    echo "Installing required dependencies to run install-vertnode..."    
+    echo "Installing required dependencies to run install-dogecoinnode..."    
     sudo apt-get install git -y
 fi
 # fail on error; debug all lines
@@ -94,7 +94,7 @@ ARCH="$(dpkg --print-architecture)"
 P2P=''
 INSTALLP2POOL=''
 INSTALL_LIT=''
-BUILDVERTCOIN=''
+BUILDDOGECOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
 # find the active interface
@@ -150,7 +150,7 @@ function network_addr {
 function wait_for_continue {
     echo 
     echo "DO NOT CONTINUE UNTIL THE BLOCKCHAIN HAS BEEN"
-    echo "COMPLETELY COPIED OVER TO $userhome/.vertcoin/"
+    echo "COMPLETELY COPIED OVER TO $userhome/.dogecoin/"
     echo
     read -n 1 -s -r -p "Press any key to continue..."
     echo
@@ -172,21 +172,19 @@ function redtext(){
 
 # user_intro | introduction to installation script, any key to continue
 function user_intro {
-    greentext 'Welcome to the Vertnode installation script!'
+    greentext 'Welcome to the Dogecoin node installation script!'
     echo
-    greentext 'This script will install the Vertcoin software and allow for'
-    greentext 'easy configuration of a Vertcoin full node. Additionally the'
-    greentext 'script provides an optional installation and configuration of'
-    greentext 'p2pool-vtc.'
+    greentext 'This script will install the Dogecoin software and allow for'
+    greentext 'easy configuration of a Dogecoin full node.'
     echo 
     echo "To make this node a full node, please visit $GATEWAY with the"
     echo "URL bar of your web browser. Login to your router and continue"
     echo "to the port forwarding section and port forward..."
-    echo "$LANIP TCP/UDP 5889"
+    echo "$LANIP TCP/UDP 22556"
     echo
-    yellowtext 'What is a full node? It is a Vertcoin server that contains the'
-    yellowtext 'full blockchain and propagates transactions throughout the Vertcoin'
-    yellowtext 'network via peers). Playing its part to keep the Vertcoin peer-to-peer'
+    yellowtext 'What is a full node? It is a Dogecoin server that contains the'
+    yellowtext 'full blockchain and propagates transactions throughout the Dogecoin'
+    yellowtext 'network via peers. Playing its part to keep the Dogecoin peer-to-peer'
     yellowtext 'network healthy and strong.'
     echo
     read -n 1 -s -r -p "Press any key to continue..."
@@ -207,14 +205,14 @@ function user_input {
     done
     clear
     echo -e "$TEXT_GREEN"
-    echo 'Vertcoin requires both an rpcuser & rpcpassword, enter your preferred values: '
+    echo 'Dogecoin requires both an rpcuser & rpcpassword, enter your preferred values: '
     read -p 'Enter RPC user: ' rpcuser
     read -s -p 'Enter RPC password: ' rpcpass
     clear    
     while true; do
         echo -e "$TEXT_GREEN"
         echo "What would you like the maximum amount of data (in MegaBytes) "
-        echo "that you would like to allow your Vertcoin node to upload daily? "
+        echo "that you would like to allow your Dogecoin node to upload daily? "
         echo
         echo "Examples:"
         echo "          1024 = 1GB"
@@ -238,7 +236,7 @@ function user_input {
     done
 }
 
-# compile_or_compiled | prompt the user for input; would you like to build vertcoin core 
+# compile_or_compiled | prompt the user for input; would you like to build Dogecoin core 
 #                     | from source or would you like to grab the latest release binary?
 function compile_or_compiled {
     # if the system name contains RaspberryPiZero then compile from source
@@ -249,11 +247,11 @@ function compile_or_compiled {
             echo "HARDWARE = $SYSTEM"
             echo "Precompiled release binaries produce segmentation fault errors on $SYSTEM."
             echo
-            echo "This script will build Vertcoin Core from source..."
+            echo "This script will build Dogecoin Core from source..."
             echo "NOTE: These operations will utilize the CPU @ 100% for a long time."
             echo "**************************************************************************"
             sleep 15
-            BUILDVERTCOIN="install_vertcoind"
+            BUILDDOGECOIN="install_dogecoind"
             break
         fi
         if [[ $SYSTEM = "Rockchip"* ]]; then
@@ -261,65 +259,37 @@ function compile_or_compiled {
             echo "HARDWARE = $SYSTEM"
             echo "No precompiled releases are made available for $SYSTEM $ARCH."
             echo
-            echo "This script will build Vertcoin Core from source..."
+            echo "This script will build Dogecoin Core from source..."
             echo "NOTE: These operations will utilize the CPU @ 100% for some time."
             echo "**************************************************************************"
             sleep 15
-            BUILDVERTCOIN="install_vertcoind"
+            BUILDDOGECOIN="install_dogecoind"
             break
         fi
         if [[ $KERNEL = "orangepione" ]]; then
             echo "**************************************************************************"           
             echo "HARDWARE = $KERNEL"
-            echo "The latest release of Vertcoin will be utilized for $KERNEL $ARCH."
+            echo "The latest release of Dogecoin will be utilized for $KERNEL $ARCH."
             echo
-            echo "$KERNEL currently experiences issues building Vertcoin from source"
+            echo "$KERNEL currently experiences issues building Dogecoin from source"
             echo "**************************************************************************"
             sleep 15
-            BUILDVERTCOIN="grab_vtc_release"
+            BUILDDOGECOIN="grab_doge_release"
             break
         fi
             # prompt user if they would like to build from source
-        read -p "Would you like to build Vertcoin from source? (y/n) " yn
+        read -p "Would you like to build Dogecoin from source? (y/n) " yn
         case $yn in 
-            # if user says yes, call install_vertcoind to compile source
-            [Yy]*   )   BUILDVERTCOIN="install_vertcoind"; break;;
-            # if user says no, grab latest vtc release and break from loop            
-            [Nn]*   )   BUILDVERTCOIN="grab_vtc_release"; break;;
-        esac
-    done
-}
-
-# prompt_p2pool | function to prompt user with option to install p2pool
-function prompt_p2pool {
-    while true; do
-        echo
-        read -p "Would you like install p2pool-vtc? (y/n) " yn
-        case $yn$P2P in 
-            # if user says yes, call install_p2pool 
-            [Yy]*   )   INSTALLP2POOL="install_p2pool"; break;;
-            # if user says no, break from loop            
-            [Nn]*   )   INSTALLP2POOL=""; break;;
-        esac
-    done
-}
-
-# prompt_lit | function to prompt user with option to install lit
-function prompt_lit {
-    while true; do
-        echo
-        read -p "Would you like install lit & lit-af? (y/n) " yn
-        case $yn in 
-            # if user says yes, call install_lit
-            [Yy]*   )   INSTALL_LIT="install_lit"; break;;
-            # if user says no, break from loop            
-            [Nn]*   )   INSTALL_LIT=""; break;;
+            # if user says yes, call install_dogecoind to compile source
+            [Yy]*   )   BUILDDOGECOIN="install_dogecoind"; break;;
+            # if user says no, grab latest doge release and break from loop            
+            [Nn]*   )   BUILDDOGECOIN="grab_doge_release"; break;;
         esac
     done
 }
 
 # load_blockchain | prompt the user for input; would you like to sideload the
-#                 | the vertcoin blockchain or grab the latest bootstrap.dat
+#                 | the Dogecoin blockchain or grab the latest bootstrap.dat
 function load_blockchain {
     # prompt user with menu selection
     echo
@@ -348,19 +318,14 @@ function load_blockchain {
 # init_script
 function init_script {
     echo    
-    greentext 'Initializing Vertnode installation script...' 
+    greentext 'Initializing Dogecoin node installation script...' 
     echo
     yellowtext '****************************************************************'
-    if [[ $BUILDVERTCOIN = "install_vertcoind" ]]; then
-        yellowtext 'Vertcoin Installation      | Build from source'
+    if [[ $BUILDDOGECOIN = "install_dogecoind" ]]; then
+        yellowtext 'Dogecoin Installation      | Build from source'
     else
-        yellowtext 'Vertcoin Installation      | Latest vertcoin-core release'    
-    fi  
-    if [[ $INSTALLP2POOL = "install_p2pool" ]]; then
-        yellowtext 'P2Pool-vtc Installation    | True'
-    else
-        yellowtext 'P2Pool-vtc Installation    | False'    
-    fi  
+        yellowtext 'Dogecoin Installation      | Latest dogecoin release'    
+    fi
     if [[ $LOADBLOCKMETHOD = "wait_for_continue" ]]; then
         yellowtext 'Blockchain Loading Method  | Sideload the blockchain'
     elif [[ $LOADBLOCKMETHOD = "grab_bootstrap" ]]; then
@@ -402,7 +367,7 @@ function secure {
     sudo ufw default deny incoming
     sudo ufw default allow outgoing
     sudo ufw allow from $network_address to any port 22 comment 'allow SSH from local LAN'
-    sudo ufw allow 5889 comment 'allow vertcoin core'
+    sudo ufw allow 22556 comment 'allow dogecoin core'
     sudo ufw --force enable
     sudo systemctl enable ufw
     sudo ufw status
@@ -449,19 +414,19 @@ function hd_config {
     # locally declare UUID as the value given by blkid
     UUID="$(sudo blkid -o value -s UUID "$drive")"
     echo
-    yellowtext 'Creating Vertcoin data folder...'
-    VTCDIR='/home/'$user'/.vertcoin'
-    mkdir -p "$VTCDIR"
+    yellowtext 'Creating dogecoin data folder...'
+    DOGEDIR='/home/'$user'/.dogecoin'
+    mkdir -p "$DOGEDIR"
     yellowtext 'Modifying fstab configuration...'
     echo    
     sudo sed -i".bak" "/$UUID/d" /etc/fstab    
-    sudo sh -c "echo 'UUID=$UUID  $VTCDIR  ext4  defaults,noatime  0    0' >> /etc/fstab"
+    sudo sh -c "echo 'UUID=$UUID  $DOGEDIR  ext4  defaults,noatime  0    0' >> /etc/fstab"
         if mount | grep "$drive" > /dev/null; then
             :
         else
             sudo mount -a
         fi
-    sudo chmod 777 $VTCDIR
+    sudo chmod 777 $DOGEDIR
     greentext 'Successfully configured USB flash drive!'
     echo
 }
@@ -474,7 +439,7 @@ function swap_config {
     echo
     echo " If you intend on sideloading the blockchain please use an " 
     echo " SFTP client such as WinSCP or FileZilla to copy the BLOCKS"
-    echo " and CHAINSTATE folder to /home/$user/.vertcoin/"
+    echo " and CHAINSTATE folder to /home/$user/.dogecoin/"
     yellowtext '--------------------------------------------------------------------'
     greentext ' HOW TO CONNECT: '
     echo
@@ -489,33 +454,33 @@ function swap_config {
     echo
     # continue and configure swap    
     yellowtext 'Configuring swap file to reside on USB flash drive...'
-    mkdir -p /home/"$user"/.vertcoin/swap
+    mkdir -p /home/"$user"/.dogecoin/swap
     # dd will take a few minutes to complete
     echo 
     echo "This may take awhile, please be patient."
-    dd if=/dev/zero of=/home/"$user"/.vertcoin/swap/swap.file bs=1M count=2148
-    sudo chmod 600 /home/"$user"/.vertcoin/swap/swap.file
+    dd if=/dev/zero of=/home/"$user"/.dogecoin/swap/swap.file bs=1M count=2148
+    sudo chmod 600 /home/"$user"/.dogecoin/swap/swap.file
     sudo sed -i".bak" "/CONF_SWAPFILE/d" /etc/dphys-swapfile
     sudo sed -i".bak" "/CONF_SWAPSIZE/d" /etc/dphys-swapfile
-    sudo sh -c "echo 'CONF_SWAPFILE=/home/$user/.vertcoin/swap/swap.file' >> /etc/dphys-swapfile"
+    sudo sh -c "echo 'CONF_SWAPFILE=/home/$user/.dogecoin/swap/swap.file' >> /etc/dphys-swapfile"
     # set aside 2GB of memory for swap    
     sudo sh -c "echo 'CONF_SWAPSIZE=2048' >> /etc/dphys-swapfile"
-    sudo mkswap /home/"$user"/.vertcoin/swap/swap.file
-    sudo swapon /home/"$user"/.vertcoin/swap/swap.file
-    sudo sh -c "echo '/home/$user/.vertcoin/swap/swap.file  none  swap  defaults  0    0' >> /etc/fstab"
+    sudo mkswap /home/"$user"/.dogecoin/swap/swap.file
+    sudo swapon /home/"$user"/.dogecoin/swap/swap.file
+    sudo sh -c "echo '/home/$user/.dogecoin/swap/swap.file  none  swap  defaults  0    0' >> /etc/fstab"
     echo    
     greentext 'Successfully configured swap space!'
     echo
 }
 
-# install_berkeley | install berkeley database 4.8 for wallet functionality
+# install_berkeley | install berkeley database 5.1 for wallet functionality
 function install_berkeley {
-    yellowtext 'Installing Berkeley (4.8) database...'
+    yellowtext 'Installing Berkeley (5.1) database...'
     mkdir -p "$userhome"/bin
     cd "$userhome"/bin
-    wget http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz
-    tar -xzvf db-4.8.30.NC.tar.gz
-    cd db-4.8.30.NC/build_unix/
+    wget http://download.oracle.com/berkeley-db/db-5.1.29.NC.tar.gz
+    tar -xzvf db-5.1.29.NC.tar.gz
+    cd db-5.1.29.NC/build_unix/
     # check if system is rock64, specify build type if true
     if [[ $SYSTEM = "Rockchip"* ]]; then
         ../dist/configure --enable-cxx --build=aarch64-unknown-linux-gnu
@@ -525,77 +490,80 @@ function install_berkeley {
     make
     sudo make install
     # set the current environment berkeley db location
-    export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
+    export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.5.1/lib/"
     # echo the same location into .bashrc for persistence
-    echo 'export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.4.8/lib/' >> /home/"$user"/.bashrc
-    greentext 'Successfully installed Berkeley (4.8) database!'
+    echo 'export LD_LIBRARY_PATH=/usr/local/BerkeleyDB.5.1/lib/' >> /home/"$user"/.bashrc
+    greentext 'Successfully installed Berkeley (5.1) database!'
     echo
 }
 
-# userinput_vertcoin | begin configuration, building and installation of vertcoin
-function userinput_vertcoin {
+# userinput_dogecoin | begin configuration, building and installation of dogecoin
+function userinput_dogecoin {
     # check for user response to compile from source
-    if [[ $BUILDVERTCOIN = "install_vertcoind" ]]; then
-        # if user selected to compile vertcoin from source, then compile
-        install_vertcoind
+    if [[ $BUILDDOGECOIN = "install_dogecoind" ]]; then
+        # if user selected to compile dogecoin from source, then compile
+        install_dogecoind
     else
-        # grab latest vtc release
-        grab_vtc_release   
+        # grab latest doge release
+        grab_doge_release   
     fi   
 }
 
-# install_vertcoind | clone, build and install vertcoin core daemon
-function install_vertcoind {
+# install_dogecoind | clone, build and install dogecoin core daemon
+function install_dogecoind {
     install_berkeley      
-    # continue on compiling vertcoin from source
-    yellowtext 'Installing Vertcoin Core...'
-    rm -fR "$userhome"/bin/vertcoin-core
+    # continue on compiling dogecoin from source
+    yellowtext 'Installing Dogecoin Core...'
+    rm -fR "$userhome"/bin/dogecoin
     cd "$userhome"/bin
-    git clone https://github.com/vertcoin-project/vertcoin-core.git
+    git clone https://github.com/dogecoin/dogecoin.git
     while true; do        
        if [[ $SYSTEM = "Rockchip"* ]]; then
-                cd "$userhome"/bin/vertcoin-core/
+                cd "$userhome"/bin/dogecoin/
                 ./autogen.sh        
-                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
                 break
        elif [ "$RAM" -gt "$RAM_MIN" ]; then
                 # if RAM is greater than 910MB configure without memory flags
-                cd "$userhome"/bin/vertcoin-core/
+                cd "$userhome"/bin/dogecoin/
                 ./autogen.sh        
-                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default 
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --enable-upnp-default 
                 break
        else
                 # if RAM is less than 910MB configure with memory flags
-                cd "$userhome"/bin/vertcoin-core/
+                cd "$userhome"/bin/dogecoin/
                 ./autogen.sh 
-                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.4.8/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.4.8/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
                 break
         fi
     done
-    cd "$userhome"/bin/vertcoin-core/
+    cd "$userhome"/bin/dogecoin/
     make
     sudo make install
-    greentext 'Successfully installed Vertcoin Core!'
+    greentext 'Successfully installed Dogecoin Core!'
     echo
 }
 
-# grab_vtc_release | grab the latest vertcoind release from github
-function grab_vtc_release {
+# grab_doge_release | grab the latest dogecoind release from github
+function grab_doge_release {
     if [[ $RELEASE = "Ubuntu" ]]; then
         sudo add-apt-repository ppa:bitcoin/bitcoin -y
         sudo apt-get update 
         sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
     fi
     # grab the latest version number; store in variable $VERSION
-    export VERSION=$(curl -s "https://github.com/vertcoin-project/vertcoin-core/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
+    export VERSION=$(curl -s "https://github.com/dogecoin/dogecoin/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
     # grab the latest version release; deviation in release naming scheme will break this
-    # release naming scheme needs to be: 'vertcoind-v(release#)-linux-armhf.zip' to work
-    wget https://github.com/vertcoin-project/vertcoin-core/releases/download/$VERSION/vertcoind-v$VERSION-linux-$ARCH.zip
-    unzip vertcoind-v$VERSION-linux-$ARCH.zip
+    # release naming scheme needs to be: 'dogecoin-(release#)-linux-armhf.tar.gz' to work
+    wget https://github.com/dogecoin/dogecoin/releases/download/$VERSION/dogecoin-$VERSION-linux-$ARCH.zip
+    tar -xzvf dogecoind-$VERSION-linux-$ARCH.tar.gz
     # clean up    
-    rm vertcoind-v$VERSION-linux-$ARCH.zip
-    # move vertcoin binaries to /usr/bin/ 
-    sudo mv vertcoind vertcoin-tx vertcoin-cli /usr/bin/
+    rm dogecoind-$VERSION-linux-$ARCH.tar.gz
+    # move dogecoin binaries to /usr/bin/ 
+    cd dogecoin-$VERSION/bin
+    sudo mv dogecoind dogecoin-tx dogecoin-cli /usr/bin/
+    cd "$userhome"
+    rm -r dogecoin-$VERSION
 }
 
 # grab_bootstrap | grab the latest bootstrap.dat
@@ -604,19 +572,11 @@ function grab_bootstrap {
     if [ $(dpkg-query -W -f='${Status}' pv 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
         sudo apt-get install pv
     fi
-    # clone megadown script to download bootstrap
-    echo    
     cd $userhome
-    git clone https://github.com/tonikelope/megadown.git
-    cd $userhome/megadown/
-    echo
-    # grab bootstrap.dat generated by sam sepiol
-    echo "Downloading latest bootstrap.dat (Generated 7/8/2018)..."
+    # grab bootstrap.dat generated by rnicoll
+    echo "Downloading latest bootstrap.dat by rnicoll..."
     # download boostrap.dat    
-    ./megadown 'https://mega.nz/#!eSRSjaLL!wY5gE6JhL2zODZIARoTCr2eNKgNIwBzmz9yIxZiu_R4' -o $userhome/.vertcoin/
-    cd $userhome
-    # clean up, megadown not needed
-    rm -r megadown/    
+    wget https://bootstrap.sochain.com/ -o $userhome/.dogecoin/
     echo
     echo "Successfully downloaded bootstrap.dat!"
     echo
@@ -624,203 +584,31 @@ function grab_bootstrap {
 
 # config_crontab | function to configure crontab to start 
 function config_crontab {
-    VTCRON=$({ crontab -l -u $user 2>/dev/null; echo '@reboot vertcoind -daemon'; } | crontab -u $user - )
+    dogeRON=$({ crontab -l -u $user 2>/dev/null; echo '@reboot dogecoind -daemon'; } | crontab -u $user - )
     echo    
     yellowtext 'Configuring Crontab...'
-    yellowtext '** vertcoind  | start on reboot'
-    $VTCRON
+    yellowtext '** dogecoind  | start on reboot'
+    $dogeRON
     echo
     greentext 'Successfully configured Crontab!'
 }
 
-# config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
-function config_vertcoin {
-    # echo values into a file named vertcoin.conf
-    echo "server=1" >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo "rpcuser=$rpcuser" >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo "rpcpassword=$rpcpass" >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'dbcache=100' >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'maxmempool=100' >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'maxorphantx=10' >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'maxmempool=50' >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'maxconnections=40' >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo "maxuploadtarget=$MAXUPLOAD" >> /home/"$user"/.vertcoin/vertcoin.conf
-    echo 'usehd=1' >> /home/"$user"/.vertcoin/vertcoin.conf
+# config_dogecoin | create ~/.dogecoin/dogecoin.conf to configure dogecoind
+function config_dogecoin {
+    # echo values into a file named dogecoin.conf
+    echo "server=1" >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo "rpcuser=$rpcuser" >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo "rpcpassword=$rpcpass" >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo 'dbcache=100' >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo 'maxmempool=100' >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo 'maxorphantx=10' >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo 'maxmempool=50' >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo 'maxconnections=40' >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo "maxuploadtarget=$MAXUPLOAD" >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo 'usehd=1' >> /home/"$user"/.dogecoin/dogecoin.conf
     # configure permissions for user access
-    cd "$userhome"/.vertcoin/
-    sudo chmod 777 vertcoin.conf
-}
-
-# userinput_p2pool | configure p2pool based on user input
-function userinput_p2pool {
-    while true; do
-            # check for user response to install p2pool
-        if [[ $INSTALLP2POOL = "install_p2pool" ]]; then
-            # if user selected to install p2pool, then install it
-            install_p2pool
-            break
-        else
-            # else do nothing and break from loop
-            :        
-            break
-        fi
-    done 
-}
-
-# install_p2pool | function to download and configure p2pool
-function install_p2pool {
-    echo
-    yellowtext 'Installing p2pool-vtc...'
-    # install dependencies for p2pool-vtc
-    sudo apt-get install python-rrdtool python-pygame python-scipy python-twisted python-twisted-web python-imaging python-pip libffi-dev -y
-    # grab latest p2pool-vtc release
-    cd "$userhome"/
-    wget "https://github.com/vertcoin-project/p2pool-vtc/archive/v0.3.0-rc1.zip"
-    unzip v0.3.0-rc1.zip
-    sudo rm v0.3.0-rc1.zip
-    cd "$userhome"/p2pool-vtc-0.3.0-rc1/
-    sudo python setup.py install
-    # download alternative web frontend and install
-    echo
-    yellowtext 'Installing alternate web frontend for p2pool-vtc...'
-    echo
-    cd "$userhome"/
-    git clone https://github.com/hardcpp/P2PoolExtendedFrontEnd.git
-    cd "$userhome"/P2PoolExtendedFrontEnd/
-    mv * /home/$user/p2pool-vtc-0.3.0-rc1/web-static/
-    cd "$userhome"/
-    # clean up
-    sudo rm -r P2PoolExtendedFrontEnd/
-    echo
-    greentext 'Successfully installed alternate web frontend for p2pool-vtc!'
-    echo
-    getnewaddress=$(vertcoin-cli getnewaddress "" legacy)
-    # grab the LAN IP range and store it in variable network_address    
-    network_address=$(ip -o -f inet addr show | awk '/scope global/{sub(/[^.]+\//,"0/",$4);print $4}')
-    # open both ports for network 1 & network 2
-    sudo ufw allow 9171 comment 'allow --network 1 mining port'
-    sudo ufw allow 9181 comment 'allow --network 2 mining port'
-    sudo ufw allow 9346 comment 'allow --network 1 p2p port'
-    sudo ufw allow 9347 comment 'allow --network 2 p2p port'
-    sudo ufw --force enable
-    sudo ufw status
-    # begin configuration of p2pool
-    yellowtext 'Configuring p2pool-vtc...'
-    echo
-    echo "Network 1 | Recommended for large miners with hashrate larger than 100Mh"
-    echo "Network 2 | Recommended for small miners with hashrate lower than 100Mh"
-    # prompt user with menu for network selection
-    echo
-    PS3="What network do you want to configure with p2pool-vtc? "
-    options=("Network 1" "Network 2")
-    select opt in "${options[@]}"
-    do
-        case $opt in
-            "Network 1")
-                p2poolnetwork=""
-                break       
-                ;;
-            "Network 2")
-                p2poolnetwork="2"                
-                break                
-                ;;
-            * ) echo "Invalid option, please select option 1 or 2.";;
-        esac
-    done
-    # echo our values into a file named start-p2pool.sh
-    echo "#!/bin/bash" >> /home/"$user"/start-p2pool.sh
-    echo "cd p2pool-vtc-0.3.0-rc1" >> /home/"$user"/start-p2pool.sh
-    echo
-    greentext 'Waiting 2 minutes, vertcoind must be active before continuing...'
-    # sleep an additional 2 minutes to make sure vertcoind is alive and can give an address
-    sleep 120
-    echo "python run_p2pool.py --net vertcoin$p2poolnetwork -a $getnewaddress --max-conns 8 --outgoing-conns 4" >> /home/"$user"/start-p2pool.sh
-    # permission the script for execution
-    chmod +x start-p2pool.sh
-    echo
-    greentext 'Successfully configured p2pool-vtc!'
-    echo    
-    yellowtext 'Configuring Crontab...'    
-    yellowtext '** p2pool-vtc | start on reboot'    
-    # define p2poolcron variable and store command to echo new cronjob into crontab    
-    P2POOLCRON=$({ crontab -l -u $user 2>/dev/null; echo "@reboot sleep 120; nohup sh /home/$user/start-p2pool.sh"; } | crontab -u $user - ) 
-    # echo cronjob value into crontab
-    $P2POOLCRON
-    echo
-    yellowtext 'Starting p2pool-vtc...'
-    cd "$userhome"/
-    nohup ./start-p2pool.sh &
-}
-
-# userinput_lit | configure lit based on user input
-function userinput_lit {
-    while true; do
-            # check for user response to install lit
-        if [[ $INSTALL_LIT = "install_lit" ]]; then
-            # if user selected to install lit, then get lit
-            install_lit
-            break
-        else
-            # else do nothing and break from loop
-            :        
-            break
-        fi
-    done 
-}
-
-# download and install new version of golang, lit and lit-af
-function install_lit { 
-    # go home first
-    cd "$userhome"/
-    echo
-    greentext 'Installing golang...'
-    echo
-    while true; do
-        # check if system is a raspberry pi, grep for only inet if true, print the 2nd column
-        if [[ $SYSTEM = "Raspberry"* ]]; then
-            # grab armhf arch for raspberry pi  
-            curl -L -O https://dl.google.com/go/go1.10.3.linux-armv6l.tar.gz
-            sudo tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
-            break 
-        elif [[ $SYSTEM = "Rockchip"* ]]; then
-            # grab arm64 arch for rock64 
-            curl -L -O https://dl.google.com/go/go1.10.3.linux-arm64.tar.gz
-            sudo tar -C /usr/local -xzf go1.10.3.linux-arm64.tar.gz
-            break
-        else
-                if [[ $KERNEL = "orangepione" ]]; then  
-                    curl -L -O https://dl.google.com/go/go1.10.3.linux-armv6l.tar.gz
-                    sudo tar -C /usr/local -xzf go1.10.3.linux-armv6l.tar.gz
-                else
-                    # grab amd64 arch
-                    curl -L -O https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
-                    sudo tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz
-                fi
-            # do nothing        
-            :
-            break
-        fi
-    done
-    # echo enviornment variables to .bashrc which is loaded on each new shell
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> /home/"$user"/.bashrc
-    mkdir -p /home/$user/go
-    echo 'export GOPATH=$HOME/go' >> /home/"$user"/.bashrc
-    # export environment variables to current shell     
-    export GOPATH=$HOME/go    
-    export PATH=$PATH:/usr/local/go/bin
-    # display go version
-    go version
-    # install lit
-    echo
-    greentext 'Installing lit, lit-af...'
-    echo
-    cd "$userhome"/
-    git clone https://github.com/mit-dci/lit
-    cd "$userhome"/lit/
-    make
-    cd "$userhome"/
-    # clean up home directory
-    sudo rm go1.*.tar.gz
+    cd "$userhome"/.dogecoin/
+    sudo chmod 777 dogecoin.conf
 }
 
 # initiate_blockchain | take user response from load_blockchain and execute
@@ -829,59 +617,59 @@ function initiate_blockchain {
         # if user selected to install p2pool, then install it
         wait_for_continue
         echo
-        # wait two minutes to ensure vertcoin core is alive before moving on
-        greentext 'Waiting two minutes for Vertcoin Core to start...' 
+        # wait two minutes to ensure dogecoin core is alive before moving on
+        greentext 'Waiting two minutes for Dogecoin Core to start...' 
         echo
-        greentext 'Starting Vertcoin Core...'
+        greentext 'Starting Dogecoin Core...'
         echo
-        if [[ $BUILDVERTCOIN="install_vertcoind" ]]; then
-            # if vertcoin was built from source set berkeleydb path 
+        if [[ $BUILDDOGECOIN="install_dogecoind" ]]; then
+            # if dogecoin was built from source set berkeleydb path 
             # env variable was exported to .bashrc but not active until new terminal session
-            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
-            vertcoind -daemon
+            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.5.1/lib/"
+            dogecoind -daemon
             sleep 120 
         else
-            # just launch vertcoin because vertcoin was compiled for us
-            vertcoind -daemon 
+            # just launch dogecoin because dogecoin was compiled for us
+            dogecoind -daemon 
             sleep 120 
         fi         
     elif [[ $LOADBLOCKMETHOD = "grab_bootstrap" ]]; then
         grab_bootstrap
         echo
-        # wait two minutes to ensure vertcoin core is alive before moving on
-        greentext 'Waiting two minutes for Vertcoin Core to start...' 
+        # wait two minutes to ensure dogecoin core is alive before moving on
+        greentext 'Waiting two minutes for Dogecoin Core to start...' 
         echo
-        greentext 'Starting Vertcoin Core...'
+        greentext 'Starting Dogecoin Core...'
         echo
-        if [[ $BUILDVERTCOIN="install_vertcoind" ]]; then
-            # if vertcoin was built from source set berkeleydb path 
+        if [[ $BUILDDOGECOIN="install_dogecoind" ]]; then
+            # if dogecoin was built from source set berkeleydb path 
             # env variable was exported to .bashrc but not active until new terminal session
-            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
-            vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
+            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.5.1/lib/"
+            dogecoind -daemon -loadblock=$userhome/.dogecoin/bootstrap.dat
             sleep 120 
         else
-            # just launch vertcoin because vertcoin was compiled for us
-            vertcoind -daemon -loadblock=$userhome/.vertcoin/bootstrap.dat
+            # just launch dogecoin because dogecoin was compiled for us
+            dogecoind -daemon -loadblock=$userhome/.dogecoin/bootstrap.dat
             sleep 120 
         fi
         sleep 120           
     else
-        # else just sync vertcoin on its own
+        # else just sync dogecoin on its own
         echo
-        # wait two minutes to ensure vertcoin core is alive before moving on
-        greentext 'Waiting two minutes for Vertcoin Core to start...' 
+        # wait two minutes to ensure dogecoin core is alive before moving on
+        greentext 'Waiting two minutes for Dogecoin Core to start...' 
         echo
-        greentext 'Starting Vertcoin Core...'
+        greentext 'Starting Dogecoin Core...'
         echo
-        if [[ $BUILDVERTCOIN="install_vertcoind" ]]; then
-            # if vertcoin was built from source set berkeleydb path 
+        if [[ $BUILDDOGECOIN="install_dogecoind" ]]; then
+            # if dogecoin was built from source set berkeleydb path 
             # env variable was exported to .bashrc but not active until new terminal session
-            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.4.8/lib/"
-            vertcoind -daemon        
+            export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.5.1/lib/"
+            dogecoind -daemon        
             sleep 120 
         else
-            # just launch vertcoin because vertcoin was compiled for us
-            vertcoind -daemon 
+            # just launch dogecoin because dogecoin was compiled for us
+            dogecoind -daemon 
             sleep 120 
         fi       
     fi 
@@ -890,63 +678,39 @@ function initiate_blockchain {
 # post installation_report | report back key and contextual information
 function installation_report {
     echo
-    echo "VERTNODE INSTALLATION SCRIPT COMPLETE"
+    echo "DOGECOIN NODE INSTALLATION SCRIPT COMPLETE"
     echo "-------------------------------------"
     echo "Public IP Address: $PUBLICIP"
     echo "Local IP Address: $LANIP"
     echo "Default Gateway: $GATEWAY"
-    echo "Vertcoin Data: $userhome/.vertcoin/"
+    echo "dogecoin Data: $userhome/.dogecoin/"
     echo    
-    echo "p2pool-vtc -----------"    
-    echo "Network 1: $LANIP:9171"
-    echo "Network 2: $LANIP:9181"
     echo "-------------------------------------"
     echo
     echo "To make this node a full node, please visit $GATEWAY with the"
     echo "URL bar of your web browser. Login to your router and continue"
     echo "to the port forwarding section and port forward..."
-    echo "$LANIP TCP/UDP 5889"
+    echo "$LANIP TCP/UDP 22556"
     echo
-    echo "What is a full node? It is a Vertcoin server that contains the"
-    echo "full blockchain and propagates transactions throughout the Vertcoin"
-    echo "network via peers). Playing its part to keep the Vertcoin peer-to-peer"
+    echo "What is a full node? It is a Dogecoin server that contains the"
+    echo "full blockchain and propagates transactions throughout the Dogecoin"
+    echo "network via peers). Playing its part to keep the Dogecoin peer-to-peer"
     echo "network healthy and strong."
     echo
     echo "Useful commands to know:"
     echo "------------------------------------------------------------------------------"
     echo " htop                                 | task manager / resource monitor"
     echo " ifconfig                             | display network interface IP addresses"
-    echo " vertcoin-cli getblockchaininfo       | display blockchain information"
-    echo " vertcoin-cli getblockcount           | display current number of blocks"
-    echo " vertcoin-cli getconnectioncount      | display number of connections"
-    echo " vertcoin-cli getnettotals            | display total number of bytes sent/recv"
-    echo " vertcoin-cli getnewaddress           | generate bech32 (segwit) address"
-    echo " vertcoin-cli getnewaddress "\"""\"" legacy | generate legacy address"
+    echo " dogecoin-cli getblockchaininfo       | display blockchain information"
+    echo " dogecoin-cli getblockcount           | display current number of blocks"
+    echo " dogecoin-cli getconnectioncount      | display number of connections"
+    echo " dogecoin-cli getnettotals            | display total number of bytes sent/recv"
+    echo " dogecoin-cli getnewaddress           | generate bech32 (segwit) address"
+    echo " dogecoin-cli getnewaddress "\"""\"" legacy | generate legacy address"
     echo
-    echo " # display latest vertcoin log information: " 
-    echo " tail -f ~/.vertcoin/debug.log"
+    echo " # display latest dogecoin log information: " 
+    echo " tail -f ~/.dogecoin/debug.log"
     echo
-    if [[ $INSTALLP2POOL = "install_p2pool" ]]; then
-        # if p2pool was installed display this information
-        echo " # display latest p2pool log information: " 
-        echo " tail -f ~/p2pool-vtc-0.3.0-rc1/data/vertcoin$p2poolnetwork/log"
-        echo
-    else
-        # else do nothing and proceed 
-        :        
-    fi  
-    if [[ $INSTALL_LIT = "install_lit" ]]; then
-        # if lit was installed display this information
-        echo " ./lit/lit -v --vtc https://vtc.blkidx.org/ | start lit with remote indexer, vtc mainnet"
-        echo " ./lit/lit -v --vtc localhost               | start lit with localhost vtc node, vtc mainnet"
-        echo     
-        echo " When lit is running open another SSH session:"
-        echo " ./lit/lit-af                               | start lit-af to interact with LN" 
-        echo
-    else
-        # else do nothing and proceed 
-        :        
-    fi  
     echo "------------------------------------------------------------------------------"
 }
 
@@ -974,10 +738,6 @@ user_input
 clear
 compile_or_compiled
 clear
-prompt_p2pool
-clear
-prompt_lit
-clear
 # prompt user to load blockchain
 load_blockchain
 clear
@@ -993,17 +753,13 @@ if [ "$DRIVE_CONF" = "true" ]; then
     hd_config
     swap_config
 fi
-# call userinput_vertcoin and build from source or grab release
-userinput_vertcoin
-# configure crontab for vertcoin
+# call userinput_dogecoin and build from source or grab release
+userinput_dogecoin
+# configure crontab for dogecoin
 config_crontab
-# call config_vertcoin | create ~/.vertcoin/vertcoin.conf to configure vertcoind
-config_vertcoin
+# call config_dogecoin | create ~/.dogecoin/dogecoin.conf to configure dogecoind
+config_dogecoin
 # execute on blockchain loading method
 initiate_blockchain
-# call userinput_p2pool
-userinput_p2pool 
-# call userinput_lit
-userinput_lit
 # display post installation results
 installation_report
