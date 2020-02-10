@@ -1,21 +1,13 @@
 <p align="center">
-  <img src="https://i.imgur.com/PJxYRgW.png" width="200" height="200" />
+  <img src="https://i.imgur.com/LR7kclV.png" width="200" height="200" />
 </p>
-
-<p align="center">
-  <img src="https://github.com/e-corp-sam-sepiol/Documentation/blob/master/images/vertcoin-branding.png" width="343" height="68" /> <img src="https://i.imgur.com/1RKi4wd.png" width="90">
-</p>
-
-## [Vertcoin.org](https://vertcoin.org/)
-## [Vertcoin Node Scanner](https://scanner.vertcoin.org/nodes)
-## [`lit` `lit-af` /mit-dci/lit](https://github.com/mit-dci/lit)
 
 ------------
 
-# Vertnode 
-## An automated solution for installing Vertcoin node(s) on Single Board Computers and `amd64` compatible hardware
+# pidohj 
+## An automated solution for installing Dogecoin node(s) on Single Board Computers and `amd64` compatible hardware
 
-**`NOTE:` The steps provided below produce a “headless” server... meaning we will not be using a GUI to configure Vertcoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
+**`NOTE:` The steps provided below produce a “headless” server... meaning we will not be using a GUI to configure Dogecoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 
 ### Functioning Status
 - [x] `Working` **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
@@ -23,12 +15,8 @@
 - [x] `Working` **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
 - [x] `Working` **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
 - [x] `Working` **Orange Pi One** | H3 Quad-core Cortex-A7 1.2 GHz | 512MB RAM |
-- [x] `Working` **`lit` & `lit-af`**
 
-### **`Optional lit & lit-af Installation`**<img src="https://i.imgur.com/c6GEfJS.png" width="30" height="30" />
-### **`Optional P2Pool Installation`**
-### **`USB flash drive required: 8GB >`**
-## [`lit` `lit-af` Vertnode Documentation](https://github.com/e-corp-sam-sepiol/vertnode/blob/master/docs/lit.md)
+### **`USB flash drive required: 64GB >`**
 
 
 ### Supported
@@ -42,33 +30,27 @@
 ```
 sudo apt-get update ; sudo apt-get upgrade -y ; sudo apt-get install git -y ; sudo reboot
 ``` 
-**and `ssh` back into your system before running the `install-vertnode.sh` script.**
+**and `ssh` back into your system before running the `install-pidohj.sh` script.**
 ```
-git clone https://github.com/e-corp-sam-sepiol/vertnode.git
-cd vertnode/
-chmod +x install-vertnode.sh
-./install-vertnode.sh 
+git clone https://github.com/Vertian/pidohj.git
+cd pidohj/
+chmod +x install-pidohj.sh
+./install-pidohj.sh 
 ```
 
 ---------------
 
 ### TO-DO Checklist
-- [x] add support for Orange Pi One single board computer
 - [ ] adjust swap file size based on RAM 
-- [ ] address option of installing p2pool on raspberry pi zero (currently possible, not recommended)
 - [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
-- [x] fix `go` errors when fetching `go version`
-- [ ] add `md5` hash checksum to `vertcoind` and `golang` downloads
-- [x] force compiling from souce on raspberry pi zero
 - [ ] add TOR network option
-- [x] fix libdb_cxx.so missing directory error when running vertcoin after compiling from source
 
 ---------------
 
 ### FAQ
 
-#### Why a Vertcoin Full node?
-Vertcoin is a digital currency supported by a peer-to-peer network. In order to run efficiently and effectively, it needs peers run by different people... and the more the better.
+#### Why a Dogecoin Full node?
+Dogecoin is a digital currency supported by a peer-to-peer network. In order to run efficiently and effectively, it needs peers run by different people... and the more the better.
 
 #### Why a Raspberry Pi?
 Raspberry Pi is an inexpensive computing hardware platform that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it.
@@ -85,23 +67,23 @@ Intel NUC is the next significant step up in computing hardware in comparison to
 Intel’s Next Unit of Computing (NUC) models are well equipped for light- to medium-duty server use in a home. Much more robust than their ARM-based Raspberry Pi counterparts, Intel’s NUCs will consume more power but be able to handle more computationally intensive tasks. Some NUC models will have room for a 2.5-inch SSD for onboard storage.
 
 #### What if I don't have an Intel NUC?
-The Intel NUC was chosen because of it's entry level hardware, and the wide distribution of hardware with similar capability to the Intel NUC existing in the world today. If you do not have an Intel NUC don't worry, if your CPU supports `amd64` architecture, has 2GB or more of `RAM` and 16GB+ of hard drive space the steps performed below apply when using Ubuntu 16.04. The headless server edition is recommended, a GUI is not needed to run a Vertcoin Core full node. 
+The Intel NUC was chosen because of it's entry level hardware, and the wide distribution of hardware with similar capability to the Intel NUC existing in the world today. If you do not have an Intel NUC don't worry, if your CPU supports `amd64` architecture, has 2GB or more of `RAM` and 16GB+ of hard drive space the steps performed below apply when using Ubuntu 16.04. The headless server edition is recommended, a GUI is not needed to run a Dogecoin Core full node. 
 
 #### What is a Full Node?
 
-Vertcoin’s peer-to-peer network is composed of network "nodes," run mostly by volunteers. Those running vertcoin nodes have a direct and authoritative view of the vertcoin blockchain, with a local copy of all the transactions, independently validated by their own system and can initiate transactions directly on the vertcoin network. 
+Dogecoin’s peer-to-peer network is composed of network "nodes," run mostly by volunteers. Those running Dogecoin nodes have a direct and authoritative view of the Dogecoin blockchain, with a local copy of all the transactions, independently validated by their own system and can initiate transactions directly on the Dogecoin network. 
 
-By running a node, you don’t have to rely on any third party to validate a transaction. Moreover, **by running a vertcoin node you contribute to the vertcoin network by making it more robust**. A full-node client consumes substantial computer resources (e.g., more than `4 GB` of disk, `~1 GB` of `RAM` at most) but offers complete autonomy and independent transaction verification.
+By running a node, you don’t have to rely on any third party to validate a transaction. Moreover, **by running a Dogecoin node you contribute to the Dogecoin network by making it more robust**. A full-node client consumes substantial computer resources (e.g., more than `4 GB` of disk, `~1 GB` of `RAM` at most) but offers complete autonomy and independent transaction verification.
 
-**Running a node, however, requires a permanently connected system with enough resources to process all vertcoin transactions.** Vertcoin nodes also transmit and receive vertcoin transactions and blocks, consuming internet bandwidth. If your internet connection is limited, has a low data cap, or is metered (charged by the gigabit), you should probably not run a vertcoin node on it, or run it in a way that limits its bandwidth usage.
+**Running a node, however, requires a permanently connected system with enough resources to process all Dogecoin transactions.** Dogecoin nodes also transmit and receive Dogecoin transactions and blocks, consuming internet bandwidth. If your internet connection is limited, has a low data cap, or is metered (charged by the gigabit), you should probably not run a Dogecoin node on it, or run it in a way that limits its bandwidth usage.
 
-Despite these resource requirements, hundreds of volunteers run vertcoin nodes. **Some are running on systems as simple as a [Raspberry Pi](https://www.canakit.com/raspberry-pi-3-model-b-plus.html) (a $35 USD computer the size of a pack of cards)**. Many volunteers also run vertcoin nodes on rented servers, usually some variant of Linux. A Virtual Private Server (VPS) or Cloud Computing Server instance can be used to run a vertcoin node. Such servers can be rented for $25 to $50 USD per month from a variety of providers.
+Despite these resource requirements, hundreds of volunteers run Dogecoin nodes. **Some are running on systems as simple as a [Raspberry Pi](https://www.canakit.com/raspberry-pi-3-model-b-plus.html) (a $35 USD computer the size of a pack of cards)**. Many volunteers also run Dogecoin nodes on rented servers, usually some variant of Linux. A Virtual Private Server (VPS) or Cloud Computing Server instance can be used to run a Dogecoin node. Such servers can be rented for $25 to $50 USD per month from a variety of providers.
 
 #### Why run a headless node on a Single Board Computer?
 
-1. You want to support vertcoin. Running a node makes the network more robust and able to serve more wallets, more users, and more transactions. 
-2. You are building or using applications such as mining that must validate transactions according to vertcoin’s consensus rules.
-3. You are developing vertcoin software and need to rely on a vertcoin node for programmable (API) access to the network and blockchain.
+1. You want to support Dogecoin. Running a node makes the network more robust and able to serve more wallets, more users, and more transactions. 
+2. You are building or using applications such as mining that must validate transactions according to Dogecoin’s consensus rules.
+3. You are developing Dogecoin software and need to rely on a Dogecoin node for programmable (API) access to the network and blockchain.
 
 **The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 
@@ -148,9 +130,9 @@ Insert the MicroSD card that was safely removed into the microSD slot the Raspbe
 
 ## Testing Errors
 
-- [x] **Configuring firewall | Fixed with: `sudo reboot` then re-run `install_vertnode.sh`**
+- [x] **Configuring firewall | Fixed with: `sudo reboot` then re-run `install_pidohj.sh`**
 
-**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-vertnode.sh` script.**
+**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-pidohj.sh` script.**
 
 **This error occurs when `sudo apt-get upgrade` installs a new kernel to the Raspberry Pi, it affects `iptables` which is a part of the kernel. Updating the kernel requires a reboot.**
 ```
@@ -190,9 +172,6 @@ Perhaps iptables or your kernel needs to be upgraded.
 |                                                                                                        SanDisk SSD PLUS 120GB | $44.95 USD          | https://www.amazon.com/dp/B01F9G414U/                                              |
 
 ------------------------
-
-![NodeMap](https://i.imgur.com/rzj5SU2.png)
-## [Vertcoin Node Scanner](https://scanner.vertcoin.org/nodes)
 
 <p align="center">
   <img src="https://i.imgur.com/TKEVSFv.png">
