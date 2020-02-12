@@ -11,7 +11,7 @@
 # Thanks @b17z, this fork would not have happened without you. Thanks
 # for your help and inspiration. 
 #
-# Dedicated to the dogecoin community. 
+# Dedicated to the Vertcoin community. 
 # -------------------------------------------------------------------
 # Functions:
 #           color functions
@@ -29,17 +29,13 @@
 #           install_dogecoind   | clone, build and install dogecoin core daemon
 #           config_dogecoin     | create ~/.dogecoin/dogecoin.conf to configure dogecoind
 #           install_depends     | install the required dependencies to run this script
-#           grab_doge_release    | grab the latest dogecoind release from github
+#           grab_doge_release   | grab the latest dogecoind release from github
 #           wait_for_continue   | function for classic "Press spacebar to continue..." 
-#           grab_doge_release    | grab the latest dogecoind release from github
-#           grab_bootstrap      | grab the latest bootstrap.dat from alwayshashing
+#           grab_doge_release   | grab the latest dogecoind release from github
+#           grab_bootstrap      | grab the latest bootstrap.dat from rnicoll
 #           compile_or_compiled | prompt the user for input; would you like to build dogecoin core 
 #           load_blockchain     | prompt the user for input; would you like to sideload the chain or 
 #                               | grab the latest bootstrap.dat
-#           prompt_p2pool       | function to prompt user with option to install p2pool
-#           install_p2pool      | function to download and configure p2pool
-#           userinput_lit       | function to prompt user with option to install lit and lit-af
-#           install_lit         | function to download and install golang, lit and lit-af
 #           user_intro          | introduction to installation script, any key to continue
 #           installation_report | report back key and contextual information
 #           wait_for_continue   | function for classic "Press spacebar to continue..." 
@@ -91,9 +87,6 @@ RELEASE="$(cat /etc/*-release | gawk -F= '/^NAME/{print $2}' | tr -d '"')"
 RAM="$(cat /proc/meminfo | grep MemTotal | awk -F'[: ]+' '{print $2}')"
 RAM_MIN='910000'
 ARCH="$(dpkg --print-architecture)"
-P2P=''
-INSTALLP2POOL=''
-INSTALL_LIT=''
 BUILDDOGECOIN=''
 LOADBLOCKMETHOD=''
 MAXUPLOAD=''
@@ -249,18 +242,6 @@ function compile_or_compiled {
             echo
             echo "This script will build Dogecoin Core from source..."
             echo "NOTE: These operations will utilize the CPU @ 100% for a long time."
-            echo "**************************************************************************"
-            sleep 15
-            BUILDDOGECOIN="install_dogecoind"
-            break
-        fi
-        if [[ $SYSTEM = "Rockchip"* ]]; then
-            echo "**************************************************************************"           
-            echo "HARDWARE = $SYSTEM"
-            echo "No precompiled releases are made available for $SYSTEM $ARCH."
-            echo
-            echo "This script will build Dogecoin Core from source..."
-            echo "NOTE: These operations will utilize the CPU @ 100% for some time."
             echo "**************************************************************************"
             sleep 15
             BUILDDOGECOIN="install_dogecoind"
@@ -551,19 +532,27 @@ function grab_doge_release {
         sudo apt-get update 
         sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
     fi
-    # grab the latest version number; store in variable $VERSION
-    export VERSION=$(curl -s "https://github.com/dogecoin/dogecoin/releases/latest" | grep -o 'tag/[v.0-9]*' | awk -F/ '{print $2}')
-    # grab the latest version release; deviation in release naming scheme will break this
-    # release naming scheme needs to be: 'dogecoin-(release#)-linux-armhf.tar.gz' to work
-    wget https://github.com/dogecoin/dogecoin/releases/download/$VERSION/dogecoin-$VERSION-linux-$ARCH.zip
-    tar -xzvf dogecoind-$VERSION-linux-$ARCH.tar.gz
-    # clean up    
-    rm dogecoind-$VERSION-linux-$ARCH.tar.gz
+    if [[ $ARCH = "armhf" ]]; then
+    	wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+    	tar -xzvf dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+   		 # clean up    
+    	rm dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+	elif [[ $ARCH = "aarch64" ]]; then
+  		wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
+   		tar -xzvf dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
+    	# clean up    
+    	rm dogecoin-$VERSION-aarch64-linux-gnu.tar.gz
+	else [[ $ARCH = "amd64" ]];
+	    wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+    	tar -xzvf dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+    	# clean up    
+    	rm dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+	fi
     # move dogecoin binaries to /usr/bin/ 
-    cd dogecoin-$VERSION/bin
+    cd dogecoin-1.14.2/bin
     sudo mv dogecoind dogecoin-tx dogecoin-cli /usr/bin/
     cd "$userhome"
-    rm -r dogecoin-$VERSION
+    rm -r dogecoin-1.14.2
 }
 
 # grab_bootstrap | grab the latest bootstrap.dat
@@ -576,7 +565,7 @@ function grab_bootstrap {
     # grab bootstrap.dat generated by rnicoll
     echo "Downloading latest bootstrap.dat by rnicoll..."
     # download boostrap.dat    
-    wget https://bootstrap.sochain.com/ -o $userhome/.dogecoin/
+    wget sudo wget https://bootstrap.sochain.com/bootstrap.dat -P $userhome/.dogecoin/
     echo
     echo "Successfully downloaded bootstrap.dat!"
     echo
@@ -626,12 +615,10 @@ function initiate_blockchain {
             # if dogecoin was built from source set berkeleydb path 
             # env variable was exported to .bashrc but not active until new terminal session
             export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.5.1/lib/"
-            dogecoind -daemon
-            sleep 120 
+            dogecoind -daemon 
         else
             # just launch dogecoin because dogecoin was compiled for us
             dogecoind -daemon 
-            sleep 120 
         fi         
     elif [[ $LOADBLOCKMETHOD = "grab_bootstrap" ]]; then
         grab_bootstrap
@@ -650,9 +637,7 @@ function initiate_blockchain {
         else
             # just launch dogecoin because dogecoin was compiled for us
             dogecoind -daemon -loadblock=$userhome/.dogecoin/bootstrap.dat
-            sleep 120 
-        fi
-        sleep 120           
+        fi      
     else
         # else just sync dogecoin on its own
         echo
@@ -666,11 +651,9 @@ function initiate_blockchain {
             # env variable was exported to .bashrc but not active until new terminal session
             export LD_LIBRARY_PATH="/usr/local/BerkeleyDB.5.1/lib/"
             dogecoind -daemon        
-            sleep 120 
         else
             # just launch dogecoin because dogecoin was compiled for us
             dogecoind -daemon 
-            sleep 120 
         fi       
     fi 
 }

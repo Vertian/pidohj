@@ -12,9 +12,9 @@
 ### Functioning Status
 - [x] `Working` **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
 - [x] `Working` **Raspberry Pi Zero (W)** | Single Core ARMv6 1 Ghz | 433MB RAM |
-- [x] `Working` **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
-- [x] `Working` **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
-- [x] `Working` **Orange Pi One** | H3 Quad-core Cortex-A7 1.2 GHz | 512MB RAM |
+- [ ] `In progress` **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
+- [ ] `In progress` **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
+- [ ] `In progress` **Orange Pi One** | H3 Quad-core Cortex-A7 1.2 GHz | 512MB RAM |
 
 ### **`USB flash drive required: 64GB >`**
 
