@@ -542,7 +542,7 @@ function grab_doge_release {
         tar -xzvf dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
         # clean up    
         rm dogecoin-$VERSION-aarch64-linux-gnu.tar.gz
-    else [[ $ARCH = "amd64" ]];
+    elif [[ $ARCH = "amd64" ]]; then
         wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
         tar -xzvf dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
         # clean up    
