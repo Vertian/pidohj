@@ -533,21 +533,21 @@ function grab_doge_release {
         sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
     fi
     if [[ $ARCH = "armhf" ]]; then
-    	wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
-    	tar -xzvf dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
-   		 # clean up    
-    	rm dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
-	elif [[ $ARCH = "aarch64" ]]; then
-  		wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
-   		tar -xzvf dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
-    	# clean up    
-    	rm dogecoin-$VERSION-aarch64-linux-gnu.tar.gz
-	else [[ $ARCH = "amd64" ]];
-	    wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
-    	tar -xzvf dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
-    	# clean up    
-    	rm dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
-	fi
+        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+        tar -xzvf dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+         # clean up    
+        rm dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+    elif [[ $ARCH = "aarch64" ]]; then
+        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
+        tar -xzvf dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
+        # clean up    
+        rm dogecoin-$VERSION-aarch64-linux-gnu.tar.gz
+    elif [[ $ARCH = "amd64" ]]; then
+        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+        tar -xzvf dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+        # clean up    
+        rm dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+    fi
     # move dogecoin binaries to /usr/bin/ 
     cd dogecoin-1.14.2/bin
     sudo mv dogecoind dogecoin-tx dogecoin-cli /usr/bin/
