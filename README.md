@@ -23,7 +23,7 @@
 
 
 ### Supported
-- [ ] **Raspberry Pi 4 | [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/)**
+- [x] **Raspberry Pi 4 | [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/)**
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
 - [x] **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
