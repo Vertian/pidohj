@@ -9,102 +9,63 @@
 
 **`NOTE:` The steps provided below produce a “headless” server... meaning we will not be using a GUI to configure Dogecoin or check to see how things are running. In fact, once the server is set up, you will only interact with it using command line calls over `SSH`. The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
 
-### Functioning Status
-- [x] `Working` **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
-- [x] `Working` **Raspberry Pi Zero (W)** | Single Core ARMv6 1 Ghz | 433MB RAM |
-- [ ] `In progress` **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
-- [ ] `In progress` **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
-- [ ] `In progress` **Orange Pi One** | H3 Quad-core Cortex-A7 1.2 GHz | 512MB RAM |
+**pidohj allows you to fast sync Dogecoin from a recent bootstrap or your own blocks data.  You may also sync from scratch.**
 
-### **`USB flash drive required: 64GB >`**
+### Functioning Status
+- [x] `Working` **Raspberry Pi 4** | Quad core Cortex-A72 1.5GHz | 2GB-8GB SDRAM |
+- [x] `Working` **Raspberry Pi 3 B+** | ARM Cortex-A53 1.4GHz | 1GB SRAM | 
+- [x] `Working` **Raspberry Pi Zero W** | Single Core ARMv6 1 Ghz | 433MB RAM |
+- [ ] `Needs help updating` **Intel NUC** | Dual-Core 2.16 GHz Intel Celeron | 8GB DDR3 RAM |
+- [ ] `Needs help updating` **Rock64 Media Board** | Quad-Core ARM Cortex A53 64-Bit CPU | 4GB LPDDR3 RAM | 
+- [ ] `Needs help updating` **Orange Pi One** | H3 Quad-core Cortex-A7 1.2 GHz | 512MB RAM |
+
+### **`USB flash drive required: >64GB - (128GB recommended)`**
 
 
 ### Supported
+- [ ] **Raspberry Pi 4 | [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/)**
 - [x] **Raspberry Pi | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest/)**
 - [x] **Raspberry Pi Zero / Wireless | [Raspbian Stretch Lite](https://downloads.raspberrypi.org/raspbian_lite_latest)** 
 - [x] **Rock64 Media Board | [Debian Stretch Minimal](https://github.com/ayufan-rock64/linux-build/releases/download/0.6.15/stretch-minimal-rock64-0.6.15-175-arm64.img.xz)**
 - [x] **Intel NUC | [Ubuntu Server 16.04](http://releases.ubuntu.com/16.04/ubuntu-16.04.4-server-amd64.iso)**
 - [x] **Orange Pi One | [Armbian Stretch](https://dl.armbian.com/orangepione/Debian_stretch_next.7z) | [Getting Started](https://docs.armbian.com/User-Guide_Getting-Started/) |** `login` root `pass` 1234
 
-**`RECOMMENDED:`** When you first boot your Raspberry Pi, Rock64 Media Board, Intel NUC, Orange Pi One or `amd64` compatible hardware running Debian / Ubuntu ensure that you insert a USB flash drive and...
-```
-sudo apt-get update ; sudo apt-get upgrade -y ; sudo apt-get install git -y ; sudo reboot
-``` 
-**and `ssh` back into your system before running the `install-pidohj.sh` script.**
-```
-git clone https://github.com/Vertian/pidohj.git
-cd pidohj/
-chmod +x install-pidohj.sh
-./install-pidohj.sh 
-```
+---------------
+### 1.) Parts List
+|                                                              Name                                                             |        Price        |                                         URL                                        |
+|:-----------------------------------------------------------------------------------------------------------------------------:|:-------------------:|:----------------------------------------------------------------------------------:|
+|                                                           **Raspberry Pi of your choice**     | -------             | NOTE: Kits may come with some required hardware                                     |
+| CanaKit Raspberry Pi Zero W (Wireless) Complete Starter Kit		             | $32.99 USD          | https://www.amazon.com/CanaKit-Raspberry-Wireless-Complete-Starter/dp/B072N3X39J/  |
+| CanaKit Raspberry Pi 3 B+ Basic Kit                			                 | $59.99 USD          | https://www.amazon.com/CanaKit-Raspberry-Premium-Clear-Supply/dp/B07BC7BMHY/       |
+| CanaKit Raspberry Pi 4 Basic Kit 			                 | $55-$90 USD         | https://www.amazon.com/CanaKit-Raspberry-Basic-Kit-8GB/dp/B07TYK4RL8/              |
+|                                                      **Required hardware**     | -------             |                                                                                    |
+| **MicroSD Memory Card** - Samsung 32GB 95MB/s (U1) MicroSD EVO Select Memory Card                        | $7.49 USD           | https://www.amazon.com/Samsung-MicroSD-Adapter-MB-ME32GA-AM/dp/B06XWN9Q99/         |
+| **USB Flash Drive** - SanDisk Ultra Fit 128GB USB 3.1 Flash Drive                                    | $16.95 USD          | https://www.amazon.com/SanDisk-128GB-Ultra-Flash-Drive/dp/B07855LJ99               |
+| **MicroSD Card Reader** - Transcend USB 3.0 SDHC / SDXC / microSDHC / SDXC Card Reader                   | $9.95 USD           | https://www.amazon.com/Transcend-microSDHC-Reader-TS-RDF5K-Black/dp/B009D79VH4/    |
+| **[Sufficient Power Supply](https://www.raspberrypi.org/documentation/hardware/raspberrypi/power/README.md)**                   | ~ $10 USD           | -------    |
+| *OPTIONAL: Case with Cooling Fan                                   | ~ $10 USD          | -------   |
 
+
+------------------------
 ---------------
 
-### TO-DO Checklist
-- [ ] adjust swap file size based on RAM 
-- [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
-- [ ] add TOR network option
+### 2.) Install Raspberry Pi OS Lite
 
----------------
+>[Raspberry Pi OS](https://www.raspberrypi.org/documentation/raspbian/) is a free operating system based on Debian, optimised for the Raspberry Pi hardware. Raspberry Pi OS comes with over 35,000 packages: precompiled software bundled in a nice format for easy installation on your Raspberry Pi.
 
-### FAQ
+Download [Raspberry Pi Imager](https://www.raspberrypi.org/%20downloads/)   
+Insert your MircoSD card into a USB MicroSD card reader and open Raspberry Pi Imager
 
-#### Why a Dogecoin Full node?
-Dogecoin is a digital currency supported by a peer-to-peer network. In order to run efficiently and effectively, it needs peers run by different people... and the more the better.
+Select [Raspberry Pi OS Lite (32-bit)](https://www.raspberrypi.org/software/operating-systems/), your target MicroSD card and Write!
 
-#### Why a Raspberry Pi?
-Raspberry Pi is an inexpensive computing hardware platform that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it.
+![Choose-OS](https://github.com/vertiond/documents/blob/main/vertnode/raspberry-pi-imager.png)  
+![Select-other](https://github.com/vertiond/documents/blob/main/vertnode/raspberry-pi-select-other.png)  
+![Select-lite](https://github.com/vertiond/documents/blob/main/vertnode/raspberry-pi-os-lite.png)
 
-#### Why a Orange Pi One?
-Orange Pi One is inexpensive computing hardware that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it.
-
-#### Why a Rock64 Media Board?
-ROCK64 is a credit card size 4K60P HDR10 Media Board Computer powered by Rockchip RK3328 Quad-Core ARM Cortex A53 64-Bit Processor and support up to 4GB 1600MHz LPDDR3 memory. The Rock64 Media Board is an inexpensive computing hardware platform that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it. The Rock64 Media Board costs a little bit more than the Raspberry Pi 3, but provides better hardware and significantly more memory. 
-
-#### Why use an Intel NUC?
-Intel NUC is the next significant step up in computing hardware in comparison to a Raspberry Pi and the Rock64 Media Board. The NUC generates little heat, draws little more power than the Raspberry Pi, with significantly better hardware and can run silently 24 hours a day without having to think about it. 
-
-Intel’s Next Unit of Computing (NUC) models are well equipped for light- to medium-duty server use in a home. Much more robust than their ARM-based Raspberry Pi counterparts, Intel’s NUCs will consume more power but be able to handle more computationally intensive tasks. Some NUC models will have room for a 2.5-inch SSD for onboard storage.
-
-#### What if I don't have an Intel NUC?
-The Intel NUC was chosen because of it's entry level hardware, and the wide distribution of hardware with similar capability to the Intel NUC existing in the world today. If you do not have an Intel NUC don't worry, if your CPU supports `amd64` architecture, has 2GB or more of `RAM` and 16GB+ of hard drive space the steps performed below apply when using Ubuntu 16.04. The headless server edition is recommended, a GUI is not needed to run a Dogecoin Core full node. 
-
-#### What is a Full Node?
-
-Dogecoin’s peer-to-peer network is composed of network "nodes," run mostly by volunteers. Those running Dogecoin nodes have a direct and authoritative view of the Dogecoin blockchain, with a local copy of all the transactions, independently validated by their own system and can initiate transactions directly on the Dogecoin network. 
-
-By running a node, you don’t have to rely on any third party to validate a transaction. Moreover, **by running a Dogecoin node you contribute to the Dogecoin network by making it more robust**. A full-node client consumes substantial computer resources (e.g., more than `4 GB` of disk, `~1 GB` of `RAM` at most) but offers complete autonomy and independent transaction verification.
-
-**Running a node, however, requires a permanently connected system with enough resources to process all Dogecoin transactions.** Dogecoin nodes also transmit and receive Dogecoin transactions and blocks, consuming internet bandwidth. If your internet connection is limited, has a low data cap, or is metered (charged by the gigabit), you should probably not run a Dogecoin node on it, or run it in a way that limits its bandwidth usage.
-
-Despite these resource requirements, hundreds of volunteers run Dogecoin nodes. **Some are running on systems as simple as a [Raspberry Pi](https://www.canakit.com/raspberry-pi-3-model-b-plus.html) (a $35 USD computer the size of a pack of cards)**. Many volunteers also run Dogecoin nodes on rented servers, usually some variant of Linux. A Virtual Private Server (VPS) or Cloud Computing Server instance can be used to run a Dogecoin node. Such servers can be rented for $25 to $50 USD per month from a variety of providers.
-
-#### Why run a headless node on a Single Board Computer?
-
-1. You want to support Dogecoin. Running a node makes the network more robust and able to serve more wallets, more users, and more transactions. 
-2. You are building or using applications such as mining that must validate transactions according to Dogecoin’s consensus rules.
-3. You are developing Dogecoin software and need to rely on a Dogecoin node for programmable (API) access to the network and blockchain.
-
-**The idea is to have this full node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
-
----------------
-
-### How to install Raspbian
-**`Download Raspbian Stretch Lite`**
-`https://www.raspberrypi.org/downloads/raspbian/`  
-
-We will utilize the software 'Win32 Disk Imager' to format and install Raspbian on the MicroSD card. Please follow the [guide](https://www.raspberrypi.org/documentation/installation/installing-images/windows.md) below for details on installing the Rasbian image to the MicroSD card.
-
-If you are using Linux please use [Etcher](https://etcher.io/)
-
-![Write](https://i.imgur.com/fTyqpat.png)  
-![Writing...](https://i.imgur.com/DrGi0mb.png)  
-![Done](https://i.imgur.com/cfUjvKR.png)
-
-Once Win32 Disk Imager is finished writing to the MicroSD card please access the 'boot' partition of the MicroSD card with Windows Explorer `Win+E`. Create a new empty text file named `ssh` like so...
+Once Raspberry Pi Imager is finished writing to the MicroSD card please access the 'boot' partition of the MicroSD card with Windows Explorer `Win+E`. Create a new empty text file named `ssh` like so...
 
 ![MicroSD card - ssh](https://i.imgur.com/m14rGdV.png)  
-This enables `SSH` access on the Raspberry Pi's first boot sequence. 
+This enables `SSH` access on the Raspberry Pi's first boot sequence. Please safely remove the USB Card Reader / MicroSD card as to ensure the data is not corrupted.
 
 ### How to enable wireless connection on boot if hard wiring is not available
 
@@ -127,51 +88,92 @@ Please safely remove the USB Card Reader / MicroSD card as to ensure the data is
 Insert the MicroSD card that was safely removed into the microSD slot the Raspberry Pi. Once the Pi has booted it will attempt to join the wireless network using the information provided in the `wpa_supplicant.conf` file.
 
 ------------
+### 3.) Initial Setup of Raspberry Pi
 
-## Testing Errors
+Insert the MicroSD card that was safely removed into the slot located on the bottom of the Raspberry Pi. Connect an Ethernet cable to the Raspberry Pi that has internet access. When you are ready to power on the Pi, plug the power supply in and the Raspberry Pi will immediately begin to boot.
 
-- [x] **Configuring firewall | Fixed with: `sudo reboot` then re-run `install_pidohj.sh`**
+We will access our Raspberry Pi through an `SSH` session on our Windows PC. I like to use `Git Bash` which is included in the Windows [download](https://git-scm.com/downloads) of `Git`.
 
-**`RECOMMENDED:` When you first boot your Raspberry Pi ensure that you `sudo apt-get update ; sudo apt-get upgrade -y ; sudo reboot` and `ssh` back into the Raspberry Pi before running the `install-pidohj.sh` script.**
+Open a web browser, navigate to your router page and identify the `IP` address of the freshly powered on Raspberry Pi. In my case the `IP` address is `192.168.1.2`, please make note of your Raspberry Pi's `IP` address as we will need to use it to login via `SSH`.
 
-**This error occurs when `sudo apt-get upgrade` installs a new kernel to the Raspberry Pi, it affects `iptables` which is a part of the kernel. Updating the kernel requires a reboot.**
+Open `Git Bash` and ...  
+`ssh 192.168.1.2 -l pi`   
+Default password: `raspberry`
+
+Change `user` password   
+`passwd`
+
+Change `root` password  
+`sudo passwd root`
+
+Download and install latest system updates  
+`sudo apt update ; sudo apt upgrade -y ; sudo apt install git -y`
+
+Download and install useful software packages   
+`sudo apt install fail2ban -y`
+
+>[Fail2ban](https://www.digitalocean.com/community/tutorials/how-fail2ban-works-to-protect-services-on-a-linux-server) is a daemon that can be run on your server to dynamically block clients that fail to authenticate correctly with your services repeatedly. This can help mitigate the affect of brute force attacks and illegitimate users of your services like `SSH`.
+
+Initiate `raspi-config` script  
+`sudo raspi-config`
+
 ```
-ERROR: initcaps
-[Errno 2] iptables v1.6.0: can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
-Perhaps iptables or your kernel needs to be upgraded.
+1.) [8] Update				# update raspi-config script first
+2.) [5] Localization Options       	
+	> [L2] Change Timezone		# set your timezone
+3.) [6] Advanced Options		
+	> [A1] Expand Filesystem	# expand filesystem 
 ```
+Use Tab to select `<Finish>` and choose to reboot.
+
+Wait a minute, then log back in via `SSH`  
+`ssh 192.168.1.2 -l pi`
 
 ------------
+### 4.) Automated installation
+**Ensure that you have an external USB drive that is >64GB attached**
+```
+git clone https://github.com/vertiond/pidohj && cd pidohj/
+./install-pidohj.sh 
+```
+---------------
+### FAQ
 
-### [Manual Installation Walkthrough: Raspberry Pi 3](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi.md)
-### [Manual Installation Walkthrough: Raspberry Pi Zero W](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/raspberry-pi-zero-w.md)
-### [Manual Installation Walkthrough: Intel NUC](https://github.com/vertcoin-project/VertDocs/blob/master/docs/FullNodes/intel-nuc.md)
+#### Why a Dogecoin node?
+Dogecoin is a digital currency supported by a peer-to-peer network. In order to run efficiently and effectively, it needs peers run by different people... and the more the better.
 
-------------
+#### Why a Raspberry Pi?
+Raspberry Pi is an inexpensive computing hardware platform that generates little heat, draws little power, and can run silently 24 hours a day without having to think about it.
 
-### Shopping List
-|                                                              Name                                                             |        Price        |                                         URL                                        |
-|:-----------------------------------------------------------------------------------------------------------------------------:|:-------------------:|:----------------------------------------------------------------------------------:|
-|                                                         Raspberry Pi                                                          | -------             | ----------------------------------                                                 |
-| CanaKit Raspberry Pi 3 with 2.5A Micro USB Power Supply                                                                       | $42-$45 USD         | https://www.amazon.com/CanaKit-Raspberry-Micro-Supply-Listed/dp/B01C6FFNY4/        |
-|                                                                                         C4 Labs Zebra Case - Raspberry Pi 3B+ | $14.95 USD          | https://www.amazon.com/C4-Labs-Zebra-Case-Raspberry/dp/B00M6G9YBM/                 |
-| CanaKit Raspberry Pi Zero W (Wireless) Complete Starter Kit - 16 GB                                                           | $32.99 USD          | https://www.amazon.com/CanaKit-Raspberry-Wireless-Complete-Starter/dp/B072N3X39J/  |
-|                                                                      Zebra Zero Heatsink Case Black Ice for Raspberry Pi Zero | $6.95 USD           | https://www.amazon.com/Zebra-Heatsink-Raspberry-Wireless-C4Labs/dp/B01HP636I4/     |
-|                                                Pine64 Rock64 Media Board 1-4GB                                                | $24.95 - $44.95 USD | https://www.pine64.org/?product=rock64-media-board-computer                        |
-|                                               Orange Pi One Project Board ARMv7                                               | $19.99 USD          | https://www.amazon.com/Orange-Pi-One-Project-Board/dp/B01CD48E94/                  |
-| LoveRPi 8" MicroUSB to 4.0mm x 1.7mm Barrel Plug Adapter with Click Button Power Switch for Banana Pi M2 and Orange Pi Boards | $5.99 USD           | https://www.amazon.com/LoveRPi-MicroUSB-Barrel-Adapter-Button/dp/B01CMZVQQ2/       |
-|                                                          LoveRPi 2.5A 4.0mm x 1.7mm Barrel Plug Power Supply Adapter Charger  | ~7.00 USD           | https://www.amazon.com/LoveRPi-Barrel-Supply-Adapter-Charger/dp/B01CMZ96EG/        |
-|                                                 Sandisk Ultra 16GB Micro SDHC                                                 | $8.17 USD           | https://www.amazon.com/Sandisk-Ultra-Micro-UHS-I-Adapter/dp/B073K14CVB/            |
-|                                           Kingston Digital DataTraveler 16GB USB 2.0                                          | $5.99 USD           | https://www.amazon.com/Kingston-Digital-DataTraveler-DTSE9H-16GBZ/dp/B006W8U2WU/   |
-|                                                           Intel NUC                                                           | -------             | NOTE the memory type the Intel NUC takes, DDR3 or DDR4 and purchase accordingly    |
-|                                                                                                            Intel NUC NUC5CPYH | $115.13 USD         | https://www.amazon.com/Intel-NUC5CPYH-Graphics-2-5-Inch-BOXNUC5CPYH/dp/B00XPVRR5M/ |
-|                                                                                                         Intel NUC BOXNUC6CAYH | $127.02 USD         | https://www.amazon.com/dp/B01MSZTD8N/                                              |
-|                                                                                                   Intel NUC 7 Pentium Mini PC |  $169.99 USD        | https://www.amazon.com/Intel-NUC7-Pentium-Mini-BOXNUC7PJYH1/dp/B07C9GF256/         |
-|                                                                                                       Crucial 4GB Single DDR4 | $40.25 USD          | https://www.amazon.com/Crucial-PC4-19200-Unbuffered-SODIMM-260-Pin/dp/B019FRDKWI/  |
-|                                                                                                       Crucial 4GB Single DDR3 | $37.48 USD          | https://www.amazon.com/dp/B009RBN6I6/                                              |
-|                                                                                                        SanDisk SSD PLUS 120GB | $44.95 USD          | https://www.amazon.com/dp/B01F9G414U/                                              |
+#### What is a Node?
 
-------------------------
+Dogecoin’s peer-to-peer network is composed of network "nodes," run mostly by volunteers. Those running Dogecoin nodes have a direct and authoritative view of the Dogecoin blockchain, with a local copy of all the transactions, independently validated by their own system and can initiate transactions directly on the Dogecoin network.
+
+By running a node, you don’t have to rely on any third party to validate a transaction. Moreover, **by running a Dogecoin node you contribute to the Dogecoin network by making it more robust**. A node client with the entire block archive consumes substantial computer resources (e.g., more than `50 GB` of disk, `~1 GB` of `RAM` at most) but offers complete autonomy and independent transaction verification.
+
+**Running a node, however, requires a permanently connected system with enough resources to process all Dogecoin transactions.** Dogecoin nodes also transmit and receive Dogecoin transactions and blocks, consuming internet bandwidth. If your internet connection is limited, has a low data cap, or is metered (charged by the gigabit), you should probably not run a Dogecoin node on it, or run it in a way that limits its bandwidth usage.
+
+Despite these resource requirements, thousands of volunteers run Dogecoin nodes. **Some are running on systems as simple as a [Raspberry Pi Zero](https://www.raspberrypi.org/products/raspberry-pi-zero/) (a $10 USD computer the size of a cracker)**. Many volunteers also run Dogecoin nodes on rented servers, usually some variant of Linux. A Virtual Private Server (VPS) or Cloud Computing Server instance can be used to run a Dogecoin node. Such servers can be rented for $10 to $50 USD per month from a variety of providers.
+
+#### What is a Full Node?
+
+A full node is one that optionally has port `22556` forwarded to your local IP on your router.  Both starting/external and ending/internal ports should be set to `22556` and external TCP is all that is necessary.  A full node will be able to accept incoming connections and serve archival block data to peers. Full nodes can connect with more peers than the default which allows for greater throughput of data on the Dogecoin network. This helps keep the Dogecoin peer-to-peer network healthy and strong.
+
+#### Why run a headless node on a Single Board Computer?
+
+1. You want to support Dogecoin. Running a node makes the network more robust and able to serve more wallets, more users, and more transactions.
+2. You are building or using applications such as mining that must validate transactions according to Dogecoin’s consensus rules.
+3. You are developing Dogecoin software and need to rely on a Dogecoin node for programmable (API) access to the network and blockchain.
+
+**The idea is to have this node be simple, low-power, with optimized memory usage and something that “just runs” in your basement, closet, etc.**
+
+---------------
+### TO-DO Checklist
+- [ ] adjust swap file size based on RAM
+- [ ] expand support for x86_64 Debian / Ubuntu virtual machine, add option for USB flash drive
+- [ ] add TOR network option
+
+---------------
 
 <p align="center">
   <img src="https://i.imgur.com/TKEVSFv.png">

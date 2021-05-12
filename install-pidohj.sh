@@ -52,17 +52,17 @@ clear
 # install depends for detection; check for lshw, install if not
 if [ $(dpkg-query -W -f='${Status}' lshw 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-dogecoinnode..."    
-    sudo apt-get install lshw -y
+    sudo apt install lshw -y
 fi
 # install depends for detection; check for gawk, install if not
 if [ $(dpkg-query -W -f='${Status}' gawk 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-dogecoinnode..."    
-    sudo apt-get install gawk -y
+    sudo apt install gawk -y
 fi
 # install depends for detection; check for git, install if not
 if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo "Installing required dependencies to run install-dogecoinnode..."    
-    sudo apt-get install git -y
+    sudo apt install git -y
 fi
 # fail on error; debug all lines
 set -eu -o pipefail
@@ -97,7 +97,7 @@ while true; do
         INTERFACE="$(ip -o link show | awk '{print $2,$9}' | grep UP | awk '{print $1}' | sed 's/:$//' | awk 'NR==1{print $1}')"
         break
     elif [[ $SYSTEM = "Rockchip"* ]]; then
-        sudo apt-get install facter -y
+        sudo apt install facter -y
         # grab only the first row of data, user may want wifi + lan
         INTERFACE="$(sudo facter 2>/dev/null | grep ipaddress_et | awk '{print $1}' | sed 's/.*_//' | awk 'NR==1{print $1}')"
         break
@@ -142,7 +142,7 @@ function network_addr {
 # wait_for_continue | function for classic "Press spacebar to continue..." 
 function wait_for_continue {
     echo 
-    echo "DO NOT CONTINUE UNTIL THE BLOCKCHAIN HAS BEEN"
+    echo "DO NOT CONTINUE UNTIL THE BLOCKS FOLDER HAS BEEN"
     echo "COMPLETELY COPIED OVER TO $userhome/.dogecoin/"
     echo
     read -n 1 -s -r -p "Press any key to continue..."
@@ -175,10 +175,10 @@ function user_intro {
     echo "to the port forwarding section and port forward..."
     echo "$LANIP TCP/UDP 22556"
     echo
-    yellowtext 'What is a full node? It is a Dogecoin server that contains the'
-    yellowtext 'full blockchain and propagates transactions throughout the Dogecoin'
-    yellowtext 'network via peers. Playing its part to keep the Dogecoin peer-to-peer'
-    yellowtext 'network healthy and strong.'
+    echo "What is a full node? A full node will be able to accept incoming connections"
+    echo "and serve archival block data to peers. Full nodes can connect with more peers"
+    echo "than the default which allows for greater throughput of data on the Dogecoin network."
+    echo "This helps keep the Dogecoin peer-to-peer network healthy and strong."
     echo
     read -n 1 -s -r -p "Press any key to continue..."
 }
@@ -212,7 +212,8 @@ function user_input {
         echo "          2048 = 2GB"
         echo "          3072 = 3GB"
         echo "          4096 = 4GB"
-        echo "          5120 = 5GB" 
+        echo "          5120 = 5GB"
+        echo "          0 = Unlimited upload!"
         echo 
         read -p 'maxuploadtarget=' MAXUPLOAD
         # little bit of macgyvering here. this if statement uses -eq for something 
@@ -302,6 +303,7 @@ function init_script {
     greentext 'Initializing Dogecoin node installation script...' 
     echo
     yellowtext '****************************************************************'
+
     if [[ $BUILDDOGECOIN = "install_dogecoind" ]]; then
         yellowtext 'Dogecoin Installation      | Build from source'
     else
@@ -321,9 +323,9 @@ function init_script {
 # update_rasp | update the system
 function update_rasp {
     yellowtext 'Initializing system update...'
-    sudo apt-get update
-    sudo apt-get upgrade -y
-    sudo apt-get autoremove -y
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt autoremove -y
     greentext 'Successfully updated system!'
     echo
 }
@@ -331,7 +333,7 @@ function update_rasp {
 # install_depends | install the required dependencies to run this script
 function install_depends {
     yellowtext 'Installing package dependencies...'
-    sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip python python2.7-dev
+    sudo apt install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev git fail2ban dphys-swapfile unzip python python2.7-dev
     greentext 'Successfully installed required dependencies!'
     echo
 }
@@ -340,7 +342,7 @@ function install_depends {
 function secure {
     yellowtext 'Configuring firewall...'
     # install the dependancy 
-    sudo apt-get install ufw -y
+    sudo apt install ufw -y
     # call the function network_addr    
     network_addr
     # configure ufw firewall   
@@ -420,7 +422,7 @@ function swap_config {
     echo
     echo " If you intend on sideloading the blockchain please use an " 
     echo " SFTP client such as WinSCP or FileZilla to copy the BLOCKS"
-    echo " and CHAINSTATE folder to /home/$user/.dogecoin/"
+    echo "folder to /home/$user/.dogecoin/"
     yellowtext '--------------------------------------------------------------------'
     greentext ' HOW TO CONNECT: '
     echo
@@ -502,19 +504,19 @@ function install_dogecoind {
        if [[ $SYSTEM = "Rockchip"* ]]; then
                 cd "$userhome"/bin/dogecoin/
                 ./autogen.sh        
-                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --enable-upnp-default --build=aarch64-unknown-linux-gnu             
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --disable-tests --disable-bench --enable-upnp-default --build=aarch64-unknown-linux-gnu
                 break
        elif [ "$RAM" -gt "$RAM_MIN" ]; then
                 # if RAM is greater than 910MB configure without memory flags
                 cd "$userhome"/bin/dogecoin/
                 ./autogen.sh        
-                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --enable-upnp-default 
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --disable-tests --disable-bench --enable-upnp-default
                 break
        else
                 # if RAM is less than 910MB configure with memory flags
                 cd "$userhome"/bin/dogecoin/
                 ./autogen.sh 
-                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" 
+                ./configure CPPFLAGS="-I/usr/local/BerkeleyDB.5.1/include -O2" LDFLAGS="-L/usr/local/BerkeleyDB.5.1/lib" --disable-tests --disable-bench --enable-upnp-default CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
                 break
         fi
     done
@@ -527,45 +529,40 @@ function install_dogecoind {
 
 # grab_doge_release | grab the latest dogecoind release from github
 function grab_doge_release {
-    if [[ $RELEASE = "Ubuntu" ]]; then
-        sudo add-apt-repository ppa:bitcoin/bitcoin -y
-        sudo apt-get update 
-        sudo apt-get install libdb4.8-dev libdb4.8++-dev -y  
-    fi
     if [[ $ARCH = "armhf" ]]; then
-        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
-        tar -xzvf dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.3/dogecoin-1.14.3-arm-linux-gnueabihf.tar.gz
+        tar -xzvf dogecoin-1.14.3-arm-linux-gnueabihf.tar.gz
          # clean up    
-        rm dogecoin-1.14.2-arm-linux-gnueabihf.tar.gz
+        rm dogecoin-1.14.3-arm-linux-gnueabihf.tar.gz
     elif [[ $ARCH = "aarch64" ]]; then
-        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
-        tar -xzvf dogecoin-1.14.2-aarch64-linux-gnu.tar.gz
+        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.3/dogecoin-1.14.3-aarch64-linux-gnu.tar.gz
+        tar -xzvf dogecoin-1.14.3-aarch64-linux-gnu.tar.gz
         # clean up    
-        rm dogecoin-$VERSION-aarch64-linux-gnu.tar.gz
+        rm dogecoin-1.14.3-aarch64-linux-gnu.tar.gz
     elif [[ $ARCH = "amd64" ]]; then
-        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.2/dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
-        tar -xzvf dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+        wget https://github.com/dogecoin/dogecoin/releases/download/v1.14.3/dogecoin-1.14.3-i686-pc-linux-gnu.tar.gz
+        tar -xzvf dogecoin-1.14.3-i686-pc-linux-gnu.tar.gz
         # clean up    
-        rm dogecoin-1.14.2-i686-pc-linux-gnu.tar.gz
+        rm dogecoin-1.14.3-i686-pc-linux-gnu.tar.gz
     fi
     # move dogecoin binaries to /usr/bin/ 
-    cd dogecoin-1.14.2/bin
+    cd dogecoin-1.14.3/bin
     sudo mv dogecoind dogecoin-tx dogecoin-cli /usr/bin/
     cd "$userhome"
-    rm -r dogecoin-1.14.2
+    rm -r dogecoin-1.14.3
 }
 
 # grab_bootstrap | grab the latest bootstrap.dat
 function grab_bootstrap {
-    # check package manager for pv, install if not
-    if [ $(dpkg-query -W -f='${Status}' pv 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-        sudo apt-get install pv
-    fi
-    cd $userhome
-    # grab bootstrap.dat generated by rnicoll
-    echo "Downloading latest bootstrap.dat by rnicoll..."
-    # download boostrap.dat    
-    wget sudo wget https://bootstrap.sochain.com/bootstrap.dat -P $userhome/.dogecoin/
+    cd $userhome/.dogecoin
+    # grab bootstrap.dat generated by Incognitojam
+    wget https://dogecoin.gg/files/dogecoin-bootstrap-2021-05-09.torrent
+    echo "Downloading latest bootstrap.dat by IncognitoJam..."
+    # download boostrap.dat
+    sudo apt install aria2 -y
+    aria2c --seed-time=0 dogecoin-bootstrap-2021-05-09.torrent
+    mv dogecoin-bootstrap-2021-05-09/bootstrap.dat .
+    rm -r dogecoin-bootstrap-2021-05-09 dogecoin-bootstrap-2021-05-09.torrent
     echo
     echo "Successfully downloaded bootstrap.dat!"
     echo
@@ -573,11 +570,11 @@ function grab_bootstrap {
 
 # config_crontab | function to configure crontab to start 
 function config_crontab {
-    dogeRON=$({ crontab -l -u $user 2>/dev/null; echo '@reboot dogecoind -daemon'; } | crontab -u $user - )
+    dogeCRON=$({ crontab -l -u $user 2>/dev/null; echo '@reboot dogecoind -daemon'; } | crontab -u $user - )
     echo    
     yellowtext 'Configuring Crontab...'
     yellowtext '** dogecoind  | start on reboot'
-    $dogeRON
+    $dogeCRON
     echo
     greentext 'Successfully configured Crontab!'
 }
@@ -589,21 +586,17 @@ function config_dogecoin {
     echo "rpcuser=$rpcuser" >> /home/"$user"/.dogecoin/dogecoin.conf
     echo "rpcpassword=$rpcpass" >> /home/"$user"/.dogecoin/dogecoin.conf
     echo 'dbcache=100' >> /home/"$user"/.dogecoin/dogecoin.conf
-    echo 'maxmempool=100' >> /home/"$user"/.dogecoin/dogecoin.conf
     echo 'maxorphantx=10' >> /home/"$user"/.dogecoin/dogecoin.conf
     echo 'maxmempool=50' >> /home/"$user"/.dogecoin/dogecoin.conf
-    echo 'maxconnections=40' >> /home/"$user"/.dogecoin/dogecoin.conf
+    echo 'maxconnections=30' >> /home/"$user"/.dogecoin/dogecoin.conf
     echo "maxuploadtarget=$MAXUPLOAD" >> /home/"$user"/.dogecoin/dogecoin.conf
-    echo 'usehd=1' >> /home/"$user"/.dogecoin/dogecoin.conf
     # configure permissions for user access
     cd "$userhome"/.dogecoin/
-    sudo chmod 777 dogecoin.conf
 }
 
 # initiate_blockchain | take user response from load_blockchain and execute
 function initiate_blockchain {
     if [[ $LOADBLOCKMETHOD = "wait_for_continue" ]]; then
-        # if user selected to install p2pool, then install it
         wait_for_continue
         echo
         # wait two minutes to ensure dogecoin core is alive before moving on
@@ -675,10 +668,10 @@ function installation_report {
     echo "to the port forwarding section and port forward..."
     echo "$LANIP TCP/UDP 22556"
     echo
-    echo "What is a full node? It is a Dogecoin server that contains the"
-    echo "full blockchain and propagates transactions throughout the Dogecoin"
-    echo "network via peers). Playing its part to keep the Dogecoin peer-to-peer"
-    echo "network healthy and strong."
+    echo "What is a full node? A full node will be able to accept incoming connections"
+    echo "and serve archival block data to peers. Full nodes can connect with more peers"
+    echo "than the default which allows for greater throughput of data on the Dogecoin network."
+    echo "This helps keep the Dogecoin peer-to-peer network healthy and strong."
     echo
     echo "Useful commands to know:"
     echo "------------------------------------------------------------------------------"
@@ -688,8 +681,7 @@ function installation_report {
     echo " dogecoin-cli getblockcount           | display current number of blocks"
     echo " dogecoin-cli getconnectioncount      | display number of connections"
     echo " dogecoin-cli getnettotals            | display total number of bytes sent/recv"
-    echo " dogecoin-cli getnewaddress           | generate bech32 (segwit) address"
-    echo " dogecoin-cli getnewaddress "\"""\"" legacy | generate legacy address"
+    echo " dogecoin-cli getnewaddress           | generate address"
     echo
     echo " # display latest dogecoin log information: " 
     echo " tail -f ~/.dogecoin/debug.log"
